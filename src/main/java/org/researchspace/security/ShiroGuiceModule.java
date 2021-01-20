@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.servlet.Filter;
 import javax.servlet.ServletContext;
@@ -31,12 +32,19 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.shiro.config.ConfigurationException;
 import org.apache.shiro.guice.web.ShiroWebModule;
+import org.apache.shiro.web.env.WebEnvironment;
 import org.apache.shiro.web.mgt.WebSecurityManager;
+import org.pac4j.core.authorization.generator.AuthorizationGenerator;
+import org.pac4j.oauth.client.OAuth20Client;
 import org.researchspace.cache.CacheManager;
 import org.researchspace.config.Configuration;
+import org.researchspace.security.sso.OAuth2Environment;
 import org.researchspace.security.sso.SSOCallbackFilter;
+import org.researchspace.security.sso.SSOEnvironment;
 import org.researchspace.security.sso.SSOLogoutFilter;
 import org.researchspace.security.sso.SSOSecurityFilter;
+
+import io.buji.pac4j.subject.Pac4jSubjectFactory;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Injector;
@@ -55,16 +63,16 @@ public class ShiroGuiceModule extends ShiroWebModule {
     public static final String LOGIN_PATH = "/login";
 
     private Injector coreInjector;
+    private Provider<Configuration> config;
 
     public ShiroGuiceModule(ServletContext servletContext, Injector corePlatformInjector) {
         super(servletContext);
         this.coreInjector = corePlatformInjector;
+        this.config = this.coreInjector.getProvider(org.researchspace.config.Configuration.class);
     }
 
     @Override
     protected void configureShiroWeb() {
-
-        Configuration config = this.coreInjector.getInstance(org.researchspace.config.Configuration.class);
         bindConstant().annotatedWith(Names.named("shiro.successUrl")).to("/");
 
         // note: we can't set the session timeout here, but need to do that using the
@@ -78,7 +86,7 @@ public class ShiroGuiceModule extends ShiroWebModule {
         addFilterChain("/tableau", ANON);
         addFilterChain("/tableau/isAnonymousEnabled", ANON);
 
-        configureRealmBindings(config);
+        configureRealmBindings(config.get());
 
         addFilterChain("/favicon.ico", ANON);
 
@@ -99,15 +107,32 @@ public class ShiroGuiceModule extends ShiroWebModule {
         addFilterChain("/**", filters);
     }
 
+
+
     protected void configureRealmBindings(Configuration config) {
         if (config.getEnvironmentConfig().getSecurityConfig(SecurityConfigType.ShiroLDAPConfig).exists()) {
             addLocalLogin(config);
             bindRealm().toProvider(LDAPRealmProvider.class).in(Singleton.class);
             addFilterChain("/logout", LOGOUT);
+        } else if (config.getEnvironmentConfig().getSecurityConfig(SecurityConfigType.OauthParameters).exists()) {
+            bindRealm().to(io.buji.pac4j.realm.Pac4jRealm.class).in(Singleton.class);
+            bind(SSOEnvironment.class).to(OAuth2Environment.class);
+            bind(WebEnvironment.class).to(OAuth2Environment.class);
+            bind(OAuth2Environment.class).in(Singleton.class);
+            addFilterChain("/sso/callback", ShiroFilter.ssoCallback.getFilterKey());
         } else {
             bindLocalUsersRealm();
             addDefaultLoginPage();
             addFilterChain("/logout", LOGOUT);
+        }
+    }
+
+    @Override
+    protected void bindWebEnvironment(AnnotatedBindingBuilder<? super WebEnvironment> bind) {
+        if (this.config.get().getEnvironmentConfig().getSecurityConfig(SecurityConfigType.OauthParameters).exists()) {
+            bind.to(OAuth2Environment.class);
+        } else {
+            super.bindWebEnvironment(bind);
         }
     }
 
@@ -187,5 +212,4 @@ public class ShiroGuiceModule extends ShiroWebModule {
             return this.filterKey;
         }
     }
-
 }

@@ -19,7 +19,10 @@
 
 package org.researchspace.security;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashSet;
 import java.util.List;
@@ -28,14 +31,6 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
-
-import com.github.jknack.handlebars.Context;
-import com.github.jknack.handlebars.Handlebars;
-import com.github.jknack.handlebars.Template;
-import com.github.jknack.handlebars.context.FieldValueResolver;
-import com.google.common.collect.Sets;
-
-import io.buji.pac4j.subject.Pac4jPrincipal;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -57,6 +52,14 @@ import org.researchspace.services.storage.api.PlatformStorage;
 import org.researchspace.services.storage.api.StoragePath;
 import org.researchspace.templates.FromStorageLoader;
 import org.researchspace.vocabulary.LDP;
+
+import com.github.jknack.handlebars.Context;
+import com.github.jknack.handlebars.Handlebars;
+import com.github.jknack.handlebars.Template;
+import com.github.jknack.handlebars.context.FieldValueResolver;
+import com.google.common.collect.Sets;
+
+import io.buji.pac4j.subject.Pac4jPrincipal;
 
 /**
  * @author Denis Ostapenko
@@ -152,13 +155,16 @@ public class SecurityService {
             Object principal = ((DelegatingSubject) subject).getPrincipal();
 
             if (principal instanceof Pac4jPrincipal) {
-                userName = ((Pac4jPrincipal) principal).getName();
+                // userName = ((Pac4jPrincipal) principal).getName();
+                userName = "unknown";
             } else if (principal instanceof String) {
                 userName = (String) principal;
                 if (StringUtils.isEmpty(userName)) {
                     userName = "unknown";
                 }
             }
+        } else {
+            userName = "unknown";
         }
         return userName;
     }

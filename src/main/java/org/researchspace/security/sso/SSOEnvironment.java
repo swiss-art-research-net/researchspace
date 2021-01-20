@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.apache.shiro.web.env.IniWebEnvironment;
 import org.researchspace.config.Configuration;
+import org.researchspace.security.ShiroTextRealm;
 
 /**
  * @author Artem Kozlov {@literal <ak@metaphacts.com>}
@@ -32,8 +33,12 @@ public class SSOEnvironment extends IniWebEnvironment {
     private static final String USERS = "users";
 
     private SSOUsersRegistry users;
+    protected Configuration config;
+    protected ShiroTextRealm textRealm;
 
-    public SSOEnvironment(Configuration config) {
+    public SSOEnvironment(Configuration config, ShiroTextRealm textRealm) {
+        this.config = config;
+        this.textRealm = textRealm;
         this.users = new SSOUsersRegistry(config);
     }
 
@@ -42,5 +47,12 @@ public class SSOEnvironment extends IniWebEnvironment {
         Map<String, Object> defaults = super.getDefaults();
         defaults.put(USERS, users);
         return defaults;
+    }
+
+    @Override
+    protected void configure() {
+        super.configure();
+        AuthorithationGenerator authGenerator = this.getObject("authGenerator", AuthorithationGenerator.class);
+        authGenerator.setTextRealm(this.textRealm);
     }
 }
