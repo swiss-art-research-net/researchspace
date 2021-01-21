@@ -20,23 +20,22 @@ package org.researchspace.security.sso;
 import org.apache.shiro.util.Factory;
 import org.pac4j.oauth.client.OAuth20Client;
 import org.pac4j.oauth.config.OAuth20Configuration;
-import org.pac4j.oauth.profile.OAuth20Profile;
 import org.pac4j.oauth.profile.creator.OAuth20ProfileCreator;
 
-public class OpenIdProfileCreatorFactory implements Factory<OAuth20ProfileCreator<OAuth20Profile>> {
+public class OpenIdProfileCreatorFactory implements Factory<OAuth20ProfileCreator> {
     private OAuth20Configuration config;
-    private OAuth20Client<OAuth20Profile> client;
+    private OAuth20Client client;
 
     @Override
-    public OAuth20ProfileCreator<OAuth20Profile> getInstance() {
-        return new OAuth20ProfileCreator<OAuth20Profile>(this.config, this.client);
+    public OAuth20ProfileCreator getInstance() {
+        return new OAuth20ProfileCreator(this.config, this.client);
     }
 
     public void setConfig(OAuth20Configuration config) {
         this.config = config;
     }
 
-    public void setClient(OAuth20Client<OAuth20Profile> client) {
+    public void setClient(OAuth20Client client) {
         this.client = client;
     }
 }

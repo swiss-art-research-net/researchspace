@@ -16,14 +16,18 @@
  */
 package org.researchspace.security.sso;
 
+import java.util.Optional;
+
+import org.apache.shiro.authz.SimpleRole;
 import org.pac4j.core.context.WebContext;
-import org.pac4j.oauth.profile.OAuth20Profile;
+import org.pac4j.core.context.session.SessionStore;
+import org.pac4j.core.profile.UserProfile;
 import org.researchspace.security.ShiroTextRealm;
+import org.pac4j.oidc.authorization.generator.KeycloakRolesAuthorizationGenerator;
 
-public class AuthorithationGenerator
-        implements org.pac4j.core.authorization.generator.AuthorizationGenerator<OAuth20Profile> {
+public class AuthorithationGenerator extends KeycloakRolesAuthorizationGenerator {
 
-    private String defaultRole = "guest";
+    private String defaultRole;
     private ShiroTextRealm textRealm;
 
     public AuthorithationGenerator() {
@@ -34,13 +38,20 @@ public class AuthorithationGenerator
     }
 
     @Override
-    public OAuth20Profile generate(WebContext arg0, OAuth20Profile profile) {
+    public Optional<UserProfile> generate(WebContext arg0, SessionStore sessionStore, UserProfile profile) {
+        super.generate(arg0, sessionStore, profile);
         profile.addRole(defaultRole);
+        profile.getRoles().forEach(role -> this.addPermissions(profile, role));
+        return Optional.of(profile);
+    }
 
-        this.textRealm.getRoles().get(defaultRole).getPermissions().forEach(p -> {
-            profile.addPermission(p.toString());
-        });
-        return profile;
+    private void addPermissions(UserProfile profile, String role) {
+        SimpleRole shiroRole = this.textRealm.getRoles().get(role);
+        if (shiroRole != null) {
+            shiroRole.getPermissions().forEach(p -> {
+                    profile.addPermission(p.toString());
+                });
+        }
     }
 
     public void setDefaultRole(String defaultRole) {

@@ -52,6 +52,10 @@ file("${projectDir}/.eclipse/org.eclipse.jdt.core.prefs").withInputStream {
     eclipseJdtProps.load(it)
 }
 eclipse {
+    classpath {
+        downloadJavadoc = true
+        downloadSources = true
+    }
     jdt {
         file {
             withProperties { properties ->
@@ -362,10 +366,9 @@ dependencies {
         "org.glassfish.hk2:guice-bridge:2.6.1",
 
 
-        "io.buji:buji-pac4j:4.0.0",
-        "org.pac4j:pac4j-oauth:3.1.0",
-        "org.pac4j:pac4j-saml:3.1.0",
-
+        "io.buji:buji-pac4j:6.0.0-20210113.075045-4",
+        "org.pac4j:pac4j-oauth:5.0.0-20210120.092114-99",
+        "org.pac4j:pac4j-oidc:5.0.0-20210120.092224-98",
 
         // Apache commons stuff
         "org.apache.commons:commons-compress:1.20",

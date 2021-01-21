@@ -114,11 +114,8 @@ public class ShiroGuiceModule extends ShiroWebModule {
             addLocalLogin(config);
             bindRealm().toProvider(LDAPRealmProvider.class).in(Singleton.class);
             addFilterChain("/logout", LOGOUT);
-        } else if (config.getEnvironmentConfig().getSecurityConfig(SecurityConfigType.OauthParameters).exists()) {
+        } else if (config.getEnvironmentConfig().getSsoVariant() != null) {
             bindRealm().to(io.buji.pac4j.realm.Pac4jRealm.class).in(Singleton.class);
-            bind(SSOEnvironment.class).to(OAuth2Environment.class);
-            bind(WebEnvironment.class).to(OAuth2Environment.class);
-            bind(OAuth2Environment.class).in(Singleton.class);
             addFilterChain("/sso/callback", ShiroFilter.ssoCallback.getFilterKey());
         } else {
             bindLocalUsersRealm();
@@ -129,8 +126,10 @@ public class ShiroGuiceModule extends ShiroWebModule {
 
     @Override
     protected void bindWebEnvironment(AnnotatedBindingBuilder<? super WebEnvironment> bind) {
-        if (this.config.get().getEnvironmentConfig().getSecurityConfig(SecurityConfigType.OauthParameters).exists()) {
-            bind.to(OAuth2Environment.class);
+        if (this.config.get().getEnvironmentConfig().getSsoVariant() != null) {
+            bind(SSOEnvironment.class).in(Singleton.class);
+            bind(WebEnvironment.class).to(SSOEnvironment.class);
+            bind.to(SSOEnvironment.class);
         } else {
             super.bindWebEnvironment(bind);
         }
@@ -199,7 +198,7 @@ public class ShiroGuiceModule extends ShiroWebModule {
         authc(FormAuthenticationFilter.class), anon(AnonymousUserFilter.class),
         authcBasic(OptionalBasicAuthFilter.class),
 
-        oauth2(SSOSecurityFilter.class), saml2(SSOSecurityFilter.class), sso(SSOSecurityFilter.class),
+        sso(SSOSecurityFilter.class),
         ssoLogout(SSOLogoutFilter.class), ssoCallback(SSOCallbackFilter.class);
 
         private Key<? extends javax.servlet.Filter> filterKey;

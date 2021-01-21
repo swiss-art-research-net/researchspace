@@ -107,6 +107,11 @@ public class EnvironmentConfiguration extends ConfigurationGroupBase {
         return getString(type.getParamKey(), type.getDefaultPath());
     }
 
+    @ConfigurationParameter
+    public String getSsoVariant() {
+        return getString("ssoVariant");
+    }
+
     /**
      * Returns {@link SecurityConfigRecord} for specified config type.
      * <ul>

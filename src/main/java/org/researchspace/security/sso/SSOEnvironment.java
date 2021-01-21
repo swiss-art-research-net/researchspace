@@ -19,16 +19,25 @@
 
 package org.researchspace.security.sso;
 
+import java.io.InputStream;
 import java.util.Map;
 
+import javax.inject.Inject;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.shiro.config.Ini;
 import org.apache.shiro.web.env.IniWebEnvironment;
 import org.researchspace.config.Configuration;
+import org.researchspace.security.SecurityConfigRecord;
+import org.researchspace.security.SecurityConfigType;
 import org.researchspace.security.ShiroTextRealm;
 
 /**
  * @author Artem Kozlov {@literal <ak@metaphacts.com>}
  */
 public class SSOEnvironment extends IniWebEnvironment {
+    private static final Logger logger = LogManager.getLogger(SSOEnvironment.class);
 
     private static final String USERS = "users";
 
@@ -36,7 +45,9 @@ public class SSOEnvironment extends IniWebEnvironment {
     protected Configuration config;
     protected ShiroTextRealm textRealm;
 
+    @Inject
     public SSOEnvironment(Configuration config, ShiroTextRealm textRealm) {
+        super();
         this.config = config;
         this.textRealm = textRealm;
         this.users = new SSOUsersRegistry(config);
@@ -54,5 +65,27 @@ public class SSOEnvironment extends IniWebEnvironment {
         super.configure();
         AuthorithationGenerator authGenerator = this.getObject("authGenerator", AuthorithationGenerator.class);
         authGenerator.setTextRealm(this.textRealm);
+    }
+
+    @Override
+    protected Ini getDefaultIni() {
+        String ssoVariant = this.config.getEnvironmentConfig().getSsoVariant();
+        SecurityConfigType configType = SecurityConfigType.valueOf(ssoVariant);
+        SecurityConfigRecord record = config.getEnvironmentConfig().getSecurityConfig(configType);
+
+        Ini ini = new Ini();
+        try (InputStream stream = record.readStream()) {
+            ini.load(stream);
+        } catch (Exception e) {
+            logger.error("SSO is enabled but " + configType.getFileName()  + " is missing.");
+            System.exit(1);
+        }
+        return ini;
+    }
+
+    @Override
+    protected Ini getFrameworkIni() {
+        return Ini.fromResourcePath(
+                "classpath:org/researchspace/security/sso/shiro-sso-" + this.config.getEnvironmentConfig().getSsoVariant() + "-default.ini");
     }
 }

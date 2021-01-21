@@ -22,8 +22,10 @@ package org.researchspace.security;
 import org.researchspace.config.Configuration;
 
 public enum SecurityConfigType {
-    ShiroConfig("shiroConfig", "shiro.ini"), ShiroLDAPConfig("shiroLDAPConfig", "shiro-ldap.ini"),
+    ShiroConfig("shiroConfig", "shiro.ini"),
+    ShiroLDAPConfig("shiroLDAPConfig", "shiro-ldap.ini"),
     OauthParameters("oauthParameters", "shiro-sso-oauth-params.ini"),
+    keycloak("keycloakParameters", "shiro-sso-keycloak-params.ini"),
     SamlParameters("samlParameters", "shiro-sso-saml-params.ini"),
     SsoAuthConfigOverride("ssoFactorAuthOverride", "shiro-sso.ini"),
     SsoUsersConfig("ssoUserConfig", "shiro-sso-users.ini");
