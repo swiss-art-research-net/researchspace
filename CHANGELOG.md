@@ -1,4 +1,5 @@
-## 4.0.2-beta
+## 4.0.2
+
 - Added Sigma Graph component
 ## 4.0.1
 
