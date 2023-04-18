@@ -19,16 +19,28 @@
 
 package org.researchspace.templates.helper;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.inject.Inject;
 
 import org.researchspace.templates.TemplateContext;
+import org.researchspace.config.Configuration;
 
 import com.github.jknack.handlebars.Options;
 
 
 public class I18nHelperSource {
 
+    private final Configuration config;
+
+    @Inject
+    public I18nHelperSource(Configuration config) {
+        this.config = config;
+    }
+
     public String i18n(final String key, final Options options) {
-       return "OK";
+
+        //TemplateContext context =  (TemplateContext) options.context.model();
+        String languageTag = config.getUiConfig().resolvePreferredLanguage(null);
+
+        return languageTag;
     }
 }

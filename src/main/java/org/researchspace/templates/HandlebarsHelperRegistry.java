@@ -26,6 +26,7 @@ import javax.inject.Inject;
 
 import org.researchspace.cache.LabelCache;
 import org.researchspace.cache.QueryTemplateCache;
+import org.researchspace.config.Configuration;
 import org.researchspace.repository.RepositoryManager;
 import org.researchspace.services.fields.FieldDefinitionManager;
 import org.researchspace.services.fields.FieldsBasedSearch;
@@ -39,14 +40,14 @@ public class HandlebarsHelperRegistry {
 
     @Inject
     public HandlebarsHelperRegistry(RepositoryManager repositoryManager, FieldDefinitionManager fieldDefinitionManager,
-            FieldsBasedSearch fieldsBasedSearch, QueryTemplateCache queryTemplateCache, LabelCache labelCache) {
+            FieldsBasedSearch fieldsBasedSearch, QueryTemplateCache queryTemplateCache, LabelCache labelCache, Configuration config) {
         this.helpers = ImmutableList.of(new AskHelperSource(), new HasPermissionHelperSource(),
                 new UrlParamHelperSource(), new SingleValueFromSelectSource(),
                 new SparqlHelperSource(queryTemplateCache), new JsonFromSparqlSelectSource(),
                 new FieldDefinitionSource(repositoryManager, fieldDefinitionManager, fieldsBasedSearch, labelCache),
                 new PrefixResolverHelperSource(), new SetManagementHelperSource(),
                 new IsRepositoryTypeHelperSource(repositoryManager), new UriComponentHelperSource(),
-                new DateTimeHelperSource(), new I18nHelperSource());
+                new DateTimeHelperSource(), new I18nHelperSource(config));
     }
 
     public List<Object> getHelpers() {
