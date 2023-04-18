@@ -36,11 +36,15 @@ public class I18nHelperSource {
         this.config = config;
     }
 
+    public String getDefaultPreferredLanguage() {
+        return config.getUiConfig().getPreferredLanguages().get(0);
+    }
+
     public String i18n(final String key, final Options options) {
 
-        //TemplateContext context =  (TemplateContext) options.context.model();
-        String languageTag = config.getUiConfig().resolvePreferredLanguage(null);
+        TemplateContext context =  (TemplateContext) options.context.model();
+        String language = context.getPreferredLanguage().orElse(getDefaultPreferredLanguage());
 
-        return languageTag;
+        return language;
     }
 }
