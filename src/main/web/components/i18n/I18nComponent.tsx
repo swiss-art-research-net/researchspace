@@ -29,17 +29,34 @@ export class I18nComponent extends Component<{}, State> {
 
   private loadLabels() : void {
     const language = getPreferredUserLanguage();
-    // Load messages file from http://localhost:8080/assets/i18n/messages.json
+    // Load messages file from /assets/i18n/messages.json
+    
     fetch(`/assets/i18n/messages.json`)
       .then(response => response.json())
-      .then(labelsLanguage => {
-        this.setState({ labelsLanguage, isLoading: false });
+      .then(labelsDefault => {
+        this.setState({ labelsDefault, isLoading: false });
       })
-      .catch(error => {
-        const message = `Failed to load default labels. Make sure that the file /assets/i18n/messages.json exists.`
+      .catch(() => {
+        const message = `Failed to load default labels. Make sure that the file /assets/i18n/messages.json exists and contains a valid JSON object.`
         this.setState({ error: message, isLoading: false });
       });
+
+    // Load language labels from /assets/i18n/messages_{language}.json
+    const checkIfFileExists = (url: string) => {
+      return fetch(url, { method: 'HEAD' })
+    }
+    checkIfFileExists(`/assets/i18n/messages_${language}.json`)
+      .then(response => {
+        if (response.status === 200) {
+          fetch(`/assets/i18n/messages_${language}.json`)
+            .then(response => response.json())
+            .then(labelsLanguage => {
+              this.setState({ labelsLanguage, isLoading: false });
+            })
+        }
+      });
   }
+
   render() {
     const text = this.props.children;
     const language = getPreferredUserLanguage();
