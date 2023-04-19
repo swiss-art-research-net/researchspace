@@ -63,7 +63,12 @@ export class I18nComponent extends Component<{}, State> {
     if (this.state.error) {
       return React.createElement(ErrorNotification, { errorMessage: this.state.error });
     } else if (!this.state.isLoading) {
-      return <div>Test: {text} - {language}</div>;
+      const displayMessage = this.state.labelsLanguage[text] || this.state.labelsDefault[text] || null;
+      if (displayMessage) {
+        return <span>{displayMessage}</span>;
+      } else {
+        return <span>{text} - key not found</span>;
+      }
     }
     return null;
   }
