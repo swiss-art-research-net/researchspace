@@ -28,6 +28,11 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - 
+        name: Extract branch name
+        shell: bash
+        run: echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >>$GITHUB_OUTPUT
+        id: extract_branch
       -
         name: Build and push
         uses: docker/build-push-action@v4
@@ -35,4 +40,4 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: swissartresearx/researchspace:${GITHUB_REF##*/}
+          tags: swissartresearx/researchspace:${{ steps.extract_branch.outputs.branch }}
