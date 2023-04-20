@@ -123,8 +123,8 @@ jobs:
       - name: Push latest tag for non-master
         if: contains(github.ref, 'build-docker')
         env:
-          DOCKER_HUB_USER: ${{ secrets.DOCKER_HUB_USER }}
-          DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
+          DOCKER_HUB_USER: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKER_HUB_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
         run: |
           echo "$DOCKER_HUB_PASSWORD" | docker login --username ${DOCKER_HUB_USER} --password-stdin
           docker push researchspace/platform-ci:${{steps.get-branch.outputs.branch-local-name}}
@@ -136,7 +136,7 @@ jobs:
           DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
         run: |
           echo "$DOCKER_HUB_PASSWORD" | docker login --username ${DOCKER_HUB_USER} --password-stdin
-          docker push researchspace/platform-ci:latest
+          docker push swissartresearx/researchspace-ci:latest
 
       # upload zip bundle 
       - if: contains(github.event.pull_request.labels.*.name, 'build_zip') || github.ref == 'refs/heads/master'
