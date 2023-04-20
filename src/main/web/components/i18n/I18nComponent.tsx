@@ -30,7 +30,7 @@ export class I18nComponent extends Component<{}, State> {
   private loadLabels() : void {
     const language = getPreferredUserLanguage();
     // Load messages file from /assets/i18n/messages.json
-    
+    // TODO: centralise fetching of messages so they can be cached when the component appears several times on the same page
     fetch(`/assets/i18n/messages.json`)
       .then(response => response.json())
       .then(labelsDefault => {
