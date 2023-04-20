@@ -27,34 +27,42 @@ export class I18nComponent extends Component<{}, State> {
     this.loadLabels();
   }
 
+  componentWillUnmount() {
+    localStorage.labelsDefault = false;
+    localStorage.labelsLanguage = false;
+    localStorage.currentLanguage = false;
+  }
+
   private loadLabels() : void {
     const language = getPreferredUserLanguage();
     // Load messages file from /assets/i18n/messages.json
-    
-    fetch(`/assets/i18n/messages.json`)
-      .then(response => response.json())
-      .then(labelsDefault => {
-        this.setState({ labelsDefault, isLoading: false });
-      })
-      .catch(() => {
-        const message = `Failed to load default labels. Make sure that the file /assets/i18n/messages.json exists and contains a valid JSON object.`
-        this.setState({ error: message, isLoading: false });
-      });
+    if (!localStorage.labelsDefault) {
+      fetch(`/assets/i18n/messages.json`)
+        .then(response => response.json())
+        .then(labelsDefault => {
+          this.setState({ labelsDefault, isLoading: false });
+          localStorage.labelsDefault = JSON.stringify(labelsDefault);
+        })
+        .catch(() => {
+          const message = `Failed to load default labels. Make sure that the file /assets/i18n/messages.json exists and contains a valid JSON object.`
+          this.setState({ error: message, isLoading: false });
+        });
+    } else {
+      this.setState({ labelsDefault: JSON.parse(localStorage.labelsDefault), isLoading: false });
+    }
 
     // Load language labels from /assets/i18n/messages_{language}.json
-    const checkIfFileExists = (url: string) => {
-      return fetch(url, { method: 'HEAD' })
-    }
-    checkIfFileExists(`/assets/i18n/messages_${language}.json`)
-      .then(response => {
-        if (response.status === 200) {
-          fetch(`/assets/i18n/messages_${language}.json`)
-            .then(response => response.json())
-            .then(labelsLanguage => {
-              this.setState({ labelsLanguage, isLoading: false });
-            })
-        }
-      });
+    if (localStorage.currentLanguage !== language || !localStorage.labelsLanguage) {
+      fetch(`/assets/i18n/messages_${language}.json`)
+        .then(response => response.json())
+        .then(labelsLanguage => {
+          this.setState({ labelsLanguage, isLoading: false });
+          localStorage.labelsLanguage = JSON.stringify(labelsLanguage);
+          localStorage.currentLanguage = language;
+        });
+      } else {
+        this.setState({ labelsLanguage: JSON.parse(localStorage.labelsLanguage), isLoading: false });
+      }
   }
 
   render() {
