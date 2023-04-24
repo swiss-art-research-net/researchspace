@@ -38,4 +38,22 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
+          tags: swissartresearx/researchspace:${{github.sha}}
+      -
+        name: Build and push
+        uses: docker/build-push-action@v4
+        if: github.ref == 'refs/heads/master'
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: swissartresearx/researchspace:latest
+      -
+        name: Build and push for develop
+        uses: docker/build-push-action@v4
+        if: contains('refs/heads/develop', github.ref)
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
           tags: swissartresearx/researchspace:${{ steps.extract_branch.outputs.branch }}
