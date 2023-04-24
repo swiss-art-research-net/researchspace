@@ -32,7 +32,7 @@ jobs:
         run: echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >>$GITHUB_OUTPUT
         id: extract_branch
       -
-        name: Build and push
+        name: Build and push with SHA tag
         uses: docker/build-push-action@v4
         with:
           context: .
@@ -40,7 +40,7 @@ jobs:
           push: true
           tags: swissartresearx/researchspace:${{github.sha}}
       -
-        name: Build and push
+        name: Build and push with latest tag
         uses: docker/build-push-action@v4
         if: github.ref == 'refs/heads/master'
         with:
