@@ -3,8 +3,6 @@ name: Docker Image CI
 on:
   push:
     branches: [ "master", "develop" ]
-  pull_request:
-    branches: [ "master", "develop" ]
 
 jobs:
 
@@ -34,8 +32,26 @@ jobs:
         run: echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >>$GITHUB_OUTPUT
         id: extract_branch
       -
-        name: Build and push
+        name: Build and push with SHA tag
         uses: docker/build-push-action@v4
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: swissartresearx/researchspace:${{github.sha}}
+      -
+        name: Build and push with latest tag
+        uses: docker/build-push-action@v4
+        if: github.ref == 'refs/heads/master'
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: swissartresearx/researchspace:latest
+      -
+        name: Build and push for develop
+        uses: docker/build-push-action@v4
+        if: contains('refs/heads/develop', github.ref)
         with:
           context: .
           platforms: linux/amd64,linux/arm64

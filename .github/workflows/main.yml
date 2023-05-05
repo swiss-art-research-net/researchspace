@@ -1,13 +1,7 @@
 name: CI
 
 on:
-  pull_request:
-    types: [opened, synchronize, labeled]
-  push:
-    branches:
-      - master
-      - 'build-docker/**'
-      - 'build-zip/**'
+  workflow_dispatch:
 
 jobs:
   build:
