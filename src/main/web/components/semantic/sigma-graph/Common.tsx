@@ -172,6 +172,18 @@ export function createGraphFromElements(elements: any[], props: SigmaGraphConfig
     const graph = new MultiDirectedGraph();
     const nodeSize = props.sizes.nodes || 10;
     const edgeSize = props.sizes.edges || 5;
+    // Order elements by <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> key
+    elements.sort((a, b) => {
+        if (a.data['<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>'] && b.data['<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>']) {
+            return a.data['<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>'][0].value.localeCompare(b.data['<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>'][0].value);
+        } else if (a.data['<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>']) {
+            return -1;
+        } else if (b.data['<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>']) {
+            return 1;
+        } else {
+            return 0;
+        }
+    })
     for (const element of elements) {
         if (element.group == "nodes") {
             let color = "#000000";

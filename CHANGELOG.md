@@ -1,6 +1,7 @@
 ## 4.0.2
 
 - Added Sigma Graph component
+- Added i18n component
 ## 4.0.1
 
 - Corrected wrong labels
