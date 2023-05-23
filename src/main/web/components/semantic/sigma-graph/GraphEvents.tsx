@@ -142,7 +142,11 @@ export const GraphEvents: React.FC<GraphEventsConfig> = (props) => {
             // Fire event// Trigger external event
             // Node IRIs are stored with < and > brackets, so we need to remove them
             // when triggering the event
-            const data = { nodes: attributes.children ? attributes.children.map( (childNode: { "node": string, "attributes": any }) => childNode.node.substring(1, childNode.node.length - 1)) : [ node.substring(1, node.length - 1) ]}
+            const data = { 
+                id: node,
+                attributes: attributes,
+                nodes: attributes.children ? attributes.children.map( (childNode: { "node": string, "attributes": any }) => childNode.node.substring(1, childNode.node.length - 1)) : [ node.substring(1, node.length - 1) ]
+            }
             trigger({
                 eventType: NodeClicked,
                 source: node,
