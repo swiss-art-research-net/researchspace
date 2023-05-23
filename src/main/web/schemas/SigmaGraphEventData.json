@@ -42,12 +42,26 @@
                 "node"
             ],
             "type": "object"
+        },
+        "Sigma.ScatterGroupNode": {
+            "description": "Listens to an external event and expands the given group node, replacing the group node with its children",
+            "properties": {
+                "id": {
+                    "description": "The id of the group node to expand. Group node ids are generated based on the URI of the source node, the label of the edge and the URI of the type. The URI components are enclosed in < and >.",
+                    "type": "string"
+                }
+            },
+            "propertyOrder": [
+                "id"
+            ],
+            "type": "object"
         }
     },
     "propertyOrder": [
         "Sigma.NodeClicked",
         "Sigma.TriggerNodeClicked",
-        "Sigma.FocusNode"
+        "Sigma.FocusNode",
+        "Sigma.ScatterGroupNode"
     ],
     "required": [
     ],

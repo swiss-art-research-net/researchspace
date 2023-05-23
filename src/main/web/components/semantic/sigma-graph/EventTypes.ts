@@ -43,9 +43,17 @@ export interface SigmaEventData {
   'Sigma.FocusNode': {
     node: string;
   }
+  
+  /**
+   * Event that listens to an external event and expands the given group node, replacing the group node with its children
+   */
+  'Sigma.ScatterGroupNode': {
+    id: string;
+  }
 }
 const event: EventMaker<SigmaEventData> = EventMaker;
 
+export const ScatterGroupNode = event('Sigma.ScatterGroupNode');
 export const FocusNode = event('Sigma.FocusNode');
 export const NodeClicked = event('Sigma.NodeClicked');
 export const TriggerNodeClicked = event('Sigma.TriggerNodeClicked');
