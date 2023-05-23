@@ -29,7 +29,7 @@ import { Attributes } from "graphology-types";
 
 import { GraphEventsConfig } from './Config';
 import { cleanGraph, createGraphFromElements, loadGraphDataFromQuery, mergeGraphs, releaseNodeFromGroup } from './Common';
-import { FocusNode, NodeClicked, TriggerNodeClicked } from './EventTypes';
+import { ScatterGroupNode, FocusNode, NodeClicked, TriggerNodeClicked } from './EventTypes';
 import { EdgeFilterControl } from './EdgeFilterControl'
 import { Panel } from './ControlPanel'
 
@@ -54,6 +54,30 @@ export const GraphEvents: React.FC<GraphEventsConfig> = (props) => {
     const graph = useSigma().getGraph();
     const layoutSettings = inferSettings(graph);
     const { start, stop, kill, isRunning } = useWorkerLayoutForceAtlas2({ settings: layoutSettings });
+
+    const scatterGroupNode = (node: string) => {
+        const graph = sigma.getGraph();
+        const children = graph.getNodeAttribute(node, "children");
+        const incomingEdges = graph.inEdges(node);
+        for (const child of children) {
+            // Add child node to graph if it is not already there
+            if (!graph.hasNode(child.node)) {
+                graph.addNode(child.node, child.attributes);
+            }
+        }
+        for (const child of children) {
+            for (const edge of incomingEdges) {
+                const edgeAttributes = graph.getEdgeAttributes(edge);
+                // Add edge from source node to child node
+                const edgeSource = graph.source(edge);
+                if (!graph.hasEdge(edgeSource+child.node)) {
+                    graph.addEdgeWithKey(edgeSource+child.node, edgeSource, child.node, edgeAttributes);
+                }
+            }
+        }
+        // Remove the grouped node
+        graph.dropNode(node);
+    }
 
     const getEdgeLabelVisibilityString = () => {
         const visibleEdgeLabels = edgeLabels.filter(d => d.visible);
@@ -239,6 +263,21 @@ export const GraphEvents: React.FC<GraphEventsConfig> = (props) => {
                     const node = "<" + event.data.node + ">";
                     if (sigma.getGraph().hasNode(node)) {
                         focusNode(node);
+                    }
+                }
+            }
+        });
+        cancellation.map(
+            listen({
+                eventType: ScatterGroupNode,
+                target: props.id
+            })
+        ).observe({
+            value: ( event ) => {
+                if (event.data.id) {
+                    const node = event.data.id
+                    if (sigma.getGraph().hasNode(node)) {
+                        scatterGroupNode(node);
                     }
                 }
             }
