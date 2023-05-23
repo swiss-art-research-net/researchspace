@@ -45,7 +45,7 @@ export interface SigmaEventData {
   }
   
   /**
-   * Event that listens to an external event and expands the given group node
+   * Event that listens to an external event and expands the given group node, replacing the group node with its children
    */
   'Sigma.ScatterGroupNode': {
     id: string;
