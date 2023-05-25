@@ -105,6 +105,14 @@ export interface SigmaGraphConfig {
     persistGraph?: boolean;
 
     /**
+     * 
+     * Message to display when the graph has been restored from the browser's local storage.
+     * 
+     * @default "The graph has been restored from the browser's local storage."
+     */
+    persistGraphMessage?: string;
+
+    /**
      * Display a search field.
      * @default false
      */
