@@ -39,6 +39,8 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: swissartresearx/researchspace:${{github.sha}}
+          cache-from: type=registry,ref=swissartresearx/researchspace:latest
+          cache-to: type=inline
       -
         name: Build and push with latest tag
         uses: docker/build-push-action@v4
@@ -48,6 +50,8 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: swissartresearx/researchspace:latest
+          cache-from: type=registry,ref=swissartresearx/researchspace:latest
+          cache-to: type=inline
       -
         name: Build and push for develop
         uses: docker/build-push-action@v4
@@ -57,3 +61,5 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: swissartresearx/researchspace:${{ steps.extract_branch.outputs.branch }}
+          cache-from: type=registry,ref=swissartresearx/researchspace:latest
+          cache-to: type=inline
