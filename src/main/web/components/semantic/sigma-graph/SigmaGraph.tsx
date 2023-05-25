@@ -23,6 +23,7 @@ import { Component } from 'platform/api/components';
 import { BuiltInEvents, trigger } from 'platform/api/events';
 import { ErrorNotification } from 'platform/components/ui/notification';
 import { Spinner } from 'platform/components/ui/spinner';
+import { addNotification } from 'platform/components/ui/notification';
 
 import { MultiDirectedGraph } from "graphology";
 import { SigmaContainer, ControlsContainer, SearchControl } from "@react-sigma/core";
@@ -30,7 +31,7 @@ import getNodeProgramImage from "sigma/rendering/webgl/programs/node.image";
 
 import { SigmaGraphConfig } from './Config'
 import { GraphEvents } from './GraphEvents'
-import { createGraphFromElements, getStateFromLocalStorage, loadGraphDataFromQuery, saveStateIntoLocalStorage } from './Common'
+import { clearStateFromLocalStorage, createGraphFromElements, getStateFromLocalStorage, loadGraphDataFromQuery, saveStateIntoLocalStorage } from './Common'
 
 import "@react-sigma/core/lib/react-sigma.min.css";
 import "./styles.css"
@@ -79,6 +80,17 @@ export class SigmaGraph extends Component<SigmaGraphConfig, State> {
                 graph: graphFromLocalStorage,
                 isLoading: false
             })
+            addNotification({
+                level: 'success',
+                message: "Graph loaded from local storage",
+                action: {
+                    label: 'Reset',
+                    callback: () => {
+                        clearStateFromLocalStorage()
+                        this.loadInitialGraphData(this.props); 
+                    }
+                }
+            });
         } else {
             loadGraphDataFromQuery(props.query, this.context.semanticContext).onValue((elements) => {
                     this.setState({

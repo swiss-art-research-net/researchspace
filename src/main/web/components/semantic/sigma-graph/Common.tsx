@@ -234,6 +234,11 @@ export function createGraphFromElements(elements: any[], props: SigmaGraphConfig
 
 }
 
+export function clearStateFromLocalStorage() {
+    localStorage.removeItem(SAVED_STATE_LOCAL_STORAGE_KEY);
+    localStorage.removeItem(SAVED_STATE_LOCAL_STORAGE_GRAPH);
+}
+
 export function getStateFromLocalStorage(key: string) {
     if (localStorage.getItem(SAVED_STATE_LOCAL_STORAGE_KEY) == key) {
         const compressed = localStorage.getItem(SAVED_STATE_LOCAL_STORAGE_GRAPH)
