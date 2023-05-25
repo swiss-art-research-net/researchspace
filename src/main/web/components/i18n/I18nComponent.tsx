@@ -75,8 +75,7 @@ export class I18nComponent extends Component<{}, State> {
       if (displayMessage) {
         return <span>{displayMessage}</span>;
       } else {
-        console.log("No translation found for '" + text + "' in language '" + language + "'.")
-        return <span>{text}</span>;
+        return <span></span>;
       }
     }
     return null;
