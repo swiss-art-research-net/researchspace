@@ -55,28 +55,8 @@ export const GraphEvents: React.FC<GraphEventsConfig> = (props) => {
     const layoutSettings = inferSettings(graph);
     const { start, stop, kill, isRunning } = useWorkerLayoutForceAtlas2({ settings: layoutSettings });
 
-    const scatterGroupNode = (node: string) => {
-        const graph = sigma.getGraph();
-        const children = graph.getNodeAttribute(node, "children");
-        const incomingEdges = graph.inEdges(node);
-        for (const child of children) {
-            // Add child node to graph if it is not already there
-            if (!graph.hasNode(child.node)) {
-                graph.addNode(child.node, child.attributes);
-            }
-        }
-        for (const child of children) {
-            for (const edge of incomingEdges) {
-                const edgeAttributes = graph.getEdgeAttributes(edge);
-                // Add edge from source node to child node
-                const edgeSource = graph.source(edge);
-                if (!graph.hasEdge(edgeSource+child.node)) {
-                    graph.addEdgeWithKey(edgeSource+child.node, edgeSource, child.node, edgeAttributes);
-                }
-            }
-        }
-        // Remove the grouped node
-        graph.dropNode(node);
+    const scatterGroupNode = (node: string, mode: string = 'replace') => {
+        handleGroupedNodeClicked(node, () => { return undefined}, mode);
     }
 
     const getEdgeLabelVisibilityString = () => {
@@ -100,8 +80,10 @@ export const GraphEvents: React.FC<GraphEventsConfig> = (props) => {
         sigma.getGraph().setNodeAttribute(node, "highlighted", true);
     }
 
-    const handleGroupedNodeClicked = (node: string, callback = () => { return undefined}) => {
-        const mode = props.grouping.behaviour || null;
+    const handleGroupedNodeClicked = (node: string, callback = () => { return undefined}, mode: string | boolean = false) => {
+        if (!mode) {
+            mode = props.grouping.behaviour || null;
+        }
         if (!mode) {
             return
         }

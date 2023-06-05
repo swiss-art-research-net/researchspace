@@ -46,9 +46,13 @@ export interface SigmaEventData {
   
   /**
    * Event that listens to an external event and expands the given group node, replacing the group node with its children
+   * 
+   * @param id The id of the group node to expand
+   * @param mode The mode in which the group node should be expanded. Default is 'replace'
    */
   'Sigma.ScatterGroupNode': {
     id: string;
+    mode: 'expand' | 'replace';
   }
 }
 const event: EventMaker<SigmaEventData> = EventMaker;
