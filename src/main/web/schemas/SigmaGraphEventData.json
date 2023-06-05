@@ -49,10 +49,21 @@
                 "id": {
                     "description": "The id of the group node to expand. Group node ids are generated based on the URI of the source node, the label of the edge and the URI of the type. The URI components are enclosed in < and >.",
                     "type": "string"
+                },
+                "mode": {
+                    "description": "The mode to use when expanding the group node. If 'expand', the group node is expanded and the children are added to the graph. If 'replace', the group node is replaced by its children.",
+                    "enum": [
+                        "expand",
+                        "replace"
+                    ],
+                    "type": "string",
+                    "optional": true,
+                    "default": "replace"
                 }
             },
             "propertyOrder": [
-                "id"
+                "id",
+                "mode"
             ],
             "type": "object"
         }
