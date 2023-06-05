@@ -55,7 +55,7 @@ export const GraphEvents: React.FC<GraphEventsConfig> = (props) => {
     const layoutSettings = inferSettings(graph);
     const { start, stop, kill, isRunning } = useWorkerLayoutForceAtlas2({ settings: layoutSettings });
 
-    const scatterGroupNode = (node: string, mode: string = 'replace') => {
+    const scatterGroupNode = (node: string, mode = 'replace') => {
         handleGroupedNodeClicked(node, () => { return undefined}, mode);
     }
 
