@@ -72,7 +72,13 @@ export interface SigmaGraphConfig {
      *  "http://www.w3.org/2002/07/owl#ObjectProperty": "#00ff00"
      * }
      */
-    colours?: { [key: string]: string }; /** 
+    colours?: { [key: string]: string }; 
+
+    /**
+     * Display a control panel with buttons to control the graph.
+     * @default false
+     */
+    controls?: boolean;
 
     /**
      * Display a filter box for the edges
