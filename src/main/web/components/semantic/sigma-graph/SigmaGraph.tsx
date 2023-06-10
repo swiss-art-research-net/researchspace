@@ -31,6 +31,7 @@ import getNodeProgramImage from "sigma/rendering/webgl/programs/node.image";
 
 import { SigmaGraphConfig } from './Config'
 import { GraphEvents } from './GraphEvents'
+import { GraphControls } from './GraphControls'
 import { clearStateFromLocalStorage, createGraphFromElements, getStateFromLocalStorage, loadGraphDataFromQuery, saveStateIntoLocalStorage } from './Common'
 
 import "@react-sigma/core/lib/react-sigma.min.css";
@@ -122,6 +123,7 @@ export class SigmaGraph extends Component<SigmaGraphConfig, State> {
         const width = this.props.width || "800px";
         const height = this.props.height || "600px";
         const searchBox = this.props.searchBox || false;
+        const controls = this.props.controls || false;
         const edgeFilter = this.props.edgeFilter || false;
         
         const sigmaSettings = { 
@@ -159,6 +161,7 @@ export class SigmaGraph extends Component<SigmaGraphConfig, State> {
                         sizes={ sizes } 
                     />
                     {searchBox &&  <ControlsContainer position="bottom-left"><SearchControl /> </ControlsContainer>}
+                    {controls && <GraphControls position="top-left" />}
                 </SigmaContainer>
 
             )

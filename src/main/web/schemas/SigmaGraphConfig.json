@@ -40,6 +40,11 @@
                     "type": "boolean",
                     "default": false
                 },
+                "controls": {
+                    "description": "If set to true, controls will be displayed to allow the user to zoom and reset the graph.",
+                    "type": "boolean",
+                    "default": false
+                },
                 "edgesFilter": {
                     "description": "If set to true, a panel will be displayed to allow the user to filter the edges by type.",
                     "type": "boolean",
