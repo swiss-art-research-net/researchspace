@@ -67,9 +67,8 @@ interface State {
  *   style="max-width: 400px; max-height: 100px;" />
  *
  * @example
- * 
  * <mp-resource-thumbnail iri='http://example.com'
- *   style="max-width: 400px; max-height: 100px;">
+ *   style="max-width: 400px; max-height: 100px;"
  * >
  *   <mp-resource-thumbnail-fallback>
  *    <span>Image not found!</span>
