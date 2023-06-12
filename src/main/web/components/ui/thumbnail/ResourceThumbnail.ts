@@ -18,19 +18,19 @@
  */
 
 import { createElement, CSSProperties, ReactElement, ReactNode, ComponentClass, Children } from 'react';
-import * as D from 'react-dom-factories';
 import * as Kefir from 'kefir';
 import * as _ from 'lodash';
 
 import { Rdf } from 'platform/api/rdf';
 import { Component } from 'platform/api/components';
+import { TemplateItem } from 'platform/components/ui/template';
 import { ErrorNotification } from 'platform/components/ui/notification';
 import { Spinner } from 'platform/components/ui/spinner';
 import { getThumbnail } from 'platform/api/services/resource-thumbnail';
 
 import { NoResourceThumbnail } from './NoResourceThumbnail';
 
-export interface Props {
+interface ResourceThumbnailConfig {
   /** IRI of resource to fetch thumbnail for. */
   iri: string;
   /** URI of image to display when resource has no thumbnail. */
@@ -41,16 +41,25 @@ export interface Props {
   style?: CSSProperties;
   /** Optional text to append to URI title value */
   title?: string;
+  /**
+   * Template that gets the thumbnail as a parameter. Can be used with `{{thumbnail}}`.
+   */
+  template?: string;
+  /**
+   * Template which is applied when there is no thumbnail.
+   */
+  noResultTemplate?: string;
 }
+
+export type ResourceThumbnailProps = ResourceThumbnailConfig;
 
 interface State {
   imageUri?: string | null;
   error?: any;
 }
-
 /**
- * Queries for and displays thumbnail image for specified by {@Rdf.Iri} resource
- * with fallback image when no thumbnail for a resource found.
+ * Queries for and displays thumbnail image for specified {@Rdf.Iri} Resource
+ * with template support for custom formatting and fallback image when no thumbnail for a resource found
  *
  * @example
  * <mp-resource-thumbnail iri='http://example.com'
@@ -65,11 +74,17 @@ interface State {
  *     <span>Image not found!</span>
  *   </mp-resource-thumbnail-fallback>
  * </mp-resource-thumbnail>
+ * 
+ * @example
+ * <mp-resource-thumbnail iri='http://example.com'
+ *   template='<img src="{{thumbnail}}'>">
+ * </mp-resource-thumbnail>
+ * ```
  */
-export class ResourceThumbnail extends Component<Props, State> {
+export class ResourceThumbnail extends Component<ResourceThumbnailProps, State> {
   private subscription: Kefir.Subscription;
 
-  constructor(props: Props, context) {
+  constructor(props: ResourceThumbnailProps, context: any) {
     super(props, context);
     this.state = {};
   }
@@ -78,9 +93,10 @@ export class ResourceThumbnail extends Component<Props, State> {
     this.fetchThumbnailUrl(Rdf.iri(this.props.iri));
   }
 
-  componentWillReceiveProps(nextProps: Props) {
-    const { iri } = this.props;
+  componentWillReceiveProps(nextProps: ResourceThumbnailProps) {
+    const {iri} = this.props;
     if (nextProps.iri !== iri) {
+      this.setState({imageUri: undefined});
       this.subscription.unsubscribe();
       this.fetchThumbnailUrl(Rdf.iri(nextProps.iri));
     }
@@ -93,16 +109,27 @@ export class ResourceThumbnail extends Component<Props, State> {
   private fetchThumbnailUrl(resourceIri: Rdf.Iri) {
     this.subscription = getThumbnail(resourceIri).observe({
       value: (imageUri) => this.setState({ imageUri }),
-      error: (error) => this.setState({ imageUri: undefined, error }),
-    });
+        error: (error) => this.setState({ imageUri: undefined, error }),
+      });
   }
 
-  render(): ReactElement<any> {
-    const className = `resource-thumbnail ${this.props.className || ''}`;
+   render(): ReactElement<any> {
+    const {className, style, template, noResultTemplate} = this.props;
+    const {imageUri, error} = this.state;
 
-    if (this.state.imageUri !== undefined) {
-      const imageSrc = typeof this.state.imageUri === 'string' ? this.state.imageUri : this.props.noImageUri;
-
+    if (error) {
+      return createElement(ErrorNotification, {className, errorMessage: error});
+    } else if (imageUri === undefined) {
+      return createElement(Spinner, {className});
+    } else if (imageUri === null) {
+      if (noResultTemplate) {
+        return createElement(TemplateItem, {template: { source: noResultTemplate}})
+      } else {
+        return null;
+      }
+    } else {
+      const imageSrc = typeof this.state.imageUri === 'string'
+        ? this.state.imageUri : this.props.noImageUri;
       if (typeof imageSrc !== 'string') {
         // use fallback component only if neither imageUri or noImageUri present
         const fallbackComponent = this.findComponent(Children.toArray(this.props.children), NoResourceThumbnail);
@@ -112,20 +139,29 @@ export class ResourceThumbnail extends Component<Props, State> {
         return null;
       }
 
-      return D.img({
-        className,
-        src: imageSrc,
-        style: this.props.style,
-        onError: this.onError,
-        title: this.props.title ? `${this.props.iri} ${this.props.title}` : this.props.iri,
-      });
-    } else if (this.state.error !== undefined) {
-      return createElement(ErrorNotification, { className, errorMessage: this.state.error });
-    } else {
-      return createElement(Spinner, { className });
+      const templateString = this.getTemplateString(template);
+      return createElement(TemplateItem, {template: {source: templateString, options: {thumbnail: imageUri}}, componentProps: {style, className}});
     }
+
+  }
+  /**
+ * Returns a handlebars template for displaying the thumbnail. If the user
+ * provided a custom template, that one is returned. Otherwise a default template
+ * is used, which shows the description and takes the inlineHtml setting into account.
+ *
+ * @param template Custom template
+ * @param description Description to show inside the tempalte
+ * @returns {string}
+ */
+ private getTemplateString = (template: string): string => {
+  if (template) {
+    return template;
   }
 
+  const thumbnailBinding = '{{thumbnail}}';
+  return `<img src="${thumbnailBinding}" >`;
+}
+  
   private onError = (error) => {
     console.error(error);
     this.setState({
@@ -138,7 +174,7 @@ export class ResourceThumbnail extends Component<Props, State> {
     const element = _.find(children, (child) => (child as React.ReactElement<any>).type === component) as ReactElement<
       any
     >;
-    return element;
+      return element;
   };
 }
 export default ResourceThumbnail;
