@@ -59,7 +59,7 @@ interface State {
 }
 /**
  * Queries for and displays thumbnail image for specified {@Rdf.Iri} Resource
- * with template support for custom formatting.
+ * with template support for custom formatting and fallback image when no thumbnail for a resource found
  *
  * @example
  * <mp-resource-thumbnail iri='http://example.com'
