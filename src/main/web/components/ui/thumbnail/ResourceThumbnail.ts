@@ -71,7 +71,7 @@ interface State {
  *   style="max-width: 400px; max-height: 100px;"
  * >
  *   <mp-resource-thumbnail-fallback>
- *    <span>Image not found!</span>
+ *     <span>Image not found!</span>
  *   </mp-resource-thumbnail-fallback>
  * </mp-resource-thumbnail>
  * 
