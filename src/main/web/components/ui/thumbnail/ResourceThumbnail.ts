@@ -58,18 +58,25 @@ interface State {
   error?: any;
 }
 /**
- * Queries for and displays thumbnail image for specified resource IRI
+ * Queries for and displays thumbnail image for specified {@Rdf.Iri} Resource
  * with template support for custom formatting.
  *
- * **Example**:
- * ```
+ * @example
  * <mp-resource-thumbnail iri='http://example.com'
  *   no-image-uri='//no-image/available.png'
  *   style="max-width: 400px; max-height: 100px;" />
- * ```
  *
- * **Example**:
- * ```
+ * @example
+ * 
+ * <mp-resource-thumbnail iri='http://example.com'
+ *   style="max-width: 400px; max-height: 100px;">
+ * >
+ *   <mp-resource-thumbnail-fallback>
+ *    <span>Image not found!</span>
+ *   </mp-resource-thumbnail-fallback>
+ * </mp-resource-thumbnail>
+ * 
+ * @example
  * <mp-resource-thumbnail iri='http://example.com'
  *   template='<img src="{{thumbnail}}'>">
  * </mp-resource-thumbnail>
