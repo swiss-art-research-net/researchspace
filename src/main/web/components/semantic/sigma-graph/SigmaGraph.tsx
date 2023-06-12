@@ -33,6 +33,7 @@ import { SigmaGraphConfig } from './Config'
 import { GraphEvents } from './GraphEvents'
 import { GraphControls } from './GraphControls'
 import { clearStateFromLocalStorage, createGraphFromElements, getStateFromLocalStorage, loadGraphDataFromQuery, saveStateIntoLocalStorage } from './Common'
+import ArrowEdgeProgram from './programs/edge.arrow'
 
 import "@react-sigma/core/lib/react-sigma.min.css";
 import "./styles.css"
@@ -130,6 +131,7 @@ export class SigmaGraph extends Component<SigmaGraphConfig, State> {
             defaultEdgeType: "arrow",
             defaultNodeType: "image",
             nodeProgramClasses: { image: getNodeProgramImage() },
+            edgeProgramClasses: { arrow: ArrowEdgeProgram },
             renderEdgeLabels: true,
             maxEdgeSize: 2,
         };
