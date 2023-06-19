@@ -75,7 +75,7 @@ export class I18nComponent extends Component<{}, State> {
       if (displayMessage) {
         return <span>{displayMessage}</span>;
       } else {
-        return <span>{text} - key not found</span>;
+        return <span></span>;
       }
     }
     return null;

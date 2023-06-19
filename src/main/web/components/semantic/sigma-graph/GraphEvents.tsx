@@ -29,7 +29,7 @@ import { Attributes } from "graphology-types";
 
 import { GraphEventsConfig } from './Config';
 import { cleanGraph, createGraphFromElements, loadGraphDataFromQuery, mergeGraphs, releaseNodeFromGroup } from './Common';
-import { FocusNode, NodeClicked, TriggerNodeClicked } from './EventTypes';
+import { ScatterGroupNode, FocusNode, NodeClicked, TriggerNodeClicked } from './EventTypes';
 import { EdgeFilterControl } from './EdgeFilterControl'
 import { Panel } from './ControlPanel'
 
@@ -55,6 +55,10 @@ export const GraphEvents: React.FC<GraphEventsConfig> = (props) => {
     const layoutSettings = inferSettings(graph);
     const { start, stop, kill, isRunning } = useWorkerLayoutForceAtlas2({ settings: layoutSettings });
 
+    const scatterGroupNode = (node: string, mode = 'replace') => {
+        handleGroupedNodeClicked(node, () => { return undefined}, mode);
+    }
+
     const getEdgeLabelVisibilityString = () => {
         const visibleEdgeLabels = edgeLabels.filter(d => d.visible);
         if (visibleEdgeLabels.length === edgeLabels.length) {
@@ -76,8 +80,10 @@ export const GraphEvents: React.FC<GraphEventsConfig> = (props) => {
         sigma.getGraph().setNodeAttribute(node, "highlighted", true);
     }
 
-    const handleGroupedNodeClicked = (node: string, callback = () => { return undefined}) => {
-        const mode = props.grouping.behaviour || null;
+    const handleGroupedNodeClicked = (node: string, callback = () => { return undefined}, mode: string | boolean = false) => {
+        if (!mode) {
+            mode = props.grouping.behaviour || null;
+        }
         if (!mode) {
             return
         }
@@ -142,7 +148,11 @@ export const GraphEvents: React.FC<GraphEventsConfig> = (props) => {
             // Fire event// Trigger external event
             // Node IRIs are stored with < and > brackets, so we need to remove them
             // when triggering the event
-            const data = { nodes: attributes.children ? attributes.children.map( (childNode: { "node": string, "attributes": any }) => childNode.node.substring(1, childNode.node.length - 1)) : [ node.substring(1, node.length - 1) ]}
+            const data = { 
+                id: node,
+                attributes: attributes,
+                nodes: attributes.children ? attributes.children.map( (childNode: { "node": string, "attributes": any }) => childNode.node.substring(1, childNode.node.length - 1)) : [ node.substring(1, node.length - 1) ]
+            }
             trigger({
                 eventType: NodeClicked,
                 source: node,
@@ -235,6 +245,21 @@ export const GraphEvents: React.FC<GraphEventsConfig> = (props) => {
                     const node = "<" + event.data.node + ">";
                     if (sigma.getGraph().hasNode(node)) {
                         focusNode(node);
+                    }
+                }
+            }
+        });
+        cancellation.map(
+            listen({
+                eventType: ScatterGroupNode,
+                target: props.id
+            })
+        ).observe({
+            value: ( event ) => {
+                if (event.data.id) {
+                    const node = event.data.id
+                    if (sigma.getGraph().hasNode(node)) {
+                        scatterGroupNode(node);
                     }
                 }
             }
