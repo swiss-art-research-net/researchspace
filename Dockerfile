@@ -1,7 +1,7 @@
-FROM python:3.8 AS builder
+FROM maven:3-jdk-11 AS builder
 
 RUN apt update
-RUN apt -y install curl dirmngr apt-transport-https lsb-release ca-certificates openjdk-11-jdk python2
+RUN apt -y install curl dirmngr apt-transport-https lsb-release ca-certificates openjdk-11-jdk python2 build-essential
 
 # Install Gradle
 RUN wget https://services.gradle.org/distributions/gradle-6.5.1-bin.zip -P /tmp
