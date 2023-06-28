@@ -97,6 +97,7 @@
                 "sizes",
                 "colours",
                 "searchBox",
+                "controls",
                 "persistGraph",
                 "persistGraphMessage",
                 "width",
