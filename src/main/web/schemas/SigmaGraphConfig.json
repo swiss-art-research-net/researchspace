@@ -54,12 +54,12 @@
                     "description": "Sizes of the nodes and edges in pixels",
                     "type": "object",
                     "properties": {
-                        "node": {
+                        "nodes": {
                             "description": "Size of the node in pixels",
                             "type": "number",
                             "default": 10
                         },
-                        "edge": {
+                        "edges": {
                             "description": "Size of the edge in pixels",
                             "type": "number",
                             "default": 5
