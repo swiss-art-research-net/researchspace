@@ -84,6 +84,7 @@ export class SigmaGraph extends Component<SigmaGraphConfig, State> {
             })
             addNotification({
                 level: 'success',
+                position: this.props.persistGraphMessagePosition ? this.props.persistGraphMessagePosition : 'tr',
                 message: this.props.persistGraphMessage ? this.props.persistGraphMessage : "The graph has been restored from the browser's local storage.",
                 action: {
                     label: 'Reset',
