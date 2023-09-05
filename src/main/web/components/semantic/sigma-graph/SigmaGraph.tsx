@@ -40,6 +40,7 @@ import "./styles.css"
 export interface State {
     elements: Cy.ElementDefinition[];
     graph: MultiDirectedGraph;
+    key: string;
     noResults?: boolean;
     isLoading?: boolean;
     error?: any;
@@ -53,7 +54,8 @@ export class SigmaGraph extends Component<SigmaGraphConfig, State> {
           elements: [],
           graph: undefined,
           noResults: false,
-          isLoading: true
+          isLoading: true,
+          key: this.generateKey()
         };
       }
     
@@ -72,6 +74,10 @@ export class SigmaGraph extends Component<SigmaGraphConfig, State> {
         if (this.props.persistGraph) {
             saveStateIntoLocalStorage(this.state.graph, this.props.query);
         }
+    }
+
+    private generateKey() : string {
+        return Math.random().toString(36).substring(7);
     }
 
     private loadInitialGraphData(props: SigmaGraphConfig) : void {
@@ -121,6 +127,10 @@ export class SigmaGraph extends Component<SigmaGraphConfig, State> {
         }
     }
 
+    private newKey() : void {
+        this.setState({ key: this.generateKey() });
+    }
+
     render() {
         const width = this.props.width || "800px";
         const height = this.props.height || "600px";
@@ -150,6 +160,7 @@ export class SigmaGraph extends Component<SigmaGraphConfig, State> {
         } else {
             return (
                 <SigmaContainer
+                    key={ this.state.key }
                     graph={ this.state.graph } 
                     style={{ height: `${height}`, width: `${width}` }}
                     settings={ sigmaSettings }
@@ -164,7 +175,7 @@ export class SigmaGraph extends Component<SigmaGraphConfig, State> {
                         sizes={ sizes } 
                     />
                     {searchBox &&  <ControlsContainer position="bottom-left"><SearchControl /> </ControlsContainer>}
-                    {controls && <GraphControls position="top-left" />}
+                    {controls && <GraphControls position="top-left" reset={() => this.newKey()}/>}
                 </SigmaContainer>
 
             )
