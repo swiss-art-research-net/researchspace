@@ -124,7 +124,7 @@ export interface SigmaGraphConfig {
      * tr (top right), tl (top left), tc (top center), br (bottom right), bl (bottom left), bc (bottom center)
      * @default "tr"
      */
-    persistGraphMessagePosition?: string;
+    persistGraphMessagePosition?: "tr" | "tl" | "tc" | "br" | "bl" | "bc";
 
     /**
      * Display a search field.
