@@ -35,6 +35,19 @@
                     "type": "string",
                     "default": "The graph has been restored from the browser's local storage."
                 },
+                "persistGraphMessagePosition": {
+                    "description": "Position of the message to display when the graph is restored from the browser's local storage.",
+                    "type": "string",
+                    "enum": [
+                        "tl",
+                        "tr",
+                        "tc",
+                        "bl",
+                        "br",
+                        "bc"
+                    ],
+                    "default": "tr"
+                },
                 "searchBox": {
                     "description": "If set to true, a search box will be displayed. The user can search for nodes by label.",
                     "type": "boolean",
@@ -54,12 +67,12 @@
                     "description": "Sizes of the nodes and edges in pixels",
                     "type": "object",
                     "properties": {
-                        "node": {
+                        "nodes": {
                             "description": "Size of the node in pixels",
                             "type": "number",
                             "default": 10
                         },
-                        "edge": {
+                        "edges": {
                             "description": "Size of the edge in pixels",
                             "type": "number",
                             "default": 5
@@ -97,8 +110,10 @@
                 "sizes",
                 "colours",
                 "searchBox",
+                "controls",
                 "persistGraph",
                 "persistGraphMessage",
+                "persistGraphMessagePosition",
                 "width",
                 "height"
             ],
