@@ -16,12 +16,15 @@
  */
 
 import * as React from 'react';
+import { createElement } from 'react';
 
 import { Cancellation } from 'platform/api/async';
 import { trigger } from 'platform/api/events';
 import { Component } from 'platform/api/components';
 import { refresh } from 'platform/api/navigation';
+import { ErrorNotification } from 'platform/components/ui/notification';
 import { SparqlClient } from 'platform/api/sparql';
+import { TemplateItem } from 'platform/components/ui/template';
 
 import { Success } from './EventTypes';
 export interface SemanticUpdateConfig {
@@ -36,13 +39,24 @@ export interface SemanticUpdateConfig {
     query: string;
 
     /**
-     * Action executed after the update. Options are 'reload' or 'event'
+     * Action executed after the update. Options are 'reload',  'event', 'template'
+     * 'reload' reloads the page
+     * 'event' sends a SemanticUpdate.Success event
+     * 'template' replaces the content of the component with the template given in the success-template property
+     * @default none
      */
     postAction?: string;
+
+    /**
+     * Template to be used in case of postAction = 'template'
+     * @default none
+     */
+    successTemplate?: string;
 }
 
 interface State {
     error: any;
+    success: boolean;
 }
 export class SemanticUpdate extends Component<SemanticUpdateConfig, State> {
 
@@ -51,7 +65,8 @@ export class SemanticUpdate extends Component<SemanticUpdateConfig, State> {
     constructor(props: SemanticUpdateConfig, context: any) {
         super(props, context);
         this.state = {
-            error: undefined
+            error: undefined,
+            success: false
         };
     }
 
@@ -61,7 +76,7 @@ export class SemanticUpdate extends Component<SemanticUpdateConfig, State> {
             SparqlClient.executeSparqlUpdate(this.props.query )
         ).observe({
             value: () => {
-                console.log("success");
+                this.setState({ success: true });
                 if (this.props.postAction === 'reload') {
                     refresh();
                 } else if (this.props.postAction === 'event') {
@@ -82,11 +97,17 @@ export class SemanticUpdate extends Component<SemanticUpdateConfig, State> {
     render() {
         const children = React.Children.only(this.props.children)
         const props = { onClick: () => this.handleClick() }
-        return (
-            <div>
-                { React.cloneElement(children as React.ReactElement, props)}
-            </div>
-        );
+        if (this.state.error) {
+            return createElement(ErrorNotification, { errorMessage: this.state.error });
+        } else if (this.state.success && this.props.postAction === 'template') {
+            return createElement(TemplateItem, { template: { source: this.props.successTemplate } });
+        } else {
+            return (
+                <div>
+                    { React.cloneElement(children as React.ReactElement, props)}
+                </div>
+            );
+        }
     }
 }
 
