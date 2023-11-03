@@ -16,7 +16,7 @@
             "enum": [
                 "reload",
                 "event",
-                "template",
+                "template"
             ]
         },
         "successTemplate": {
