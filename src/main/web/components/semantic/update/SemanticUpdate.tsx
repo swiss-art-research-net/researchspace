@@ -16,22 +16,34 @@
  */
 
 import * as React from 'react';
-import * as assign from 'object-assign';
-import { createElement } from 'react';
 
 import { Cancellation } from 'platform/api/async';
-import { Component, ComponentContext } from 'platform/api/components';
+import { trigger } from 'platform/api/events';
+import { Component } from 'platform/api/components';
+import { refresh } from 'platform/api/navigation';
 import { SparqlClient } from 'platform/api/sparql';
 
+import { Success } from './EventTypes';
 export interface SemanticUpdateConfig {
-    query: string;
+    /**
+     * Optional id for the component. Used for sending events
+     */
     id?: string;
+
+    /**
+     * The SPARQL update query to execute
+     */
+    query: string;
+
+    /**
+     * Action executed after the update. Options are 'reload' or 'event'
+     */
+    postAction?: string;
 }
 
 interface State {
     error: any;
 }
-
 export class SemanticUpdate extends Component<SemanticUpdateConfig, State> {
 
     private cancellation = new Cancellation();
@@ -50,6 +62,15 @@ export class SemanticUpdate extends Component<SemanticUpdateConfig, State> {
         ).observe({
             value: () => {
                 console.log("success");
+                if (this.props.postAction === 'reload') {
+                    refresh();
+                } else if (this.props.postAction === 'event') {
+                    trigger({
+                        eventType: Success,
+                        source: this.props.id,
+                        data: {}
+                    });
+                }
             },
             error: (error) => {
                 console.log("error");
