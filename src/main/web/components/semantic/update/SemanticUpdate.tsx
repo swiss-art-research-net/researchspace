@@ -70,8 +70,11 @@ export class SemanticUpdate extends Component<SemanticUpdateConfig, State> {
         };
     }
 
+    componentWillUnmount() {
+        this.cancellation.cancelAll();
+    }
+
     private handleClick() {
-        console.log("handleClick");
         this.cancellation.map(
             SparqlClient.executeSparqlUpdate(this.props.query )
         ).observe({
@@ -88,7 +91,6 @@ export class SemanticUpdate extends Component<SemanticUpdateConfig, State> {
                 }
             },
             error: (error) => {
-                console.log("error");
                 this.setState({ error });
             }
         })
