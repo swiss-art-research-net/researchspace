@@ -1,0 +1,114 @@
+<ol class="page-breadcrumb">
+  <li>
+    <mp-link title="Home" url="/">Home</mp-link>
+  </li>
+  <li>
+    <semantic-link title="Documentation" iri='[[resolvePrefix "rsp:Documentation"]]'>Documentation</semantic-link>
+  </li>
+  <li>
+    <semantic-link title="Developer Documentation" iri="http://help.researchspace.org/resource/Start">Developer Documentation</semantic-link>
+  </li>
+  <li class="active">Semantic Update Component</li>
+</ol>
+
+<div class="page">
+  <div class='page__body'>
+    <h1>Semantic Update Component </h1>
+    <div class="documentation__intro">
+      <div class="documentation__intro__description">
+        <p>This component allows users to execute predefined SPARQL Update queries. After successful execution, the component can either trigger an event or render a template.</p>
+      </div>
+
+    <h2>Configuration</h2>
+
+
+    <mp-documentation type="SemanticUpdateConfig"></mp-documentation>
+
+    <h2>Examples </h2>
+
+    <h3>INSERT Data</h3>
+    <div id='demo2'>
+      <mp-code-example>
+<![CDATA[
+
+<semantic-update
+query='
+  prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+  prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+  prefix person: <http://example.com/person/> 
+  prefix org: <http://example.com/org/> 
+  prefix foaf: <http://xmlns.com/foaf/0.1/>
+
+  INSERT DATA {
+    person:Alice a foaf:Person
+  }'
+>
+  <button>Insert data</button>
+</semantic-update>
+]]>
+      </mp-code-example>
+    </div>
+
+    <h3>Trigger event</h3>
+    <div id='demo3'>
+      <mp-code-example>
+        <![CDATA[
+
+<semantic-update
+  id="update-test"
+  post-action="event"
+  query="
+      PREFIX ex: <http://example.org/>
+      INSERT DATA {
+          ex:subject ex:predicate ex:object .
+      }"
+  >
+  <button>Do</button>
+</semantic-update>
+
+
+<mp-event-proxy
+  id="proxy"
+  on-event-type="SemanticUpdate.Success"
+  proxy-event-type="Component.TemplateUpdate" 
+  proxy-targets='["some-element"]' data='{"success": true}'>
+</mp-event-proxy>
+
+<mp-event-target-template-render id="some-element" template="{{> template}}">
+  <template id="template">
+    {{#if success}}
+        Updated!
+    {{/if}}
+  </template>
+</mp-event-target-template-render>
+
+        ]]>
+      </mp-code-example>
+    </div>
+
+    <h3>Display Template</h3>
+    <div id='demo3'>
+      <mp-code-example>
+        <![CDATA[
+
+<semantic-update
+  id="update-test"
+  post-action="template"
+  query="
+      PREFIX ex: <http://example.org/>
+      INSERT DATA {
+          ex:subject ex:predicate ex:object .
+      }"
+  success-template="{{> template}}"
+  >
+  <button>Do</button>
+    <template id="template">
+      <p>Success!</p>
+    </template>
+  </semantic-update>
+
+        ]]>
+      </mp-code-example>
+    </div>
+
+</div>
