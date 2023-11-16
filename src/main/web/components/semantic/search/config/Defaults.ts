@@ -180,13 +180,13 @@ export namespace DefaultFacetValuesQueries {
 }
 
 export const DefaultFacetValueTemplate = {
-  resource: '<span><mp-highlight highlight="{{highlight}}">{{label.value}}</mp-highlight> ({{count.value}})</span>',
+  resource: '<span><mp-highlight highlight="{{highlight}}">{{{label.value}}}</mp-highlight> ({{count.value}})</span>',
   literal: '<span><mp-highlight highlight="{{highlight}}">{{literal.value}}</mp-highlight> ({{count.value}})</span>',
 };
 
 export const DefaultFacetRelationTupleTemplate = `
  <div class="facet-relation__content" title="{{$relation.label.value}}">
-   {{$relation.label.value}}
+   {{{$relation.label.value}}}
    {{#if $range.thumbnail}}
      {{#ifCond $range.thumbnail.value.length '>' 0}}
        <img class="facet__relation__content__category-image" src="{{$range.thumbnail.value}}"/>
@@ -200,10 +200,10 @@ export const DefaultFacetCategoriesTupleTemplate = `
     {{#ifCond $category.thumbnail.value.length '>' 0}}
       <div class="category-item" style="background-image: url('{{$category.thumbnail.value}}')"></div>
     {{else}}
-      <span>{{$category.label.value}}</span>
+      <span>{{{$category.label.value}}}</span>
     {{/ifCond}}
   {{else}}
-    <span>{{$category.label.value}}</span>
+    <span>{{{$category.label.value}}}</span>
   {{/if}}
 `;
 
@@ -224,5 +224,5 @@ export function DefaultResourceSelectorQuery() {
   `;
 }
 export const DefaultResourceSelectorRelationPattern = `?subject $${SEMANTIC_SEARCH_VARIABLES.RELATION_VAR} ?suggestion`;
-export const DefaultResourceSelectorSuggestionTemplate = `<span title="{{label.value}}">{{label.value}}</span>`;
+export const DefaultResourceSelectorSuggestionTemplate = `<span title="{{label.value}}">{{{label.value}}}</span>`;
 export const DefaultResourceSelectorNoSuggestionsTemplate = `<div class="suggestion-no-matches">no matches found</div>`;

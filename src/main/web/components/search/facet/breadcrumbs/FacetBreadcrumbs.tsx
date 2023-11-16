@@ -21,9 +21,11 @@
  */
 
 import * as React from 'react';
-import { Component, ReactElement, createFactory } from 'react';
+import { Component, ReactElement, createElement, createFactory } from 'react';
 import * as classNames from 'classnames';
 import { List } from 'immutable';
+
+import { TemplateItem } from 'platform/components/ui/template';
 
 import {
   Ast,
@@ -83,7 +85,13 @@ export class FacetBreadcrumbsComponent extends Component<FacetBreadcrumbsProps, 
     return (
       <div className={styles.conjunct}>
         <div className={classNames(styles.values, 'btn')} onClick={() => this.selectRelation(relation)}>
-          <span className={styles.relation}>{relation.label}</span>
+          <span className={styles.relation}>
+            { createElement(TemplateItem, {
+                ref: relation.iri.value, 
+                template: { source: relation.label } 
+              }) 
+            }
+          </span>
           {disjuncts}
         </div>
         <button
