@@ -1,0 +1,38 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "description": "The component requires at least a SPARQL UPDATE query that should be executed and a HTML element that triggers the event.",
+    "properties": {
+        "id": {
+            "description": "Optional id for the component. Used for sending events.",
+            "type": "string"
+        },
+        "query": {
+            "description": "SPARQL UPDATE query string.",
+            "type": "string"
+        },
+        "postAction": {
+            "description": "Action executed after the update.",
+            "type": "string",
+            "enum": [
+                "reload",
+                "event",
+                "template"
+            ]
+        },
+        "successTemplate": {
+            "description":  "Template to be used in case of postAction = 'template'.",
+            "type": "string"
+        }
+    },
+    "propertyOrder": [
+        "id",
+        "query",
+        "postAction",
+        "successTemplate"
+    ],
+    "required": [
+        "query"
+    ],
+    "type": "object"
+}
+
