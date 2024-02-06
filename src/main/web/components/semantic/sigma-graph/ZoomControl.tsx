@@ -84,7 +84,6 @@ const ZoomControl: React.FC<ZoomControlProps> = ({
     className: `react-sigma-control ${className || ""}`,
   };
 
-  console.log("Hello from ZoomControl.tsx");
   return (
     <>
       <div {...htmlProps}>
