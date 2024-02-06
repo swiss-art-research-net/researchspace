@@ -1,13 +1,7 @@
 name: CI
 
 on:
-  pull_request:
-    types: [opened, synchronize, labeled]
-  push:
-    branches:
-      - master
-      - 'build-docker/**'
-      - 'build-zip/**'
+  workflow_dispatch:
 
 jobs:
   build:
@@ -94,7 +88,7 @@ jobs:
           cp src/main/resources/org/researchspace/apps/default/config/shiro.ini $DOCKER_FOLDER/platform/config/
           cp -r dist/migrations $DOCKER_FOLDER/platform
           cd $DOCKER_FOLDER/platform
-          docker build -t researchspace/platform-ci:${DATE}_${GITHUB_SHA} .
+          docker build -t swissartresearx/researchspace-ci:${DATE}_${GITHUB_SHA} .
 
       - name: get branch local name
         id: get-branch
@@ -105,11 +99,11 @@ jobs:
 
       - name: tag docker image for non-master branch
         if: contains(github.ref, 'build-docker')
-        run: docker tag researchspace/platform-ci:${DATE}_${GITHUB_SHA} researchspace/platform-ci:${{steps.get-branch.outputs.branch-local-name}}
+        run: docker tag swissartresearx/researchspace-ci:${DATE}_${GITHUB_SHA} researchspace/platform-ci:${{steps.get-branch.outputs.branch-local-name}}
 
       - name: tag docker image for master branch
         if: github.ref == 'refs/heads/master'
-        run: docker tag researchspace/platform-ci:${DATE}_${GITHUB_SHA} researchspace/platform-ci:latest
+        run: docker tag swissartresearx/researchspace-ci:${DATE}_${GITHUB_SHA} researchspace/platform-ci:latest
 
       - name: Push docker image
         if: contains(github.event.pull_request.labels.*.name, 'build_image') || github.ref == 'refs/heads/master' || contains(github.ref, 'build-docker')
@@ -118,16 +112,16 @@ jobs:
           DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
         run: |
           echo "$DOCKER_HUB_PASSWORD" | docker login --username ${DOCKER_HUB_USER} --password-stdin
-          docker push researchspace/platform-ci:${DATE}_${GITHUB_SHA}
+          docker push swissartresearx/researchspace-ci:${DATE}_${GITHUB_SHA}
 
       - name: Push latest tag for non-master
         if: contains(github.ref, 'build-docker')
         env:
-          DOCKER_HUB_USER: ${{ secrets.DOCKER_HUB_USER }}
-          DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
+          DOCKER_HUB_USER: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKER_HUB_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
         run: |
           echo "$DOCKER_HUB_PASSWORD" | docker login --username ${DOCKER_HUB_USER} --password-stdin
-          docker push researchspace/platform-ci:${{steps.get-branch.outputs.branch-local-name}}
+          docker push swissartresearx/researchspace-ci:${{steps.get-branch.outputs.branch-local-name}}
 
       - name: Push latest tag for master
         if: github.ref == 'refs/heads/master'
@@ -136,7 +130,7 @@ jobs:
           DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
         run: |
           echo "$DOCKER_HUB_PASSWORD" | docker login --username ${DOCKER_HUB_USER} --password-stdin
-          docker push researchspace/platform-ci:latest
+          docker push swissartresearx/researchspace-ci:latest
 
       # upload zip bundle 
       - if: contains(github.event.pull_request.labels.*.name, 'build_zip') || github.ref == 'refs/heads/master'
