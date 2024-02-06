@@ -3,7 +3,7 @@ services:
   rs-dev:
     container_name: "rs-dev"
     build: dev/.
-    image: rs-dev
+    image: fkraeutli/rs-dev
     ports:
       - "3000:3000"
       - "10214:10214"
