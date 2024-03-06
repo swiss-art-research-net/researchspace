@@ -322,7 +322,7 @@ export const GraphEvents: React.FC<GraphEventsConfig> = (props) => {
             const newData: Attributes = { ...data, image: data.image || false};
     
             if (activeNode) {
-              if (node != activeNode &&  !graph.neighbors(activeNode).includes(node)) {
+              if (graph.hasNode(activeNode) && node != activeNode &&  !graph.neighbors(activeNode)) {
                 newData.color = "#E2E2E2";
                 newData.image = false;
               }
