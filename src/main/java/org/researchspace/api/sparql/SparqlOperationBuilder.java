@@ -23,7 +23,6 @@
  
  import java.util.Map;
  import java.util.Optional;
- import java.util.function.Supplier;
  
  import org.apache.commons.lang3.StringUtils;
  import org.apache.logging.log4j.LogManager;
@@ -31,7 +30,6 @@
  import org.eclipse.rdf4j.model.IRI;
  import org.eclipse.rdf4j.model.Resource;
  import org.eclipse.rdf4j.model.Value;
- import org.eclipse.rdf4j.model.util.Values;
  import org.eclipse.rdf4j.query.Dataset;
  import org.eclipse.rdf4j.query.MalformedQueryException;
  import org.eclipse.rdf4j.query.Operation;
@@ -40,7 +38,6 @@
  import org.eclipse.rdf4j.repository.RepositoryConnection;
  import org.eclipse.rdf4j.repository.RepositoryException;
  import org.researchspace.api.sparql.SparqlUtil.SparqlOperation;
- import org.researchspace.config.groups.UIConfiguration;
  
  import com.google.common.collect.Maps;
  
@@ -189,7 +186,7 @@
          this.userURI = userURI;
          return this;
      }
-     
+ 
      /**
       * Syntactic replacement of legacy parameters:
       * <ul>
