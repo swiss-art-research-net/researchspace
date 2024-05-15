@@ -63,7 +63,6 @@
      private Boolean includeInferred = false;
      private Optional<Integer> maxExecutionTime = Optional.empty();
      private Map<String, String> namespaces = Maps.newHashMap();
-     private Supplier<String> userPreferredLanguage;
  
      private SparqlOperationBuilder(String queryString, Class<? extends Operation> clazz) {
          checkNotNull(queryString, "queryString must not be null.");
@@ -71,7 +70,6 @@
          this.queryString = queryString;
          this.bindings = Maps.newHashMap();
          this.clazz = clazz;
-         this.userPreferredLanguage = () -> "en";
      }
  
      public static <T extends Operation> SparqlOperationBuilder<T> create(String queryString,
@@ -133,21 +131,6 @@
          return this;
      }
  
-     public SparqlOperationBuilder<T> resolveUserPreferredLanguage(String userPreferredLanguage) {
-         if (userPreferredLanguage == null) {
-             return this;
-         }
-         this.userPreferredLanguage = () -> userPreferredLanguage;
-         return this;
-     }
-     public SparqlOperationBuilder<T> resolveUserPreferredLanguage(Supplier<String> userPreferredLanguage) {
-         if (userPreferredLanguage == null) {
-             return this;
-         }
-         this.userPreferredLanguage = userPreferredLanguage;
-         return this;
-     }
- 
      /**
       * Time in seconds until operation should be canceled.
       * 
@@ -206,7 +189,7 @@
          this.userURI = userURI;
          return this;
      }
- 
+     
      /**
       * Syntactic replacement of legacy parameters:
       * <ul>
@@ -287,10 +270,6 @@
          if (this.queryString.contains(SparqlMagicVariables.THIS) && this.thisResource != null) {
              op.setBinding(SparqlMagicVariables.THIS, thisResource);
          }
-         if (this.queryString.contains(SparqlMagicVariables.USER_PREFERRED_LANGUAGE) && this.userPreferredLanguage != null) {
-             String _userPreferredLanguage = this.userPreferredLanguage.get();
-             op.setBinding(SparqlMagicVariables.USER_PREFERRED_LANGUAGE, Values.literal(_userPreferredLanguage));
-         }
          return cast(op, this.clazz, type);
      }
  
@@ -316,7 +295,6 @@
      public static class SparqlMagicVariables {
          public static final String USERURI = "__useruri__";
          public static final String THIS = "__this__";
-         public static final String USER_PREFERRED_LANGUAGE = "__userPreferredLanguage__";
      }
  
  }
