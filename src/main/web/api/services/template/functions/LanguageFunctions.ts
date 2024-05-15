@@ -17,24 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DataContextFunctions } from './DataContextFunctions';
-import { GenericFunctions } from './GenericFunctions';
-import { DateTimeFunctions } from './DateTimeFunctions';
-import { RdfFunctions } from './RdfFunctions';
-import { UriComponentFunctions } from './UriComponentFunctions';
-import { NumbersFunctions } from './NumbersFunctions';
-import { StringsFunctions } from './StringsFunctions';
-import { LanguageFunctions } from './LanguageFunctions';
+import { getPreferredUserLanguage } from 'platform/api/services/language';
 
-export const DefaultHelpers = {
-  ...DataContextFunctions,
-  ...GenericFunctions,
-  ...DateTimeFunctions,
-  ...RdfFunctions,
-  ...UriComponentFunctions,
-  ...NumbersFunctions,
-  ...StringsFunctions,
-  ...LanguageFunctions
+export const LanguageFunctions = {
+  userPreferredLanguage: function() {
+    return getPreferredUserLanguage();
+  }
 };
-
-export { ContextCapturer, CapturedContext } from './DataContextFunctions';
