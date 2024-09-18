@@ -102,7 +102,7 @@ export class SparqlQueryEditor extends Component<SparqlQueryEditorProps, State> 
               permission={Permissions.toLdp('container', VocabPlatform.QueryTemplateContainer, 'create', 'owner')}
             >
               <Button
-              className='btn-grey'
+              className='btn btn-default'
                 onClick={() =>
                   getOverlaySystem().show(
                     SaveQueryModal.KEY,
@@ -117,7 +117,8 @@ export class SparqlQueryEditor extends Component<SparqlQueryEditorProps, State> 
               </Button>
             </HasPermission>
             <Button
-              bsStyle="primary"
+              bsStyle="default"
+              className='btn-action'
               disabled={this.state.isExecuting}
               onClick={() => this.executeQuery(this.state.query)}
             >
@@ -279,6 +280,7 @@ export class SparqlQueryEditor extends Component<SparqlQueryEditorProps, State> 
     const { context } = this.getQueryContext();
     const hideDialog = () => getOverlaySystem().hide(dialogRef);
     const props = {
+      title: 'Execute update',
       message: `Do you want to execute the UPDATE operations on the "${context.repository}" repository?`,
       onHide: () => {
         hideDialog();

@@ -26,7 +26,7 @@ export interface ReactElementModel {
 const MAX_LINK_COUNT = 100;
 const ALL_RELATED_ELEMENTS_LINK: FatLinkType = new FatLinkType({
   id: 'allRelatedElements' as LinkTypeIri,
-  label: [{ value: 'All', language: '' }],
+  label: [{ value: 'All connections', language: '' }],
 });
 
 export interface PropertySuggestionParams {
@@ -316,7 +316,7 @@ class ConnectionsMenuMarkup extends React.Component<ConnectionsMenuMarkupProps, 
 
       return (
         <span className="ontodia-connections-menu_bread-crumbs">
-          <a className="ontodia-connections-menu__link" onClick={this.onCollapseLink}>
+          <a className="ontodia-connections-menu__link text-underline" onClick={this.onCollapseLink}>
             Connections
           </a>
           {'\u00A0' + '/' + '\u00A0'}
@@ -417,7 +417,7 @@ class ConnectionsMenuMarkup extends React.Component<ConnectionsMenuMarkupProps, 
             className="search-input ontodia-form-control ontodia-connections-menu__search-line-input"
             value={this.state.filterKey}
             onChange={this.onChangeFilter}
-            placeholder="Search for..."
+            placeholder="Search connection"
           />
           {this.renderSortSwitches()}
         </div>
@@ -568,7 +568,7 @@ class ConnectionsList extends React.Component<ConnectionsListProps, { scores: Di
             count={allRelatedElements.inCount + allRelatedElements.outCount}
             onMoveToFilter={this.props.onMoveToFilter}
           />,
-          <hr key="ontodia-hr-line" className="ontodia-connections-menu_links-list__hr" />,
+           <hr key="ontodia-hr-line" className="ontodia-connections-menu_links-list__hr" />,
         ].concat(viewList);
       }
     }
@@ -655,7 +655,7 @@ class LinkInPopupMenu extends React.Component<LinkInPopupMenuProps, {}> {
           </div>
         ) : null}
         <div className="link-in-popup-menu__link-title">{textLine}</div>
-        <span className="ontodia-badge link-in-popup-menu__count">
+        <span className="badge link-in-popup-menu__count">
           {this.props.count <= MAX_LINK_COUNT ? this.props.count : '100+'}
         </span>
         <div
@@ -775,7 +775,7 @@ class ObjectsPanel extends React.Component<ObjectsPanelProps, ObjectsPanelState>
               onChange={this.onSelectAll}
               disabled={nonPresented.length === 0}
             />
-            <span>Select All</span>
+            <span>Select all</span>
           </label>
         </div>
         {this.props.loading ? (
@@ -805,7 +805,7 @@ class ObjectsPanel extends React.Component<ObjectsPanelProps, ObjectsPanelState>
           {this.counter(active.length)}
           <button
             className={
-              'ontodia-btn ontodia-btn-primary pull-right ' +
+              'ontodia-btn ontodia-btn-action pull-right ' +
               'ontodia-connections-menu_objects-panel_bottom-panel__add-button'
             }
             disabled={this.props.loading || nonPresented.length === 0}

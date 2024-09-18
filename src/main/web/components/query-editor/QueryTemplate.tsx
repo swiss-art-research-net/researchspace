@@ -723,13 +723,17 @@ export class QueryTemplate extends Component<QueryTemplateProps, State> {
         onDelete: this.deleteArgument,
         onChange: this.setArgument,
       }),
-      Button(
-        {
-          bsStyle: 'success',
-          disabled: disableSave,
-          onClick: this.isUpdateMode() ? this.updateTemplate : this.createTemplate,
-        },
-        this.isUpdateMode() ? 'Update' : 'Save'
+      D.div(
+        {style: { display: 'flex', justifyContent:'end'}},
+        Button(
+          {
+            bsStyle: 'default',
+            className: 'btn-action',
+            disabled: disableSave,
+            onClick: this.isUpdateMode() ? this.updateTemplate : this.createTemplate,
+          },
+          this.isUpdateMode() ? 'Update query' : 'Save query'
+        )
       )
     );
   }
