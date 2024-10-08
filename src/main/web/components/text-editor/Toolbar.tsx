@@ -27,9 +27,11 @@ import {
 } from './EditorSchema';
 import { ResourceTemplateConfig } from './Config';
 import * as styles from './TextEditor.scss';
+import Icon from '../ui/icon/Icon';
+import { TemplateItem } from '../ui/template';
 
 export const BLOCK_TO_ICON: { [block in Block]: string } = {
-  [Block.empty]: 'fa-plus',
+  [Block.empty]: 'fa-font',
   [Block.embed]: 'fa-file-code-o',
   [Block.p]: 'fa-paragraph',
   [Block.h1]: 'fa-header',
@@ -41,7 +43,7 @@ export const BLOCK_TO_ICON: { [block in Block]: string } = {
 };
 
 const BLOCK_TO_LABEL: { [block in Block]: string } = {
-  [Block.empty]: 'Placeholder',
+  [Block.empty]: 'Text format',
   [Block.embed]: 'Resource',
   [Block.p]: 'Paragraph',
   [Block.h1]: 'Heading 1',
@@ -53,17 +55,17 @@ const BLOCK_TO_LABEL: { [block in Block]: string } = {
 };
 
 const TEXT_ALIGNMENT_TO_ICON: { [alignment in TextAlignment]: string } = {
-  [TextAlignment.left]: 'fa-align-left',
-  [TextAlignment.right]: 'fa-align-right',
-  [TextAlignment.center]: 'fa-align-center',
-  [TextAlignment.justify]: 'fa-align-justify',
+  [TextAlignment.left]: 'format_align_left',
+  [TextAlignment.right]: 'format_align_right',
+  [TextAlignment.center]: 'format_align_center',
+  [TextAlignment.justify]: 'format_align_justify',
 };
 
 const MARK_TO_ICON: { [mark in Mark]: string } = {
-  [MARK.s]: 'fa-strikethrough',
-  [MARK.u]: 'fa-underline',
-  [MARK.em]: 'fa-italic',
-  [MARK.strong]: 'fa-bold'
+  [MARK.s]: 'format_strikethrough',
+  [MARK.u]: 'format_underlined',
+  [MARK.em]: 'format_italic',
+  [MARK.strong]: 'format_bold'
 };
 
 export interface ToolbarProps {
@@ -73,9 +75,19 @@ export interface ToolbarProps {
   options?: { [objectIri: string]: ResourceTemplateConfig[] }
   onDocumentSave: () => void;
   saving?: boolean;
+  showDropdown?: boolean;
+  showRefresh?: boolean;
+  onRefresh?: () => void; 
 }
 
 export class Toolbar extends React.Component<ToolbarProps> {
+
+  private getTemplate = (template: string): React.CElement<{}, TemplateItem> => {
+    if(!template) return null;
+    return React.createElement(TemplateItem, {
+      template: { source: template },
+    })
+  }
 
   isTextSelectionActionDisabled = () =>
     !isTextBlock(this.props.anchorBlock) || this.props.value.selection.isCollapsed
@@ -87,10 +99,10 @@ export class Toolbar extends React.Component<ToolbarProps> {
 
   markButton = (markType: Mark) => {
     const isActive = this.hasMark(markType);
-    const className = `fa ${MARK_TO_ICON[markType]}`;
-    return <Button active={isActive} disabled={this.isTextSelectionActionDisabled()}
+    const iconName = `${MARK_TO_ICON[markType]}`;
+    return <Button active={isActive} disabled={this.isTextSelectionActionDisabled()} className='btn-default-icon'
       onMouseDown={event => this.onMarkClick(event, markType)}>
-      <i className={className} aria-hidden={true}></i>
+      <Icon iconType='round' iconName={iconName}/>
     </Button>;
   }
 
@@ -101,10 +113,10 @@ export class Toolbar extends React.Component<ToolbarProps> {
 
   alignTextButton = (alignment: TextAlignment) => {
     const isActive = this.hasAlignment(alignment);
-    const className = `fa ${TEXT_ALIGNMENT_TO_ICON[alignment]}`;
-    return <Button active={isActive} disabled={!isTextBlock(this.props.anchorBlock)}
+    const iconName = `${TEXT_ALIGNMENT_TO_ICON[alignment]}`;
+    return <Button active={isActive} disabled={!isTextBlock(this.props.anchorBlock)} className='btn-default-icon'
       onMouseDown={event => this.onAlignClick(event, alignment)}>
-      <i className={className} aria-hidden={true}></i>
+      <Icon iconType='round' iconName={iconName}/>
     </Button>;
   }
 
@@ -141,15 +153,15 @@ export class Toolbar extends React.Component<ToolbarProps> {
   }
 
   // link
-  externalLinkButton = () => {
+/*   externalLinkButton = () => {
     return (
       <Button onMouseDown={this.onExternalLinkClick}
         disabled={this.isTextSelectionActionDisabled()}
       >
-        <i className='fa fa-external-link' aria-hidden={true}></i>
+      <Icon iconType='round' iconName='open_in_new'/>
       </Button>
     );
-  }
+  } */
 
   onExternalLinkClick = (event: React.MouseEvent<Button>) => {
     event.preventDefault();
@@ -169,7 +181,7 @@ export class Toolbar extends React.Component<ToolbarProps> {
     }
   }
 
-  internalLinkButton = () => {
+/*   internalLinkButton = () => {
     return (
       <Button onMouseDown={this.onInternalLinkClick}
         disabled={this.isTextSelectionActionDisabled()}
@@ -177,7 +189,7 @@ export class Toolbar extends React.Component<ToolbarProps> {
         <i className='fa fa-chain' aria-hidden={true}></i>
       </Button>
     );
-  }
+  } */
 
   onInternalLinkClick = (event: React.MouseEvent<Button>) => {
     event.preventDefault();
@@ -212,49 +224,81 @@ export class Toolbar extends React.Component<ToolbarProps> {
   }
 
   render() {
-    const { saving } = this.props;
+    const { saving, showDropdown, showRefresh, onRefresh } = this.props;
+    const dropdownTemplate = showDropdown ? this.getTemplate('{{> semantic-narrative-dropdown}}') : null
     return (
-      <ButtonToolbar className={styles.toolbar}>
-        <ButtonGroup>
-          <Button bsStyle='success' onClick={this.props.onDocumentSave} disabled={saving}>
-            <i className={saving ? 'fa fa-spinner fa-pulse fa-fw' : 'fa fa-floppy-o' }
+      <div className={styles.toolbar}>
+
+        <div className={styles.toolbarBtnGroup}>
+
+          <ButtonGroup>
+            {
+              this.props.anchorBlock?.type === Block.embed ?
+                <ResourceDropdown
+                  options={this.props.options[this.props.anchorBlock.data.get('attributes').src]}
+                  anchorBlock={this.props.anchorBlock}
+                  onSelect={this.onResourceTemplateSelected}
+                />
+                :
+                <BlockDropdown {...this.props} sidebar={false} />
+            }
+          </ButtonGroup>
+
+          <ButtonGroup>
+            {this.markButton(MARK.strong)}
+            {this.markButton(MARK.em)}
+            {this.markButton(MARK.u)}
+            {this.markButton(MARK.s)}
+          </ButtonGroup>
+
+          <ButtonGroup>
+            {this.alignTextButton(TextAlignment.left)}
+            {this.alignTextButton(TextAlignment.center)}
+            {this.alignTextButton(TextAlignment.right)}
+            {this.alignTextButton(TextAlignment.justify)}
+          </ButtonGroup>
+          
+{/*           <ButtonGroup>
+            {this.internalLinkButton()}
+            {this.externalLinkButton()}
+          </ButtonGroup> */}
+
+          <Dropdown id='links' disabled={this.isTextSelectionActionDisabled()}>
+            <Dropdown.Toggle>
+              <Icon iconType='round' iconName='add_link' className='icon-left'/>
+              Links
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+            <MenuItem href="#" onMouseDown={this.onInternalLinkClick}>
+              <Icon iconType='round' iconName='insert_link' className='icon-left'/>
+              Resource link
+            </MenuItem>
+            <MenuItem href="#" onMouseDown={this.onExternalLinkClick}>
+              <Icon iconType='round' iconName='public' className='icon-left'/>
+              External link
+            </MenuItem>
+              
+            </Dropdown.Menu>
+          </Dropdown>
+
+        </div>
+        
+        <div className={styles.toolbarBtnGroup}>
+          {showRefresh && <Button onClick={onRefresh} className='btn-textAndIcon' title='Refresh narrative'>
+                            <Icon iconType='round' iconName='refresh' />
+                          </Button>}
+          {dropdownTemplate}
+          <Button bsStyle='default' 
+                  className='btn-action'
+                  onClick={this.props.onDocumentSave} 
+                  disabled={saving}>
+            <i className={saving ? 'fa fa-spinner fa-pulse fa-fw' : null }
               aria-hidden='true'></i>
-            &nbsp; Save
+            Save narrative
           </Button>
-        </ButtonGroup>
+        </div>
 
-        <ButtonGroup>
-          {
-            this.props.anchorBlock?.type === Block.embed ?
-              <ResourceDropdown
-                options={this.props.options[this.props.anchorBlock.data.get('attributes').src]}
-                anchorBlock={this.props.anchorBlock}
-                onSelect={this.onResourceTemplateSelected}
-              />
-              :
-              <BlockDropdown {...this.props} sidebar={false} />
-          }
-        </ButtonGroup>
-
-        <ButtonGroup>
-          {this.markButton(MARK.strong)}
-          {this.markButton(MARK.em)}
-          {this.markButton(MARK.u)}
-          {this.markButton(MARK.s)}
-        </ButtonGroup>
-
-        <ButtonGroup>
-          {this.alignTextButton(TextAlignment.left)}
-          {this.alignTextButton(TextAlignment.center)}
-          {this.alignTextButton(TextAlignment.right)}
-          {this.alignTextButton(TextAlignment.justify)}
-        </ButtonGroup>
-
-        <ButtonGroup>
-          {this.internalLinkButton()}
-          {this.externalLinkButton()}
-        </ButtonGroup>
-      </ButtonToolbar>
+      </div>
     );
   }
 }

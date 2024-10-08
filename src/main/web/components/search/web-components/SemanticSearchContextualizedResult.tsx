@@ -69,7 +69,7 @@ interface State {
 class SemanticSearchContextualizedResultInner extends React.Component<InnerProps, State> {
   static defaultProps = {
     tupleTemplate: `
-        <span title="{{label}}" style="display: flex; align-items: center; height: 40px;">
+        <span title="{{label}}" style="display: flex; align-items: center; height:30px;">
           {{label}}
           {{#ifCond hasRange.thumbnail.length '>' 0}}
           <img style="margin-left: auto; width: 30px; margin-right: 10px"
@@ -115,7 +115,7 @@ class SemanticSearchContextualizedResultInner extends React.Component<InnerProps
             <ControlLabel>Visualization Context</ControlLabel>
             {this.props.context.searchProfileStore.map(this.contextSelector).getOrElse(<span />)}
           </FormGroup>
-          {React.Children.only(this.props.children)}
+          <div style={{ flex: '1'}}>{React.Children.only(this.props.children)}</div>
         </div>
       </SemanticSearchContext.Provider>
     );

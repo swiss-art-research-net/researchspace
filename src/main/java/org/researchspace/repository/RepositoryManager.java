@@ -94,6 +94,7 @@ public class RepositoryManager implements RepositoryManagerInterface {
 
     public static final String DEFAULT_REPOSITORY_ID = "default";
     public static final String ASSET_REPOSITORY_ID = "assets";
+    public static final String ONTOLOGIES_REPOSITORY_ID = "ontologies";
     public static final String TEST_REPOSITORY_ID = "tests";
 
     private final MpSharedHttpClientSessionManager client;
@@ -259,8 +260,7 @@ public class RepositoryManager implements RepositoryManagerInterface {
     private void initializeDefaultRepositories(Map<String, RepositoryConfig> repositoryConfigs) {
         String sparqlRepositoryUrl = this.config.getEnvironmentConfig().getSparqlEndpoint();
         if (repositoryConfigs.containsKey(DEFAULT_REPOSITORY_ID)) {
-            // Do nothing: the repository will be initialized in the standard sequence
-            // from a Turtle file
+            initializeRepository(repositoryConfigs.get(DEFAULT_REPOSITORY_ID), false);
         } else if (!StringUtils.isEmpty(sparqlRepositoryUrl)) {
             logger.info("Initializing HTTP Sparql Repository with URL: {}.", sparqlRepositoryUrl);
             RepositoryConfig repConfig = RepositoryManager.createSPARQLRepositoryConfigForEndpoint(sparqlRepositoryUrl);

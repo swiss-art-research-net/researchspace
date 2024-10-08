@@ -104,7 +104,7 @@ export class HeadlessSaveSetDialog extends Component<HeadlessSaveSetDialogProps,
           onKeyDown={this.onKeyPress}
         />
         <button
-          className={classNames('btn', 'btn-primary', 'save-as-dataset-modal__form__save-button')}
+          className={classNames('btn', 'btn-action', 'save-as-dataset-modal__form__save-button')}
           disabled={isLoading || isSaved}
           onClick={this.onSave}
         >
@@ -130,7 +130,7 @@ export class HeadlessSaveSetDialog extends Component<HeadlessSaveSetDialogProps,
     if (setName.length < 6) {
       return this.setState({
         state: States.ERROR,
-        errorMessage: `Name of the set must have at least six characters.`,
+        errorMessage: `Name of the set must have at least six characters`,
       });
     }
     event && event.preventDefault();

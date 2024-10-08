@@ -24,7 +24,7 @@
 
 .virtualizedList {
 
-  margin-top: 10px;
+  margin-top: 5px;
   outline: none;
 }
 
@@ -53,6 +53,7 @@
 }
 
 .itemContent {
+  font-size: $font-size-small;
   display: inline;
   cursor: pointer;
   margin-left: 5px;
