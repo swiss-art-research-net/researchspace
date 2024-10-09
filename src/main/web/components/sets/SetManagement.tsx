@@ -39,9 +39,10 @@ import { ViewState, ViewModel } from './ViewModel';
 
 import { SearchAndFilters } from './views/SearchAndFilters';
 import { SetWithItems, ItemsView, OpenedSetView } from './views/SetsAndItems';
-import { Footer } from './views/Footer';
+import { Toolbar } from './views/Toolbar';
 
 import './set-management.scss';
+import Icon from '../ui/icon/Icon';
 
 export const CLASS_NAME = 'set-management';
 
@@ -58,6 +59,7 @@ export class SetManagement extends Component<Props, ViewState> {
     const childContext: SetManagementContext = {
       'mp-set-management': {
         removeSet: this.model.removeSet,
+        removeSetFromView: this.model.removeSetFromView,
         removeSetItem: this.model.removeSetItem,
         startRenamingSet: this.model.startRenamingSet,
         fetchSetItems: this.model.fetchSetItems,
@@ -75,7 +77,7 @@ export class SetManagement extends Component<Props, ViewState> {
     super(props, context);
 
     this.state = this.pendingState = ViewModel.loadState(this.props);
-
+    
     this.model = new ViewModel({
       props: this.props,
       cancellation: this.cancellation,
@@ -128,12 +130,14 @@ export class SetManagement extends Component<Props, ViewState> {
   }
 
   render() {
+    const only_opened_set = (this.state.openedSet && !ViewState.isSearchOpened(this.state))||(this.props.singleSetIri!=undefined);
+    const read_only = this.props.readonly || (this.props.singleSetIri!=undefined);
     const className = classnames({
       [CLASS_NAME]: true,
       [`${CLASS_NAME}--readonly`]: this.props.readonly,
       [`${CLASS_NAME}--list-view`]: this.state.itemViewMode === 'list',
       [`${CLASS_NAME}--grid-view`]: this.state.itemViewMode === 'grid',
-      [`${CLASS_NAME}--only-opened-set`]: this.state.openedSet && !ViewState.isSearchOpened(this.state),
+      [`${CLASS_NAME}--only-opened-set`]: only_opened_set,
     });
 
     const view = this.renderView();
@@ -156,13 +160,15 @@ export class SetManagement extends Component<Props, ViewState> {
         shouldReactToDrag={() => !this.state.draggingItem}
         query={this.props.acceptResourceQuery}
         onDrop={(iri) => {
-          this.model.onDropItemToSet(iri, displayedSetIri);
+          this.model.onDropItemToSet(iri, displayedSetIri,this.props.id);
         }}
         dropMessage={
           displayedSetIri ? (
-            <span>Drop items here to add to set "{<ResourceLabel iri={displayedSetIri.value} />}"</span>
+            // <span>Drop items here to add to set "{<ResourceLabel iri={displayedSetIri.value} />}"</span>
+            <span>Drop resource here</span>
           ) : (
-            <span>Drop items here to add to the default set</span>
+           // <span>Drop items here to add to the default set</span>
+           <span>Drop resource here</span>
           )
         }
       >
@@ -183,11 +189,10 @@ export class SetManagement extends Component<Props, ViewState> {
     const view = (
       <div className={`${CLASS_NAME}__drop-area-children`}>
         {this.renderSearchAndFilters()}
-        {hasOpenedSet ? this.renderBackToContentsButton() : undefined}
-        {hasSearchOpened ? this.renderSearchResults() : hasOpenedSet ? this.renderOpenedSet() : this.renderAllSets()}
-        <Footer
+        <Toolbar
           baseClass={CLASS_NAME}
           readonly={readonly}
+          singleSet={this.props.singleSetIri!=undefined}
           itemViewMode={itemViewMode}
           onModeChanged={this.model.setItemViewMode}
           canReorder={setHasItems}
@@ -201,6 +206,8 @@ export class SetManagement extends Component<Props, ViewState> {
           onPressCreateNewSet={this.model.startCreatingNewSet}
           onPressReorderApply={this.model.applyItemsOrder}
         />
+        {hasOpenedSet ? this.props.singleSetIri != undefined? undefined : this.renderBackToContentsButton() : undefined}
+        {hasSearchOpened ? this.renderSearchResults() : hasOpenedSet ? this.renderOpenedSet() : this.renderAllSets()}      
       </div>
     );
     return Children.toArray((view.props as React.Props<any>).children);
@@ -308,8 +315,9 @@ export class SetManagement extends Component<Props, ViewState> {
 
   private renderBackToContentsButton() {
     return (
-      <button
-        className={`${CLASS_NAME}__back-to-contents btn btn-success`}
+      <div
+        role="button"
+        className={`${CLASS_NAME}__back-to-contents`}
         onClick={() =>
           this.setViewState({
             openedSet: undefined,
@@ -318,8 +326,9 @@ export class SetManagement extends Component<Props, ViewState> {
           })
         }
       >
-        <span className="fa fa-chevron-left"></span> Back to contents
-      </button>
+        <Icon iconType='round' iconName='arrow_back'/>
+        Back
+      </div>
     );
   }
 

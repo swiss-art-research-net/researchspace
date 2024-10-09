@@ -31,6 +31,11 @@ export interface DashboardEvents {
     resourceIri: string;
     data?: { [key: string]: any }; // additional info that can be passed with the event
   };
+
+  /**
+   * Event fired every time there is a change in the frame layout (eg. frame moved or resized)
+   */
+    'Dashboard.LayoutChanged': {}
 }
 
 /**
@@ -40,10 +45,11 @@ export const AddFrameEvent = 'Dashboard.AddFrame';
 export type AddFrameEventData = {
   resourceIri?: string;
   viewId?: string;
-  entityEditorLabel?: string;
+  customLabel?: string;
 };
 
 const event: EventMaker<DashboardEvents> = EventMaker;
 
 export const StatusChanged = event('Dashboard.StatusChanged');
 export const ResourceChanged = event('Dashboard.ResourceChanged');
+export const LayoutChanged = event('Dashboard.LayoutChanged')

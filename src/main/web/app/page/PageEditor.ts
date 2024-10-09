@@ -227,7 +227,7 @@ class PageEditorComponent extends Component<PageEditorProps, PageEditorState> {
             },
           }),
           this.getSyntaxChoices(),
-          ButtonToolbar(
+          D.div(
             { className: 'pull-right template-cancel-save' },
             Button(
               {
@@ -237,31 +237,36 @@ class PageEditorComponent extends Component<PageEditorProps, PageEditorState> {
               },
               'Cancel'
             ),
+            
             Button(
               {
-                bsStyle: 'danger',
+                bsStyle: 'default',
                 disabled: this.isDeleteBtnDisabled(),
                 onClick: this.onClickDeleteBtn,
               },
               'Delete Page'
             ),
+            
             Button(
               {
-                bsStyle: 'primary',
+                bsStyle: 'default',
+                className: 'btn-action',
+                onClick: () => this.onSave({ action: ResourceLinkAction[ResourceLinkAction.edit] }),
+                disabled: this.state.saving,
+              },
+              'Save'
+            ),
+
+            Button(
+              {
+                bsStyle: 'default',
+                className: 'btn-action',
                 onClick: () => this.onSave(),
                 disabled: this.state.saving,
               },
               this.state.saving
                 ? D.span({}, 'Saving', D.i({ className: 'fa fa-cog fa-spin' }))
                 : 'Save & View'
-            ),
-            Button(
-              {
-                bsStyle: 'success',
-                onClick: () => this.onSave({ action: ResourceLinkAction[ResourceLinkAction.edit] }),
-                disabled: this.state.saving,
-              },
-              'Save'
             )
           )
         )
@@ -297,6 +302,7 @@ class PageEditorComponent extends Component<PageEditorProps, PageEditorState> {
     const dialogRef = 'deletion-confirmation';
     const onHide = () => getOverlaySystem().hide(dialogRef);
     const props = {
+      title: 'Delete template',
       message: 'Do you really want to delete this template?',
       onHide,
       onConfirm: (confirm) => {

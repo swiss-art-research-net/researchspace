@@ -24,18 +24,19 @@ import {
   } from "react-icons/ai";
 import { MdFilterCenterFocus } from "react-icons/md";
 
-import { ControlsContainer, ZoomControl } from "@react-sigma/core";
+import { ControlsContainer } from "@react-sigma/core";
+import ZoomControl from "./ZoomControl";
 
-export class GraphControls extends Component<{position: string}> {
+export class GraphControls extends Component<{position: string, reset: any}> {
 
     render() {
         const position = this.props.position || "bottom-right";
         return (
             <ControlsContainer position={ position }>
-                <ZoomControl>
-                <AiOutlineZoomIn />
-                <AiOutlineZoomOut />
-                <MdFilterCenterFocus />
+                <ZoomControl resetFunction={ this.props.reset }>
+                    <AiOutlineZoomIn />
+                    <AiOutlineZoomOut />
+                    <MdFilterCenterFocus/>
                 </ZoomControl>
             </ControlsContainer>
 

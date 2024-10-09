@@ -19,7 +19,7 @@
 
 const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const defaultsFn = require('./defaults');
 
 module.exports = function () {
@@ -27,6 +27,7 @@ module.exports = function () {
     var config = require('./webpack.config.js')(true);
     config.mode = 'production';
 
+    config.optimization.emitOnErrors = false;
     config.optimization.minimize = true;
     config.optimization.minimizer = [
         new TerserPlugin({
@@ -39,10 +40,15 @@ module.exports = function () {
             },
             extractComments: false,
         }),
-        new OptimizeCSSAssetsPlugin({
-            cssProcessorPluginOptions: {
-                preset: ['default', { discardComments: { removeAll: true } }],
-            },
+        new CssMinimizerPlugin({
+            minimizerOptions: {
+            preset: [
+                "default",
+                {
+                    discardComments: { removeAll: true },
+                },
+            ],
+            }
         })
     ];
 

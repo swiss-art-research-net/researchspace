@@ -85,7 +85,7 @@ interface ParamMap {
  * component will automatically try to fetch a label and render a sensible and
  * human readable default link (unless getlabel=true).
  *
- * 'uri' attribute specifies destination resource uri.
+ * 'iri' attribute specifies destination resource iri.
  *
  * 'urlqueryparam-*' attribute specify additional url query parameter,
  * last part of attribute name corresponds to the url query parameter name.
@@ -97,19 +97,19 @@ interface ParamMap {
  *
  * @example
  *   <semantic-link
- *   	title="Execute" uri="http://researchspace.org/SearchDemo"
+ *   	title="Execute" iri="http://researchspace.org/SearchDemo"
  *   	urlqueryparam-query="{{ID.value}}">
  *       <i class="fa fa-play-circle"></i>
  *   </semantic-link>
  *
  * @example
  * 	 // fetching label automatically
- *   <semantic-link uri="http://xmlns.com/foaf/0.1/Person">
+ *   <semantic-link iri="http://xmlns.com/foaf/0.1/Person">
  *   </semantic-link>
  *
  * @example
  * 	 //  fetching no label, will render plain link
- *   <semantic-link uri="http://xmlns.com/foaf/0.1/Person" getlabel=false>
+ *   <semantic-link iri="http://xmlns.com/foaf/0.1/Person" getlabel=false>
  *   </semantic-link>
  */
 export class ResourceLinkComponent extends Component<ResourceLinkProps, State> {

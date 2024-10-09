@@ -20,11 +20,14 @@ package org.researchspace.sail.rest;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.sql.ResultSet;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.Optional;
 
 import javax.ws.rs.HttpMethod;
@@ -32,6 +35,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
@@ -92,38 +96,48 @@ public class RESTSailConnection extends AbstractServiceWrappingSailConnection<RE
     }
 
     @Override
-    protected Collection<BindingSet> convertStream2BindingSets(InputStream inputStream,
+    protected Collection<BindingSet> convertResult2BindingSets(ResultSet result,
             ServiceParametersHolder parametersHolder) throws SailException {
+        throw new UnsupportedOperationException("Unimplemented method 'convertResult2BindingSets'");
 
+    }
+
+    @Override
+    protected Collection<BindingSet> convertResult2BindingSets(InputStream result,
+            ServiceParametersHolder parametersHolder) throws SailException {
         logger.trace("REST Response received");
 
         List<BindingSet> results = Lists.newArrayList();
 
         try {
-            String stringResponse = IOUtils.toString(inputStream, StandardCharsets.UTF_8.name());
+            String stringResponse = IOUtils.toString(result, StandardCharsets.UTF_8.name());
 
-            // TODO: check the string format and call the right type. E.g., json or XML
             String type = RESTSailConfig.JSON;
 
             logger.trace("REST Response type is {}", type);
             switch (type) {
-            case RESTSailConfig.JSON:
+                case RESTSailConfig.JSON:
 
-                // Get the root path
-                Optional<Parameter> param = getSail().getSubjectParameter();
-                String rootPath = param.isPresent() ? param.get().getJsonPath() : "$";
+                    // Get the root path
+                    Optional<Parameter> param = getSail().getSubjectParameter();
+                    String rootPath = param.isPresent() ? param.get().getJsonPath() : "$";
 
-                results = executeJson(stringResponse, rootPath, parametersHolder.getOutputVariables());
-                break;
+                    results = executeJson(stringResponse, rootPath, parametersHolder.getOutputVariables());
+                    break;
 
-            default:
-                break;
+                case RESTSailConfig.XML:
+                    logger.trace("XML format not supported yet");
+                    break;
+
+                default:
+                    break;
             }
 
             return results;
         } catch (Exception e) {
             throw new SailException(e);
         }
+
     }
 
     /**
@@ -234,7 +248,7 @@ public class RESTSailConnection extends AbstractServiceWrappingSailConnection<RE
         }
         InputStream resultStream = (InputStream) response.getEntity();
         return new CollectionIteration<BindingSet, QueryEvaluationException>(
-                convertStream2BindingSets(resultStream, parametersHolder));
+                convertResult2BindingSets(resultStream, parametersHolder));
     }
 
     protected Response submit(ServiceParametersHolder parametersHolder) {
@@ -243,8 +257,23 @@ public class RESTSailConnection extends AbstractServiceWrappingSailConnection<RE
             String httpMethod = getSail().getConfig().getHttpMethod();
             logger.trace("Creating request with HTTP METHOD: {}", httpMethod);
 
+            /* 
+             * Prepare the url and replace any rest apis input {param}, not just query string parameters
+             * e.g https://api.vam.ac.uk/v2/object/{objectid} 
+             */
+            String url = getSail().getConfig().getUrl();
+            System.out.println(getSail().getConfig().getUrl().toString());
+            Pattern pattern = Pattern.compile("\\{([^}]*)\\}");
+            Matcher matcher = pattern.matcher(getSail().getConfig().getUrl().toString());
+
+            while (matcher.find()) {
+                String param = matcher.group(1);
+                String value = parametersHolder.getInputParameters().get(param);
+                url = url.replace("{"+param+"}", value);
+            }
+         
             // Create request
-            WebTarget targetResource = this.client.target(getSail().getConfig().getUrl())
+            WebTarget targetResource = this.client.target(url)
                     .property(ClientProperties.FOLLOW_REDIRECTS, Boolean.TRUE);
 
             // Case with POST
@@ -297,11 +326,17 @@ public class RESTSailConnection extends AbstractServiceWrappingSailConnection<RE
             request = this.addHTTPHeaders(request);
 
             String mediaType = getSail().getConfig().getMediaType();
+            String inputFormfield = getSail().getConfig().getInputFormfield();
 
             logger.trace("Submitting POST request");
             if (StringUtils.equals(mediaType, MediaType.APPLICATION_JSON)) {
                 Object body = getJsonBody(parametersHolder.getInputParameters());
-                return request.post(Entity.json(body));
+                if (StringUtils.isNotBlank(inputFormfield)) {
+                    String bodyString = body.toString(); // Convert body to string
+                    return request.post(Entity.form(new Form(inputFormfield, bodyString)));
+                } else {
+                    return request.post(Entity.json(body));
+                }
             } else if (StringUtils.equals(mediaType, MediaType.APPLICATION_FORM_URLENCODED)) {
                 return request.post(Entity.form(getHashMapBody(parametersHolder.getInputParameters())));
             } else {
@@ -430,4 +465,5 @@ public class RESTSailConnection extends AbstractServiceWrappingSailConnection<RE
 
         return map;
     }
+
 }

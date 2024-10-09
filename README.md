@@ -15,17 +15,37 @@
     <img src="https://badges.gitter.im/Join Chat.svg" height="30px" alt="Gitter"></a>
 </p>
 
-- - -
+<h2>Github Repository</h2>
 
+  
+<p>If you would like to discuss something in person please schedule an appointment using https://calendar.app.google/ytoocWhkbVKE9Teq7</p>
+<p>Community developers should test new code before submitting a pull request.</p>
+<p>When submitting a pull request they will provide enough information to allow Kartography to apply the objectives above. </p>
+</ul>
+
+
+<p>--------------------------------------------------------------------------------------------------------------------------</p>
+
+<p>Kartography are currently using rs-new-design branch as a basis for the next version of ResearchSpace in order to support a comprehensive user interface and consolidate work. </p>   
+
+
+
+<p>--------------------------------------------------------------------------------------------------------------------------</p>
+
+
+
+<h2>The ResearchSpace System</h2>
+<div style="float:left;">
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=MaAv0SE7wis
+" target="_blank"><img src="https://i.ytimg.com/vi/MaAv0SE7wis/maxresdefault.jpg" 
+alt="ResearchSpace Overview" width="640" border="1" /></a></div>
 [ResearchSpace](https://www.researchspace.org/) is a new type of contextualising knowledge system. It promotes collaborative interdisciplinary research allowing people to grow knowledge that relates to and reveals different aspects of society.
 
 It challenges the instrumental nature of technology and allows subject experts to become authors of meaningful forms of structured data, combined with visual and textual narrative.
 
 The ResearchSpace system has been designed to allow researchers to connect qualitative and quantitative research, to transition from information systems that solely capture and index ‘essential’ reference material, to ones that address the complexity and richness of the research itself and provide a natural ‘relational’ method that traverses space and time, supporting different levels of complexity, variety of vantage point, and the represention of arguments and meta-commentary in a collaborative environment.
 
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=MaAv0SE7wis
-" target="_blank"><img src="https://i.ytimg.com/vi/MaAv0SE7wis/maxresdefault.jpg" 
-alt="ResearchSpace Overview" width="640" border="1" /></a>
+
 
 # Knowledge Base 
 see <a href="https://documentation.researchspace.org/resource/rsp:Start"> ResearchSpace Documentation Site</a>
@@ -149,12 +169,20 @@ On Windows the use of [Chocolatey](https://chocolatey.org/) is highly recommende
 
 **Java 11**
 
+deprecated:
 `brew tap AdoptOpenJDK/openjdk`
 `brew cask install adoptopenjdk11`
+
+Adopt has been move to Adoptium, with Temurin. Find the correct pkg version [here](https://adoptium.net/download/)
 
 **Node.js**
 
 `brew install node@12`
+
+or 
+
+use NVM [link here](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating)
+
 
 ### Prerequisites Installation on *Windows 10*
 See [installation instruction](https://chocolatey.org/docs/installation) for [Chocolatey](https://chocolatey.org).

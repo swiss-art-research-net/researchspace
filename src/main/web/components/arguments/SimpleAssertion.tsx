@@ -69,13 +69,14 @@ export class SimpleAssertion extends React.Component<SimpleAssertionConfig, void
   };
 
   render() {
-    const { selection, closeMenu, menuTitle, title, types, repositories } = this.props;
+    const { selection, closeMenu, menuTitle, title, types, repositories, icon } = this.props;
     return (
       <TypedSelectionActionComponent
         title={title}
         isDisabled={(s) => s.length < 1}
         selection={selection}
         menuTitle={menuTitle}
+        icon={icon}
         repositories={repositories}
         closeMenu={closeMenu}
         types={types}
@@ -197,7 +198,7 @@ class SimpleAssertionDialog extends Component<SimpleAssertionConfig, State> {
       <ul>
         {_.map(this.state.values, (value) => (
           <li key={value.value}>
-            <ResourceLinkComponent guessRepository={true} uri={value.value} />
+            <ResourceLinkComponent guessRepository={true} iri={value.value} />
           </li>
         ))}
       </ul>

@@ -66,7 +66,7 @@ export class I18nComponent extends Component<{}, State> {
   }
 
   render() {
-    const text = this.props.children;
+    const text = this.props.children as string;
     const language = getPreferredUserLanguage();
     if (this.state.error) {
       return React.createElement(ErrorNotification, { errorMessage: this.state.error });

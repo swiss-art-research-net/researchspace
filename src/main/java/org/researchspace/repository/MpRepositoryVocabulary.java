@@ -55,6 +55,11 @@ public class MpRepositoryVocabulary {
     public static final String FEDERATION_NAMESPACE = "http://www.researchspace.org/resource/system/ephedra#";
 
     /**
+     * Namespace for the SQL configuration properties of custom services.
+     */
+    public static final String SQL_NAMESPACE = "http://www.researchspace.org/resource/system/sql#";
+
+    /**
      * For each federation member declared in the federation descriptor,
      * delegateRepositoryID points to its repository ID.
      */
@@ -96,6 +101,7 @@ public class MpRepositoryVocabulary {
     public static final IRI REALM = VF.createIRI(NAMESPACE, "realm");
     public static final IRI QUAD_MODE = VF.createIRI(NAMESPACE, "quadMode");
     public static final IRI WRITABLE = VF.createIRI(NAMESPACE, "writable");
+    public static final IRI SILENT_MODE = VF.createIRI(NAMESPACE, "silentMode");
 
     public static final IRI USE_ASYNCHRONOUS_PARALLEL_JOIN = VF.createIRI(FEDERATION_NAMESPACE,
             "useAsynchronousParallelJoin");
@@ -108,6 +114,7 @@ public class MpRepositoryVocabulary {
     public static final IRI NAME = VF.createIRI(FEDERATION_NAMESPACE, "name");
     public static final IRI VALUE = VF.createIRI(FEDERATION_NAMESPACE, "value");
     public static final IRI INPUT_FORMAT = VF.createIRI(FEDERATION_NAMESPACE, "inputFormat");
+    public static final IRI INPUT_FORMFIELD = VF.createIRI(FEDERATION_NAMESPACE, "inputFormfield");
     public static final IRI MEDIA_TYPE = VF.createIRI(FEDERATION_NAMESPACE, "mediaType");
 
     public static final IRI IMPLEMENTS_SERVICE = VF.createIRI(FEDERATION_NAMESPACE, "implementsService");
@@ -126,6 +133,11 @@ public class MpRepositoryVocabulary {
     public static final IRI AUTHORIZATION_KEY = VF.createIRI(FEDERATION_NAMESPACE, "authKey");
     public static final IRI AUTHORIZATION_VALUE = VF.createIRI(FEDERATION_NAMESPACE, "authValue");
     public static final IRI AUTHORIZATION_LOCATION = VF.createIRI(FEDERATION_NAMESPACE, "authLocation");
+
+    // SQL authorization
+    public static final IRI INCLUDE_SQL_QUERY = VF.createIRI(SQL_NAMESPACE, "includesSQLQuery");
+    public static final IRI HAS_QUERY_ID = VF.createIRI(SQL_NAMESPACE, "hasQueryId");
+    public static final IRI HAS_QUERY_TEXT = VF.createIRI(SQL_NAMESPACE, "text");
 
     public static final Set<IRI> queryHints = Sets.newHashSet(EXECUTE_FIRST, EXECUTE_LAST, DISABLE_JOIN_REORDERING);
 
