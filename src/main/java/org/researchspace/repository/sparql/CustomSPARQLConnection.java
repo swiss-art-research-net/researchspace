@@ -33,8 +33,8 @@ public class CustomSPARQLConnection extends SPARQLConnection {
         this.enableSilentMode(isSilentMode);
     }
 
-    public CustomSPARQLConnection(SPARQLRepository repository, SPARQLProtocolSession client) {
-        super(repository, client);
+    public CustomSPARQLConnection(SPARQLRepository repository, SPARQLProtocolSession client, boolean quadMode) {
+        super(repository, client, quadMode);
     }
 
     @Override
