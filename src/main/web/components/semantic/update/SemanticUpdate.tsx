@@ -74,9 +74,9 @@ export class SemanticUpdate extends Component<SemanticUpdateConfig, State> {
         this.cancellation.cancelAll();
     }
 
-    private handleClick() {
+    private handleClick(context : any) {
         this.cancellation.map(
-            SparqlClient.executeSparqlUpdate(this.props.query )
+            SparqlClient.executeSparqlUpdate(this.props.query, { context } )
         ).observe({
             value: () => {
                 this.setState({ success: true });
@@ -98,7 +98,7 @@ export class SemanticUpdate extends Component<SemanticUpdateConfig, State> {
 
     render() {
         const children = React.Children.only(this.props.children)
-        const props = { onClick: () => this.handleClick() }
+        const props = { onClick: () => this.handleClick(this.context.semanticContext) }
         if (this.state.error) {
             return createElement(ErrorNotification, { errorMessage: this.state.error });
         } else if (this.state.success && this.props.postAction === 'template') {
