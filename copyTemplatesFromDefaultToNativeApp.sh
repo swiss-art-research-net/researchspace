@@ -160,7 +160,7 @@ FILES=(
     "data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2FThinkingFramesObjectThroughImageObservation.html"
 )
 
-# Loop through files and copy each one
+# Loop through files and copy if the file has changed
 for FILE in "${FILES[@]}"; do
-  cp "$DEFAULTPATH/$FILE" "$NATIVEPATH/$FILE"
+  rsync -u "$DEFAULTPATH/$FILE" "$NATIVEPATH/$FILE"
 done
