@@ -1,5 +1,6 @@
 /**
  * ResearchSpace
+ * Copyright (C) 2022-2024, © Kartography Community Interest Company
  * Copyright (C) 2020, © Trustees of the British Museum
  * Copyright (C) 2015-2019, metaphacts GmbH
  *
@@ -239,6 +240,10 @@ export class GraphActionLink extends Component<Props, State> {
           eventType: GraphActionEvents.GraphActionDelete,
           source: Math.random().toString(),
           data:{"iri":this.props.graphuri}
+        });
+        addNotification({
+          level: 'success',
+          message: 'Resource deleted',
         });
         //Disable the refresh
         //refresh();

@@ -1,5 +1,6 @@
 /**
  * ResearchSpace
+ * Copyright (C) 2022-2024, © Kartography Community Interest Company
  * Copyright (C) 2020, © Trustees of the British Museum
  * Copyright (C) 2015-2019, metaphacts GmbH
  *
@@ -177,10 +178,9 @@ export class ResourceLinkComponent extends Component<ResourceLinkProps, State> {
     return this.state.label.map(this.renderLink).getOrElse(null);
   }
 
-  private renderLink = (label: string) => {
+  private renderLink = () => {
     const iri = this.getIri();
     let props = _.clone(this.props) as any;
-    props.title = label;
     return createElement(
       InternalResourceLink,
       _.assign(
