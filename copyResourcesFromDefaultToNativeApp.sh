@@ -1,7 +1,7 @@
 #!/bin/bash
 DEFAULTPATH=src/main/resources/org/researchspace/apps/default
 NATIVEPATH=src/main/resources/org/researchspace/apps/native
-FILELIST="templatesToCopy.txt"
+FILELIST="resourcesToCopy.txt"
 
 # Count the total number of files
 TOTAL_FILES=$(wc -l < "$FILELIST")
