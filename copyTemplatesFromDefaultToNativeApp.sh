@@ -14,6 +14,7 @@ FILES=(
     "data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2FCollectionBrowserContent.html"
     "data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2FFinder.html"
     "data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2FFormAssetSidebar.html"
+    "data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2FFormDefaultActions.html"
     "data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2FFormDefaults.html"
     "data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2FIIIFConfig.html"
     "data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2FImageAnnotation.html"
