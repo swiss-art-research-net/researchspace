@@ -11,5 +11,5 @@ CURRENT_FILE=0
 while IFS= read -r FILE; do
   CURRENT_FILE=$((CURRENT_FILE + 1))
   echo "Processing file $CURRENT_FILE of $TOTAL_FILES: $FILE"
-  rsync -u "$DEFAULTPATH/$FILE" "$NATIVEPATH/$FILE"
+  rsync -au "$DEFAULTPATH/$FILE" "$NATIVEPATH/$FILE"
 done < "$FILELIST"

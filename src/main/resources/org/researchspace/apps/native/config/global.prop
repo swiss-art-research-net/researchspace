@@ -1,0 +1,3 @@
+repositoriesLDPLoad=ontologies,assets,configurations,vocabularies,system
+forceLDPLoadFromStorages=default
+homePage = rsp:ThinkingFrames
