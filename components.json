@@ -299,5 +299,7 @@
   "two-side-panel": "platform/components/ui/two-side-panel/TwoSidePanel.tsx",
   "inline-template": "platform/components/ui/template/InlineTemplate.ts",
 
-  "i18n": "platform/components/i18n/I18nComponent.tsx"
+  "i18n": "platform/components/i18n/I18nComponent.tsx",
+
+  "sari-image-upload": "platform/components/sari/ui/ImageUpload.ts"
 }
