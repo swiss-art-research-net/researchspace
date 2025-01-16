@@ -107,8 +107,6 @@ module.exports = function() {
             "SemanticTableConfig",
             "SemanticTimelineConfig",
             "SemanticTreeConfig",
-            "SigmaGraphConfig",
-            "SemanticUpdateConfig",
             "SplitPaneConfig",
             "BuiltInEventData",
             "EventProxyConfig",

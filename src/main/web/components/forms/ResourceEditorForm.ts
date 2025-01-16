@@ -189,16 +189,6 @@ export class ResourceEditorForm extends Component<ResourceEditorFormProps, State
           this.setState({defaultTab: e.data.key, tabSource: e.data.source})
         }
       });
-
-      this.cancellation.map(
-        listen({
-          eventType: TabsEvents.TabSelected,
-        })
-      ).observe({
-        value: (e) => {
-          this.setState({defaultTab: e.data.key, tabSource: e.data.source})
-        }
-      });
     }
   }
 

@@ -1,7 +1,6 @@
-version: "3"
 services:
   rs-dev:
-    container_name: "rs-dev"
+    container_name: "rs-dev-official"
     build: dev/.
     image: fkraeutli/rs-dev
     ports:
@@ -18,3 +17,4 @@ services:
 networks:
   default:
     name: ${DOCKER_NETWORK}
+    external: true

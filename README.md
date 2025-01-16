@@ -307,7 +307,7 @@ cp src/main/resources/org/researchspace/apps/default/config/shiro.ini $DOCKER_FO
 
 ```
 cd $DOCKER_FOLDER/platform
-docker build -t swissartresearx/researchspace:VERSION_TAG .
+docker build -t researchspace:VERSION_TAG .
 ```
 
 ## Setting up Your IDE
@@ -345,7 +345,7 @@ We use [Prettier](https://prettier.io/) as code formatter for all `ts/tsx/js/scs
 
 To generate generate JSON schema from any TypeScript interface to use in the documentation with `mp-documentation`, execute the following command:
 
-`npm run generateJsonSchema <interface-name>`
+`npm run generate-schema <interface-name>`
 
 
 ### Troubleshooting

@@ -60,11 +60,5 @@ module.exports = function () {
         return chunkData.chunk.name === 'page-renderer' ? '[name].js': "[name]-[contenthash].js";
     };
     config.output.chunkFilename = "[name]-[contenthash].js";
-
-    //enable assets optimizations
-    // Skip due to issues with type checking of node modules
-    // config.plugins.push(
-    //     defaults.tsTypeCheck(true),
-    // );
     return config;
 };

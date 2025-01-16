@@ -31,7 +31,6 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -47,7 +46,6 @@ import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
 
 import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.LinkedHashModel;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.util.Models;
@@ -102,9 +100,6 @@ public class LDPAssetsLoader {
 
     @Inject
     private Configuration configuration;
-
-    @Inject
-    private KnowledgePatternGenerator pg;
 
     @Inject
     private KnowledgePatternGenerator pg;
@@ -428,7 +423,6 @@ public class LDPAssetsLoader {
         LinkedHashModel modelExisting;
         Set<Resource> inconsistentContexts = Sets.newHashSet();
         List<Resource> toLoad = Lists.newArrayList();
-        List<Resource> defaultToLoad = Lists.newArrayList();
         for (Resource ctx : contextsLoaded) {
             Model modelLoaded = loadedAssetsModel.filter(null, null, null, ctx);//from local storage + jnl
             modelExisting = new LinkedHashModel();
