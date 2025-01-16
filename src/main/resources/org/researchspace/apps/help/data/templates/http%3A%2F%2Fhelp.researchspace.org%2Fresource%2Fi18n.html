@@ -1,0 +1,70 @@
+<ol class="page-breadcrumb">
+  <li>
+    <mp-link title="Home" url="/">Home</mp-link>
+  </li>
+  <li>
+    <semantic-link title="Documentation" iri='[[resolvePrefix "rsp:Documentation"]]'>Documentation</semantic-link>
+  </li>
+  <li>
+    <semantic-link title="Developer Documentation" iri="http://help.researchspace.org/resource/Start">Developer Documentation</semantic-link>
+  </li>
+  <li class="active">i18n Component</li>
+</ol>
+
+<div class="page">
+  <div class='page__body'>
+    <h1>i18n Component</h1>
+    <div class="documentation__intro">
+      <div class="documentation__intro__description">
+        <p>Basic implementation for multilingual applications.</p>
+        <p>The component reads a JSON dictionary for messages in different languages. A default message file is required. Additional languages can be added.</p>
+      </div>
+      
+    <div style="clear:both;"></div>
+
+    <h2>Configuration</h2>
+
+    <div>
+      Prepare a `messages.json` file with the following structure that contains the messages in the default language. The file shold be stored in /assets/i18n/messages.json.
+      
+      <mp-code-example>
+        <![CDATA[
+          {
+            "message_key": "Message in default language",
+            ...
+          }
+        ]]>
+      </mp-code-example>
+
+      Prepare an additional `messages_{language}.json` file for each additional language, where {language} is the language code. The file shold be stored in /assets/i18n/messages_{language}.json.
+
+      e.g. `messages_de.json` for German.
+
+      <mp-code-example>
+        <![CDATA[
+          {
+            "message_key": "Mitteilung in Deutsch",
+            ...
+          }
+        ]]>
+    </div>
+
+    <h2>Usage</h2>
+
+    Call the component with the message key as the content of the component. The component will display the message in the set language.
+
+    <div id='demo2'>
+      <mp-code-example>
+<![CDATA[
+<div>
+  <mp-user-language-switch languages='["de", "en"]'></mp-user-language-switch>
+</div>
+
+<ul>
+  <li><i18n>message_key</i18n></li>
+</ul>
+]]>
+      </mp-code-example>
+    </div>
+
+    
