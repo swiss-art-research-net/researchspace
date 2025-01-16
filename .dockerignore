@@ -1,3 +1,48 @@
-Dockerfile
-build/
+*.class
+*.log
+
+# eclipse
+.classpath
+.project
+.settings
+bin/
+
+# Gradle
+.gradle
+build
+mappings/
+
+# Visual Studio code
+.vscode*
+
+# IntelliJ IDEA
+.idea/
+
+#build specific
 node_modules/
+.log
+/webpack/tests_out/
+/webpack/*.log.*
+tsconfig.tsbuildinfo
+src/main/webapp/assets/bundles-manifest.json
+src/main/webapp/assets/*
+# emacs
+.#*
+\#*
+
+#idea
+.idea/
+*.iml
+*.iws
+
+# runtime
+/runtime-data*
+
+# Mac
+.DS_Store
+
+# Local
+.discard/
+.env
+docker-compose.override.yml
+buildDockerImage.sh
