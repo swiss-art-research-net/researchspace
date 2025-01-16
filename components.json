@@ -312,5 +312,6 @@
 
   "i18n": "platform/components/sari/i18n/I18nComponent.tsx",
   "sari-image-upload": "platform/components/sari/ui/ImageUpload.ts",
-  "semantic-update": "platform/components/sari/semantic/update/SemanticUpdate.tsx"
+  "semantic-update": "platform/components/sari/semantic/update/SemanticUpdate.tsx",
+  "semantic-sigma-graph": "platform/components/sari/semantic/sigma-graph/SigmaGraph.tsx"
 }
