@@ -210,7 +210,7 @@ gretty {
 // install npm dependencies in development mode
 task npmInstall(type: Exec) {
     executable 'npm'
-    args 'i', '--no-audit', '--no-fund', '--loglevel=error'
+    args 'i', '--no-audit', '--no-fund', '--legacy-peer-deps', '--loglevel=error'
 }
 
 // we want to get clean node_modules when we are building on CI or production version locally
