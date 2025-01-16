@@ -1,3 +1,4 @@
 Dockerfile
 build/
 node_modules/
+runtime-data/
