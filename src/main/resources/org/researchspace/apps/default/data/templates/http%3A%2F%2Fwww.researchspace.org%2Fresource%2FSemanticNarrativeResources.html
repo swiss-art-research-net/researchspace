@@ -1,12 +1,4 @@
 {{#bind viewId=dashboardId}}
-    <mp-event-proxy id='{{iri}}-refresh-narrativeResources-on-resourceForm-deleted'
-                    on-event-source='{{iri}}-resource-form' 
-                    on-event-types='["Form.ResourceRemoved"]'      
-                    additional-data='{"resourceDeleted": true, "iri": "{{iri}}"}'
-                    proxy-event-type='Component.TemplateUpdate' 
-                    proxy-targets='["{{iri}}-resources-in-narrative-frame"]'
-    ></mp-event-proxy>
-
     [[!-- Update on resourceForm actions, set actions, narrative updated, map saved --]]
     <mp-event-proxy id='{{iri}}-update-narrativeResources-on-actions'
                     on-event-types='["Form.ResourceUpdated", 
@@ -18,9 +10,30 @@
                                     "Ontodia.DiagramSaved",
                                     "Ontodia.DiagramDataPersisted"
                                     ]'         
+                    additional-data='{"iri": "{{iri}}"}'
                     proxy-event-type='Component.TemplateUpdate' 
                     proxy-targets='["{{iri}}-resources-in-narrative-frame"]'
     ></mp-event-proxy> 
+
+    <semantic-query query='SELECT * WHERE { 
+                            BIND(<{{iri}}> as ?iri) .
+                            ?iri crm:P190_has_symbolic_content ?label .
+                         }'
+                    template='{{> template}}'>
+                    
+        <template id="template">
+            <mp-event-proxy id='{{bindings.0.iri.value}}-refresh-narrativeResources-on-resourceForm-deleted'
+                            on-event-source='{{bindings.0.iri.value}}-resource-form' 
+                            on-event-types='["Form.ResourceRemoved"]'      
+                            additional-data='{"resourceDeleted": true, 
+                                                "iri": "{{bindings.0.iri.value}}",
+                                                "label": "{{bindings.0.label.value}}"
+                                            }'
+                            proxy-event-type='Component.TemplateUpdate' 
+                            proxy-targets='["{{bindings.0.iri.value}}-resources-in-narrative-frame"]'
+            ></mp-event-proxy>
+        </template>
+    </semantic-query>
 
     <mp-event-target-template-render id="{{iri}}-resources-in-narrative-frame" template='{{> template}}'>
         <template id='template'>
@@ -33,7 +46,9 @@
                 <div style="flex: 1;"> 
                     <div class="success-documentation-section-title">Success!</div>
                     <div class="success-documentation-section-content">
-                    <span><mp-label iri='{{iri}}'></mp-label> has been deleted.</span>
+                        <span>
+                            {{#if label}}{{label}}{{else}}<mp-label iri='{{iri}}'></mp-label>{{/if}} has been deleted.
+                        </span>
                     </div>
                 </div>
                 </div>
@@ -42,7 +57,7 @@
                     <div class="semantic-search-content">
                         <div class="semantic-search-header-content">
                             <div style="display: flex; align-items: center;column-gap: 30px;flex: 1;max-height: 35px;overflow: hidden;">
-                                <h3 class="semantic-search-header-title" style="flex: unset;">
+                                <h3 class="semantic-search-header-title text-truncate-line1" style="flex: unset;">
                                     <mp-label iri="{{iri}}"></mp-label>
                                 </h3>
                                 <div class="color-base" style="font-size: 21px; padding-bottom: 3px;">|</div>
@@ -99,7 +114,7 @@
                                     <template id='viewDropdown'>
                                         <bs-dropdown id="{{viewId}}-view-type-selection"
                                                     bs-style="default"
-                                                    class="btn-textAndIcon"
+                                                    class="btn-textAndIcon search-view-dropdown"
                                                     pull-right=true
                                                     title="{{#if searchViewType}}{{searchViewType}}{{else}}List{{/if}}"
                                         > 
@@ -358,7 +373,7 @@
                                                                                             {"variableName": "subject", "displayName": "", "cellTemplate": "{{> selectionCheckbox}}" },
                                                                                             {"variableName": "subject", "displayName": "Resource details", "cellTemplate": "{{> column1}}" },
                                                                                             {"variableName": "description", "displayName": "Description", "cellTemplate": "{{> column2}}" },
-                                                                                            {"variableName": "", "displayName": "more", "cellTemplate": "{{> actions}}" }
+                                                                                            {"variableName": "", "displayName": "", "cellTemplate": "{{> actions}}" }
                                                                                         ]'>
                             
                                                         <template id='selectionCheckbox'>

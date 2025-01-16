@@ -22,11 +22,9 @@
  */
 
 import * as React from 'react';
-import { Component, ReactElement, createElement, createFactory } from 'react';
+import { Component, ReactElement, createFactory } from 'react';
 import * as classNames from 'classnames';
 import { List } from 'immutable';
-
-import { TemplateItem } from 'platform/components/ui/template';
 
 import {
   Ast,

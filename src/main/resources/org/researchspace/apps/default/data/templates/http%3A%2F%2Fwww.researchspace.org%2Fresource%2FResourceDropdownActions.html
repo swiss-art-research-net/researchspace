@@ -1,5 +1,5 @@
 <bs-dropdown-menu class="resource-actions__dropdown-menu {{#if clipboardCard}}resource-card__dropdown-multitle-actions{{/if}}
-                        {{#if dragAndDropInputCard}}resource-card__dropdown-small{{/if}}
+                        {{#if dragAndDropInputCard}}resource-card__dropdown-dragAndDropInputCard{{/if}}
                         {{#if knowledgeMapCard}}resource-card__dropdown-km{{/if}}">
 
   {{#if hidePreview}}
@@ -429,78 +429,80 @@
     {{/if}}
   {{/if}}
 
+
   {{#if (not (eq resourceConfig "http://www.researchspace.org/resource/system/resource_configurations_container/data/Image_annotation"))}}
-    <semantic-if  query=' PREFIX ontodia: <http://ontodia.org/schema/v1#>
-                          PREFIX ldp: <http://www.w3.org/ns/ldp#>
-                          ASK {
-                                {
-                                  <{{iri}}> a ontodia:Diagram .
-                                  <{{iri}}> ontodia:layoutData/ontodia:hasElement/ontodia:resource ?resource .
-                                  { ?resource crm:P138i_has_representation|rs:PX_has_main_representation ?image .} UNION { ?resource a rs:EX_Digital_Image . }
-                                } UNION {
-                                  <{{iri}}> a Platform:Set .
-                                  <{{iri}}> ldp:contains / Platform:setItem ?resource .
-                                  { ?resource crm:P138i_has_representation|rs:PX_has_main_representation ?image .} UNION { ?resource a rs:EX_Digital_Image . }
-                                } UNION {
-                                  <{{iri}}> crm:P138i_has_representation|rs:PX_has_main_representation ?image .
-                                } UNION {
-                                  <{{iri}}> a rs:EX_Digital_Image .
-                                }
-                              }'
-                  then='{{> then}}'>
+    {{#if hideAnnotations}}
+    {{else}}
+      <semantic-if  query=' PREFIX ontodia: <http://ontodia.org/schema/v1#>
+                            PREFIX ldp: <http://www.w3.org/ns/ldp#>
+                            ASK {
+                                  {
+                                    <{{iri}}> a ontodia:Diagram .
+                                    <{{iri}}> ontodia:layoutData/ontodia:hasElement/ontodia:resource ?resource .
+                                    { ?resource crm:P138i_has_representation|rs:PX_has_main_representation ?image .} UNION { ?resource a rs:EX_Digital_Image . }
+                                  } UNION {
+                                    <{{iri}}> a Platform:Set .
+                                    <{{iri}}> ldp:contains / Platform:setItem ?resource .
+                                    { ?resource crm:P138i_has_representation|rs:PX_has_main_representation ?image .} UNION { ?resource a rs:EX_Digital_Image . }
+                                  } UNION {
+                                    <{{iri}}> crm:P138i_has_representation|rs:PX_has_main_representation ?image .
+                                  } UNION {
+                                    <{{iri}}> a rs:EX_Digital_Image .
+                                  }
+                                }'
+                    then='{{> then}}'>
 
-      <template id='then'>
-        <mp-event-trigger id='{{viewId}}-image-annotation-add-frame-trigger' 
-                          type='Dashboard.AddFrame' 
-                          data='{"resourceIri": "{{iri}}", 
-                                  "viewId": "image-annotation", 
-                                  "frameId": "{{viewId}}"}' 
-                          targets='["thinking-frames"]'>
+        <template id='then'>
+          <mp-event-trigger id='{{viewId}}-image-annotation-add-frame-trigger' 
+                            type='Dashboard.AddFrame' 
+                            data='{"resourceIri": "{{iri}}", 
+                                    "viewId": "image-annotation", 
+                                    "frameId": "{{viewId}}"}' 
+                            targets='["thinking-frames"]'>
+              <bs-menu-item>
+                <rs-icon icon-type="rounded" icon-name="photo_size_select_large" class="icon-left" symbol="true"></rs-icon>
+                {{#if (or (eq resourceConfig "http://www.researchspace.org/resource/system/resource_configurations_container/data/Knowledge_map") 
+                          (eq resourceConfig "http://www.researchspace.org/resource/system/resource_configurations_container/data/Set") )}}
+                  <span>Image of resources view / annotations</span>
+                {{else}}
+                  <span>Image view / annotations</span>
+                {{/if}}
+              </bs-menu-item>
+          </mp-event-trigger>
+          <hr>
+        </template>
+      </semantic-if>
+
+      <semantic-if  query=' PREFIX ontodia: <http://ontodia.org/schema/v1#>
+                            PREFIX ldp: <http://www.w3.org/ns/ldp#>
+                            ASK {
+                                  {
+                                    <{{iri}}> a ontodia:Diagram .
+                                    <{{iri}}> ontodia:layoutData/ontodia:hasElement/ontodia:resource ?resource .
+                                    ?resource a rs:EX_Digital_Image .
+                                  } UNION {
+                                    <{{iri}}> a Platform:Set .
+                                    <{{iri}}> ldp:contains / Platform:setItem ?resource .
+                                    ?resource a rs:EX_Digital_Image .
+                                  } UNION {
+                                    <{{iri}}> a rs:EX_Digital_Image .
+                                  }
+                                }'
+                    then='{{> then}}'>
+
+        <template id='then'>
+          <semantic-link-container  uri='[[resolvePrefix "rsp:ThinkingFrames"]]'
+                                    urlqueryparam-view='image-graph-authoring' 
+                                    urlqueryparam-resource='{{iri}}'>
             <bs-menu-item>
-              <rs-icon icon-type="rounded" icon-name="photo_size_select_large" class="icon-left" symbol="true"></rs-icon>
-              {{#if (or (eq resourceConfig "http://www.researchspace.org/resource/system/resource_configurations_container/data/Knowledge_map") 
-                        (eq resourceConfig "http://www.researchspace.org/resource/system/resource_configurations_container/data/Set") )}}
-                <span>Image of resources view / annotations</span>
-              {{else}}
-                <span>Image view / annotations</span>
-              {{/if}}
+              <rs-icon icon-type="rounded" icon-name="wallpaper" class="icon-left" symbol="true"></rs-icon>
+              <span>Image graph authoring</span>
             </bs-menu-item>
-        </mp-event-trigger>
-        <hr>
-      </template>
-
-    </semantic-if>
-
-    <semantic-if  query=' PREFIX ontodia: <http://ontodia.org/schema/v1#>
-                          PREFIX ldp: <http://www.w3.org/ns/ldp#>
-                          ASK {
-                                {
-                                  <{{iri}}> a ontodia:Diagram .
-                                  <{{iri}}> ontodia:layoutData/ontodia:hasElement/ontodia:resource ?resource .
-                                  ?resource a rs:EX_Digital_Image .
-                                } UNION {
-                                  <{{iri}}> a Platform:Set .
-                                  <{{iri}}> ldp:contains / Platform:setItem ?resource .
-                                  ?resource a rs:EX_Digital_Image .
-                                } UNION {
-                                  <{{iri}}> a rs:EX_Digital_Image .
-                                }
-                              }'
-                  then='{{> then}}'>
-
-      <template id='then'>
-        <semantic-link-container  uri='[[resolvePrefix "rsp:ThinkingFrames"]]'
-                                  urlqueryparam-view='image-graph-authoring' 
-                                  urlqueryparam-resource='{{iri}}'>
-          <bs-menu-item>
-            <rs-icon icon-type="rounded" icon-name="wallpaper" class="icon-left" symbol="true"></rs-icon>
-            <span>Image graph authoring</span>
-          </bs-menu-item>
-        </semantic-link-container> 
-        <hr>
-      </template>
-    </semantic-if>
-    
+          </semantic-link-container> 
+          <hr>
+        </template>
+      </semantic-if>
+    {{/if}}
   {{else}}
     {{#if (not imageAnnotation)}}
       <semantic-query query='SELECT DISTINCT ?image WHERE {
@@ -525,20 +527,18 @@
             <hr>
           </template>
       </semantic-query>
-      
     {{/if}}
   {{/if}}
 
   {{#if (not (eq resourceLabel "Knowledge map"))}}
-    
-      <semantic-link-container  uri='[[resolvePrefix "rsp:ThinkingFrames"]]'
-                                urlqueryparam-view='knowledge-map' 
-                                urlqueryparam-resource='{{iri}}'>
-          <bs-menu-item>
-            <rs-icon icon-type="rounded" icon-name="hub" class="icon-left" symbol="true"></rs-icon>
-            <span>Open in Knowledge map</span>
-          </bs-menu-item>
-      </semantic-link-container>
+    <semantic-link-container  uri='[[resolvePrefix "rsp:ThinkingFrames"]]'
+                              urlqueryparam-view='knowledge-map' 
+                              urlqueryparam-resource='{{iri}}'>
+        <bs-menu-item>
+          <rs-icon icon-type="rounded" icon-name="hub" class="icon-left" symbol="true"></rs-icon>
+          <span>Open in Knowledge map</span>
+        </bs-menu-item>
+    </semantic-link-container>
     <hr>
   {{/if}}
 
@@ -697,23 +697,10 @@
     {{/default}}
   {{/switch}}
 
-  {{#if (or allowResourceDelete imageAnnotation)}} 
-    {{#if (eq resourceConfig "http://www.researchspace.org/resource/system/resource_configurations_container/data/Authority_document")}}
+  {{#if (or allowResourceDelete imageAnnotation)}}     
+    {{#if (not (eq resourceConfig "http://www.researchspace.org/resource/system/resource_configurations_container/data/User"))}}
       <hr>
-      <bs-menu-item>
-        <rs-icon icon-type="rounded" icon-name="delete" class="icon-left" symbol="true"></rs-icon>            
-        <mp-graph-store-action title="Delete" 
-                                action="DELETE" 
-                                graphuri="{{iri}}" 
-                                graph-description="{{label.value}}">
-          <span>Delete</span>          
-        </mp-graph-store-action>
-      </bs-menu-item>
-    {{else}}
-      {{#if (not (eq resourceConfig "http://www.researchspace.org/resource/system/resource_configurations_container/data/User"))}}
-        <hr>
-        [[> deleteButton resourceFormIRI=resourceFormIRI]]
-      {{/if}}
+      [[> deleteButton resourceFormIRI=resourceFormIRI]]
     {{/if}}
   {{/if}}
   
@@ -736,7 +723,7 @@
   {{/if}} 
 
   <mp-overlay-dialog show='{{#if delete}}true{{else}}false{{/if}}' 
-                      id='{{viewId}}-delete-resource-dialog-{{iri}}' 
+                      id='{{viewId}}-delete-resource-dialog' 
                       title="Delete {{resourceName}}" type="modal" bs-size="large">
     <mp-overlay-dialog-trigger>
       <bs-menu-item>
@@ -745,13 +732,14 @@
       </bs-menu-item>
     </mp-overlay-dialog-trigger>
     <mp-overlay-dialog-content>
+
       <div>
         <p>Are you sure you want to delete <strong><mp-label iri="{{iri}}"></mp-label></strong> ?</p>
       
         <div>
-          <semantic-query query='SELECT DISTINCT ?resource ?label  
+          <semantic-query query='SELECT DISTINCT ?resource ?label 
                                   WHERE {
-                                      <{{iri}}> ?p ?resource .
+                                      ?resource ?p <{{iri}}> .
                                     { 
                                       ?resource crm:P1_is_identified_by ?appellation .
                                       ?appellation a crm:E41_Appellation .
@@ -767,22 +755,40 @@
                                     } UNION {
                                       ?resource crm:P190_has_symbolic_content ?label .
                                     }
-                                  }'
+                                  } ORDER BY ?label 
+                                    LIMIT 21'
                                 template='{{> referredByTemplate}}'>
 
               <template id='referredByTemplate'>
-                Some resources in the system link to it:
+                Some resources in the system link to it{{#if bindings.20.resource.value}} (only 20 visualised below){{/if}}:
                 <ul>
-                  {{#each bindings}}
-                    <li>
-                      <semantic-link  iri="http://www.researchspace.org/resource/ThinkingFrames" 
-                                      draggable="false"
-                                      urlqueryparam-view="resource-editor"
-                                      urlqueryparam-resource-iri="{{resource.value}}">
-                        <div class="text-link">{{label.value}}</div>
-                      </semantic-link>
-                    </li>
-                  {{/each}}
+                  {{#if bindings.20.resource.value}}
+                    {{#each bindings}}
+                      {{#if @last}}
+                      {{else}}
+                        <li>
+                          <semantic-link  iri="http://www.researchspace.org/resource/ThinkingFrames" 
+                                          draggable="false"
+                                          title="{{label.value}}"
+                                          urlqueryparam-view="resource-editor"
+                                          urlqueryparam-resource-iri="{{resource.value}}">
+                            <div class="text-link-action">{{label.value}}</div>
+                          </semantic-link>
+                        </li>
+                      {{/if}}
+                    {{/each}}
+                  {{else}}
+                    {{#each bindings}}
+                      <li>
+                        <semantic-link  iri="http://www.researchspace.org/resource/ThinkingFrames" 
+                                        draggable="false"
+                                        urlqueryparam-view="resource-editor"
+                                        urlqueryparam-resource-iri="{{resource.value}}">
+                          <div class="text-link-action">{{label.value}}</div>
+                        </semantic-link>
+                      </li>
+                    {{/each}}
+                  {{/if}}
                 </ul>
               </template>
           </semantic-query>
@@ -795,6 +801,7 @@
                                       "viewId": "{{iri}}",
                                       "mode": "edit",
                                       "editable": true,
+                                      "resourceConfig":"{{resourceConfig}}",
                                       "node": "{{iri}}"
                           }'>
         </inline-template> 
@@ -813,7 +820,7 @@
       <div class="form-btn-group">
         <mp-event-trigger id='{{iri}}-cancel-modal' 
                           type='OverlayDialog.Close' 
-                          targets='["{{viewId}}-delete-resource-dialog-{{iri}}"]'>
+                          targets='["{{viewId}}-delete-resource-dialog"]'>
           <button class="btn btn-default">Cancel</button>
         </mp-event-trigger>
 
@@ -825,15 +832,6 @@
         </mp-event-trigger>  
       </div>
 
-      [[!-- Refresh Search page for a resource removed from search page - dropdown action --]]
-      <mp-event-proxy id='{{iri}}-update-ResourceSearchPage-on-resourceForm-deleted-{{viewId}}'
-                      on-event-source='{{iri}}-resource-form' 
-                      on-event-types='["Form.ResourceRemoved"]'      
-                      proxy-event-type='Component.TemplateUpdate' 
-                      additional-data='{"resourceDeleted": true, "iri": "{{iri}}"}'
-                      proxy-targets='["{{resourceConfig}}-resourceSearch-frame"]'
-      ></mp-event-proxy> 
-
       [[!-- Listen Form.ResourceRemoving to display a 'please wait' message while waiting the delete --]]
       <mp-event-proxy id='{{iri}}-resource-removing-{{viewId}}' 
                       on-event-source='{{iri}}-resource-form' 
@@ -841,16 +839,9 @@
                       proxy-event-type='Component.TemplateUpdate' 
                       additional-data='{"resourceDeleting": true, "iri": "{{iri}}"}'
                       proxy-targets='["{{iri}}-deleting-area-{{viewId}}"]'
-      ></mp-event-proxy> 
-
-      [[!-- Close Delete dialog window once delete submitted --]]
-      <mp-event-proxy id='{{iri}}-close-removal-dialog' 
-                        on-event-source='{{iri}}-resource-form' 
-                        on-event-types='["Form.ResourceRemoved"]'
-                        proxy-event-type='OverlayDialog.Close' 
-                        proxy-targets='["{{viewId}}-delete-resource-dialog-{{iri}}"]'
-      ></mp-event-proxy>       
+      ></mp-event-proxy>      
       
     </mp-overlay-dialog-content>
   </mp-overlay-dialog>
 [[/inline]]
+

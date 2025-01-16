@@ -35,7 +35,6 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
@@ -326,17 +325,11 @@ public class RESTSailConnection extends AbstractServiceWrappingSailConnection<RE
             request = this.addHTTPHeaders(request);
 
             String mediaType = getSail().getConfig().getMediaType();
-            String inputFormfield = getSail().getConfig().getInputFormfield();
 
             logger.trace("Submitting POST request");
             if (StringUtils.equals(mediaType, MediaType.APPLICATION_JSON)) {
                 Object body = getJsonBody(parametersHolder.getInputParameters());
-                if (StringUtils.isNotBlank(inputFormfield)) {
-                    String bodyString = body.toString(); // Convert body to string
-                    return request.post(Entity.form(new Form(inputFormfield, bodyString)));
-                } else {
-                    return request.post(Entity.json(body));
-                }
+                return request.post(Entity.json(body));
             } else if (StringUtils.equals(mediaType, MediaType.APPLICATION_FORM_URLENCODED)) {
                 return request.post(Entity.form(getHashMapBody(parametersHolder.getInputParameters())));
             } else {

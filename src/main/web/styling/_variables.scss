@@ -105,7 +105,7 @@ $color-resourceTabs-bg: var(--color-resourceTabs-bg, #F7F7FA);
 $color-tf-dashboardCard-bg: var(--color-tf-dashboardCard-bg, #ffffff);
 $color-resource-popover-bg: var(--color-resource-popover-bg, #555458);
 $color-popover-bg: var(--color-popover-bg, #ffffff);
-$color-narrative-popover-bg: var(--color-narrative-popover-bg, #e2e2e8);
+$color-narrative-popover-bg: var(--color-narrative-popover-bg, #f7f7fa);
 
 $color-alert-message-bg: var(--color-alert-message-bg, #d93348);
 
@@ -333,9 +333,6 @@ $alert-danger-border:         #e78d99; //can't be css variable
 /************************* INPUTS ***********************************/
 //  Bootstrap variables override
 $input-border-focus: darken($btn-default-border, 20%);
-$input-border-radius: 0;
-$input-border-radius-large: 0;
-$input-border-radius-small: 0;
 $input-height-base: ($line-height-computed + ($padding-base-vertical * 2));
 
 
@@ -421,6 +418,9 @@ $input-font-size: var(--input-font-size, 14px);
 $input-placeholder-color: var(--input-placeholder-color, $color-base);
 $input-border-color: var(--input-border-color, $color-border);
 $input-border-radius: var(--input-border-radius, 2px);
+$input-border-radius-large: var(--input-border-radius, 2px);
+$input-border-radius-small: var(--input-border-radius, 2px);
+
 
 $input-focused-color: var(--input-focused-color, #05448d);
 $input-focused-color-bg: var(--input-focused-color-bg, #d9e2f0);
@@ -486,7 +486,7 @@ $select-item-disabled-bg:           $color-light;
 $select-item-disabled-border-color: $color-light;
 
 // react-select
-$select-menu-max-height: 240px;
+$select-menu-max-height: 210px;
 
 
 
