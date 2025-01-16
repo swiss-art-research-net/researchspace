@@ -70,7 +70,7 @@ export class I18nComponent extends Component<{}, State> {
     const language = getPreferredUserLanguage();
     if (this.state.error) {
       return React.createElement(ErrorNotification, { errorMessage: this.state.error });
-    } else if (!this.state.isLoading) {
+    } else if (!this.state.isLoading && typeof text === "string") {
       const displayMessage = this.state.labelsLanguage[text] || this.state.labelsDefault[text] || null;
       if (displayMessage) {
         return <span>{displayMessage}</span>;
