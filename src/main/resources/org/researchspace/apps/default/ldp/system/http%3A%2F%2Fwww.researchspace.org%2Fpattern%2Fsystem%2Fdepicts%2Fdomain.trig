@@ -4,7 +4,7 @@
       <http://www.w3.org/ns/prov#Entity>, <http://www.w3.org/ns/ldp#Resource>;
     <http://www.researchspace.org/resource/system/fields/autosuggestionPattern> _:genid-263cef7c31064247bcf5acf35731964c-s6s6tq;
     <http://www.researchspace.org/resource/system/fields/domain> <http://www.cidoc-crm.org/cidoc-crm/PC62_depicts>;
-    <http://www.researchspace.org/resource/system/fields/range> <http://www.cidoc-crm.org/cidoc-crm/E24_Physical_Man-Made_Thing>;
+    <http://www.researchspace.org/resource/system/fields/range> <http://www.cidoc-crm.org/cidoc-crm/E24_Physical_Human-Made_Thing>;
     <http://www.researchspace.org/resource/system/fields/insertPattern> _:genid-263cef7c31064247bcf5acf35731964c-ndd8te;
     <http://www.researchspace.org/resource/system/fields/deletePattern> _:genid-263cef7c31064247bcf5acf35731964c-5a8e4;
     <http://www.researchspace.org/resource/system/fields/xsdDatatype> <http://www.w3.org/2001/XMLSchema#anyURI>;
@@ -25,7 +25,7 @@
     $value crm:P01i_is_domain_of $subject . 
       
     ?value a ?ontologyClass .
-    ?ontologyClass rdfs:subClassOf* crm:E24_Physical_Man-Made_Thing .
+    ?ontologyClass rdfs:subClassOf* crm:E24_Physical_Human-Made_Thing .
     ?value crm:P1_is_identified_by ?appellation .
     ?appellation a crm:E41_Appellation .
     ?appellation crm:P2_has_type <http://www.researchspace.org/resource/system/vocab/resource_type/primary_appellation> . 
@@ -35,11 +35,12 @@
   _:genid-263cef7c31064247bcf5acf35731964c-s6s6tq a <http://spinrdf.org/sp#Query>;
     <http://spinrdf.org/sp#text> """SELECT DISTINCT ?value ?label WHERE {
     ?value a ?ontologyClass .
-    ?ontologyClass rdfs:subClassOf* crm:E24_Physical_Man-Made_Thing .
+    ?ontologyClass rdfs:subClassOf* crm:E24_Physical_Human-Made_Thing .
     ?value crm:P1_is_identified_by ?appellation .
     ?appellation a crm:E41_Appellation .
     ?appellation crm:P2_has_type <http://www.researchspace.org/resource/system/vocab/resource_type/primary_appellation> . 
     ?appellation crm:P190_has_symbolic_content ?label .
+  MINUS { ?value crm:P71i_is_listed_in|skos:inScheme ?systemAuthority . ?systemAuthority crm:P2_has_type Platform:System_Resource . }
   FILTER REGEX(LCASE(STR(?label)), \"?token\", \"i\")
 } ORDER BY ASC(?label) 
   LIMIT 10 """ .
@@ -49,7 +50,7 @@
   	$subject crm:P01_has_domain $value .
       
     ?value a ?ontologyClass .
-    ?ontologyClass rdfs:subClassOf* crm:E24_Physical_Man-Made_Thing .
+    ?ontologyClass rdfs:subClassOf* crm:E24_Physical_Human-Made_Thing .
     ?value crm:P1_is_identified_by ?appellation .
     ?appellation a crm:E41_Appellation .
     ?appellation crm:P2_has_type <http://www.researchspace.org/resource/system/vocab/resource_type/primary_appellation> . 
@@ -65,7 +66,7 @@
   _:genid-263cef7c31064247bcf5acf35731964c-lgoq7q a <http://spinrdf.org/sp#Query>;
     <http://spinrdf.org/sp#text> """SELECT DISTINCT ?value ?label WHERE {
     ?value a ?ontologyClass .
-    ?ontologyClass rdfs:subClassOf* crm:E24_Physical_Man-Made_Thing .
+    ?ontologyClass rdfs:subClassOf* crm:E24_Physical_Human-Made_Thing .
     ?value crm:P1_is_identified_by ?appellation .
     ?appellation a crm:E41_Appellation .
     ?appellation crm:P2_has_type <http://www.researchspace.org/resource/system/vocab/resource_type/primary_appellation> . 

@@ -38,3 +38,6 @@ queryPartial=https://static.swissartresearch.net/queryPartial/
 crminf = http://www.ics.forth.gr/isl/CRMinf/
 
 fedsail=http://www.openrdf.org/config/sail/federation#
+crminf = http://www.ics.forth.gr/isl/CRMinf/
+
+fedsail=http://www.openrdf.org/config/sail/federation#
