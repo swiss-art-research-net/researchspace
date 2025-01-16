@@ -311,6 +311,6 @@
   "rs-resource-dropdown": "platform/components/ui/resource-dropdown/index.tsx",
 
   "i18n": "platform/components/sari/i18n/I18nComponent.tsx",
-
-  "sari-image-upload": "platform/components/sari/ui/ImageUpload.ts"
+  "sari-image-upload": "platform/components/sari/ui/ImageUpload.ts",
+  "semantic-update": "platform/components/sari/semantic/update/SemanticUpdate.tsx"
 }
