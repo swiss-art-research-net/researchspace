@@ -1,6 +1,6 @@
 services:
   rs-dev:
-    container_name: "rs-dev-official"
+    container_name: "rs-dev"
     build: dev/.
     image: fkraeutli/rs-dev
     ports:
