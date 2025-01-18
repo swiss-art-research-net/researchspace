@@ -1,5 +1,6 @@
 /**
  * ResearchSpace
+ * Copyright (C) 2022-2024, © Kartography Community Interest Company
  * Copyright (C) 2015-2020, © Trustees of the British Museum
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,11 +22,9 @@
  */
 
 import * as React from 'react';
-import { Component, ReactElement, createElement, createFactory } from 'react';
+import { Component, ReactElement, createFactory } from 'react';
 import * as classNames from 'classnames';
 import { List } from 'immutable';
-
-import { TemplateItem } from 'platform/components/ui/template';
 
 import {
   Ast,
@@ -46,6 +45,7 @@ import { Category, Relation } from 'platform/components/semantic/search/data/pro
 import { DateConverter, NumericConverter } from '../slider/FacetSlider';
 
 import * as styles from './FacetBreadcrumbs.scss';
+import Icon from 'platform/components/ui/icon/Icon';
 
 export interface FacetBreadcrumbsProps {
   ast: Ast;
@@ -84,21 +84,15 @@ export class FacetBreadcrumbsComponent extends Component<FacetBreadcrumbsProps, 
 
     return (
       <div className={styles.conjunct}>
-        <div className={classNames(styles.values, 'btn')} onClick={() => this.selectRelation(relation)}>
-          <span className={styles.relation}>
-            { createElement(TemplateItem, {
-                ref: relation.iri.value, 
-                template: { source: relation.label } 
-              }) 
-            }
-          </span>
+        <div className={classNames(styles.values, 'btn')} onClick={() => this.selectRelation(relation)} title='Open in filter list'>
+          <span className={styles.relation}>{relation.label}</span>
           {disjuncts}
         </div>
         <button
           className={classNames(styles.cancelButton, 'btn')}
           onClick={() => this.props.actions.removeConjunct(conjunct)}
         >
-          <i />
+          <Icon iconType='rounded' iconName='close' symbol />
         </button>
       </div>
     );

@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.Optional;
 
 import javax.ws.rs.HttpMethod;
@@ -33,7 +35,6 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
@@ -255,8 +256,23 @@ public class RESTSailConnection extends AbstractServiceWrappingSailConnection<RE
             String httpMethod = getSail().getConfig().getHttpMethod();
             logger.trace("Creating request with HTTP METHOD: {}", httpMethod);
 
+            /* 
+             * Prepare the url and replace any rest apis input {param}, not just query string parameters
+             * e.g https://api.vam.ac.uk/v2/object/{objectid} 
+             */
+            String url = getSail().getConfig().getUrl();
+            System.out.println(getSail().getConfig().getUrl().toString());
+            Pattern pattern = Pattern.compile("\\{([^}]*)\\}");
+            Matcher matcher = pattern.matcher(getSail().getConfig().getUrl().toString());
+
+            while (matcher.find()) {
+                String param = matcher.group(1);
+                String value = parametersHolder.getInputParameters().get(param);
+                url = url.replace("{"+param+"}", value);
+            }
+         
             // Create request
-            WebTarget targetResource = this.client.target(getSail().getConfig().getUrl())
+            WebTarget targetResource = this.client.target(url)
                     .property(ClientProperties.FOLLOW_REDIRECTS, Boolean.TRUE);
 
             // Case with POST
@@ -309,17 +325,11 @@ public class RESTSailConnection extends AbstractServiceWrappingSailConnection<RE
             request = this.addHTTPHeaders(request);
 
             String mediaType = getSail().getConfig().getMediaType();
-            String inputFormfield = getSail().getConfig().getInputFormfield();
 
             logger.trace("Submitting POST request");
             if (StringUtils.equals(mediaType, MediaType.APPLICATION_JSON)) {
                 Object body = getJsonBody(parametersHolder.getInputParameters());
-                if (StringUtils.isNotBlank(inputFormfield)) {
-                    String bodyString = body.toString(); // Convert body to string
-                    return request.post(Entity.form(new Form(inputFormfield, bodyString)));
-                } else {
-                    return request.post(Entity.json(body));
-                }
+                return request.post(Entity.json(body));
             } else if (StringUtils.equals(mediaType, MediaType.APPLICATION_FORM_URLENCODED)) {
                 return request.post(Entity.form(getHashMapBody(parametersHolder.getInputParameters())));
             } else {

@@ -1,3 +1,2 @@
-repositoriesLDPSave=,
-forceLDPLoadFromStorages=,
-homePage = page:Start
+homePage = rsp:ThinkingFrames
+dashboard = rsp:ThinkingFrames
