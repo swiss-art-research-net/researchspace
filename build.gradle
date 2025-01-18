@@ -217,7 +217,7 @@ task npmInstall(type: Exec) {
 // see https://docs.npmjs.com/cli/ci
 task npmInstallCi(type: Exec) {
     executable 'npm'
-    args 'ci', '--no-audit', '--no-fund', '--loglevel=error'
+    args 'ci', '--no-audit', '--no-fund', '--legacy-peer-deps', '--loglevel=error'
 }
 
 // execute webpack in production mode with minifications, etc
