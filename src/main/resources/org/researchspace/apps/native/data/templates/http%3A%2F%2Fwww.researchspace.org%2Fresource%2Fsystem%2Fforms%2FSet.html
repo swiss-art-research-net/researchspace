@@ -8,6 +8,13 @@
 
                             entity_image_main_representation="http://www.researchspace.org/pattern/system/entity/main_image"
                             entity_image="http://www.researchspace.org/pattern/system/entity/images"
+                            entity_document="http://www.researchspace.org/pattern/system/entity/documents"
+                            entity_video="http://www.researchspace.org/pattern/system/entity/subject_of_video"
+                            entity_audio="http://www.researchspace.org/pattern/system/entity/subject_of_audio"
+                            entity_3d_model="http://www.researchspace.org/pattern/system/entity/subject_of_3Dmodel"
+                            entity_has_representation="http://www.researchspace.org/pattern/system/entity/has_representation"
+                            entity_represents_range="http://www.researchspace.org/pattern/system/entity/represents_range"
+                            entity_web_URL="http://www.researchspace.org/pattern/system/entity/web_URL_embed"
                             
                             set_title="http://www.w3.org/2000/01/rdf-schema#label"
 
@@ -20,7 +27,7 @@
     
                             symbolic_object_used_in="http://www.researchspace.org/pattern/system/symbolic_object/used_in"
                             conceptual_object_created_by="http://www.researchspace.org/pattern/system/conceptual_object/created_by"
-                            man-made_thing_was_intended_use_of_range="http://www.researchspace.org/pattern/system/man-made_thing/was_intended_use_of_range"
+                            human-made_thing_was_intended_use_of_range="http://www.researchspace.org/pattern/system/human-made_thing/was_intended_use_of_range"
                             thing_used_specific_object_range="http://www.researchspace.org/pattern/system/thing/used_specific_object_range"
                             persistent_item_present_at="http://www.researchspace.org/pattern/system/persistent_item/present_at"
                             persistent_item_brought_into_existence_by="http://www.researchspace.org/pattern/system/persistent_item/brought_into_existence_by"
@@ -80,7 +87,7 @@
               </semantic-form-autocomplete-input>
               
             </div>
-            [[> rsp:FormAssetSidebar imagesOnly=true]]
+            [[> rsp:FormAssetSidebar]]
           </div>
         </rs-tab>
 
@@ -116,7 +123,7 @@
           </semantic-form-autocomplete-input> 
 
           <div class="inline-composite-container">
-              <semantic-form-composite-input  for="man-made_thing_was_intended_use_of_range"
+              <semantic-form-composite-input  for="human-made_thing_was_intended_use_of_range"
                                               label="Made for"
                                               new-subject-template="/PC19_was_intended_use_of/{{{{raw}}}}{{UUID}}{{{{/raw}}}}"
                                               fields='[[fieldDefinitions
@@ -423,7 +430,7 @@
                 <semantic-form-autocomplete-input for='depicts_thing_domain' 
                                                   render-header="false"
                                                   placeholder="Select what depicts the set"
-                                                  nested-form-templates='[[> Platform:NestedFormTemplates_physicalManMadeThings]]'>
+                                                  nested-form-templates='[[> Platform:NestedFormTemplates_physicalHumanMadeThings]]'>
                 </semantic-form-autocomplete-input>
               </div>
               <div style="flex: 1;">
@@ -571,7 +578,7 @@
         </rs-tab> 
 
         {{#if node}}
-          <rs-tab event-key="metadata" title="Metadata">
+          <rs-tab event-key="metadata" title="Metadata" tab-class-name="tab-right">
 
               <semantic-query  query='SELECT ?set ?modifiedByUser ?modifiedByUserFullName ?modifiedAtTime WHERE {
                                           BIND(<{{node}}> AS ?set)
