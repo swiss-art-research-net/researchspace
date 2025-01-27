@@ -1,4 +1,3 @@
-
 data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2FallResourcesSearchContent.html
 data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2FAuthorityDocumentSystem.html
 data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2FAuthorityDocumentView.html
@@ -39,11 +38,11 @@ data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2Fsystem%2FNestedFo
 data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2Fsystem%2FNestedFormTemplates_informationObjects.html
 data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2Fsystem%2FNestedFormTemplates_legalObjects.html
 data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2Fsystem%2FNestedFormTemplates_linguisticObjects.html
-data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2Fsystem%2FNestedFormTemplates_manMadeThings.html
+data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2Fsystem%2FNestedFormTemplates_humanMadeThings.html
 data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2Fsystem%2FNestedFormTemplates_modifications.html
 data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2Fsystem%2FNestedFormTemplates_periods.html
 data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2Fsystem%2FNestedFormTemplates_physicalFeatures.html
-data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2Fsystem%2FNestedFormTemplates_physicalManMadeThings.html
+data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2Fsystem%2FNestedFormTemplates_physicalHumanMadeThings.html
 data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2Fsystem%2FNestedFormTemplates_physicalObjects.html
 data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2Fsystem%2FNestedFormTemplates_physicalThings.html
 data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2Fsystem%2FNestedFormTemplates_places.html
@@ -103,8 +102,8 @@ data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2Fsystem%2Fforms%2F
 data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2Fsystem%2Fforms%2FLanguage.html
 data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2Fsystem%2Fforms%2FLeaving.html
 data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2Fsystem%2Fforms%2FLinguisticObject.html
-data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2Fsystem%2Fforms%2FManMadeFeature.html
-data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2Fsystem%2Fforms%2FManMadeObject.html
+data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2Fsystem%2Fforms%2FHumanMadeFeature.html
+data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2Fsystem%2Fforms%2FHumanMadeObject.html
 data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2Fsystem%2Fforms%2FMark.html
 data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2Fsystem%2Fforms%2FMaterial.html
 data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2Fsystem%2Fforms%2FMeasurement.html
@@ -119,7 +118,7 @@ data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2Fsystem%2Fforms%2F
 data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2Fsystem%2Fforms%2FPersistentItem.html
 data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2Fsystem%2Fforms%2FPerson.html
 data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2Fsystem%2Fforms%2FPhysicalFeature.html
-data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2Fsystem%2Fforms%2FPhysicalManMadeThing.html
+data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2Fsystem%2Fforms%2FPhysicalHumanMadeThing.html
 data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2Fsystem%2Fforms%2FPhysicalObject.html
 data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2Fsystem%2Fforms%2FPhysicalThing.html
 data/templates/http%3A%2F%2Fwww.researchspace.org%2Fresource%2Fsystem%2Fforms%2FPlace.html
