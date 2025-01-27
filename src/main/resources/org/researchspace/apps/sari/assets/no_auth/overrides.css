@@ -7,6 +7,9 @@ ul.dropdown-menu .user-dropdown_item span {
 .login-body::after {
   background-image: none;
 }
+.login-body .login-container .login-border {
+  box-shadow: 0 0 6px -2px #ccc;
+}
 .nav-iconAndLabel {
   text-align: center;
 }
