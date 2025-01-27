@@ -1,6 +1,12 @@
+ul.dropdown-menu .user-dropdown_item span {
+  margin-left: 4px;
+}
 .login-body {
   background-color: #fcfcfc;
 }
 .login-body::after {
   background-image: none;
+}
+.nav-iconAndLabel {
+  text-align: center;
 }
