@@ -16,6 +16,13 @@
     <img src="https://badges.gitter.im/Join Chat.svg" height="30px" alt="Gitter"></a>
 </p>
 
+> [!NOTE]
+> This is the SARI fork of the ResearchSpace platform. It is intended to provide a relatively blank canvas for custom development and therefore excludes most parts of the native ResearchSpace app. In addition, some custom components have been added, which are documented in the Help section. If desired, the native app can be included by adding the storage configuration in the environment as follows:
+> ```
+> -Dconfig.storage.default.type=classpath
+> -Dconfig.storage.default.classpathLocation=org/researchspace/apps/default
+
+
 # The ResearchSpace Platform
 
 In 1968, the first conference on the [*Potential of Computers in Museums*](https://link.springer.com/article/10.1007/BF02400262) highlighted a paradox that would persist in arts and heritage-related systems for the next 50 years: the reliance on generalized, object-focused data records. While these records aligned with the technical capabilities of computer databases, they failed to capture the nuanced knowledge that organizations actually created. One curator at the conference recognized that computerization would only be truly valuable if its models could adapt to changing needs. However, the rigid nature of traditional databases made such adaptability impossible.
