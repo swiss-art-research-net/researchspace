@@ -17,7 +17,7 @@
 </p>
 
 > [!NOTE]
-> This is the SARI fork of the ResearchSpace platform. It is intended to provide a relatively blank canvas for custom development and therefore excludes most parts of the native ResearchSpace app. In addition, some custom components have been added, which are documented in the Help section. If desired, the native app can be included by adding the storage configuration in the environment as follows:
+> This is the SARI fork of the ResearchSpace platform, designed to serve as a flexible foundation for custom development. It omits most templates of the native ResearchSpace application, offering a more reduced starting point. Additionally, a selection of custom components has been integrated, with  documentation available in the Help section. If required, the native application can be incorporated by configuring the storage settings in the environment as follows:
 > ```
 > -Dconfig.storage.default.type=classpath
 > -Dconfig.storage.default.classpathLocation=org/researchspace/apps/default
