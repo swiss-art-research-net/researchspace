@@ -308,5 +308,11 @@
   "rs-back-button": "platform/components/ui/buttons/BackButton.tsx",
   "rs-tabs": "platform/components/ui/tabs/Tabs.tsx",
   "rs-tab": "platform/components/ui/tabs/Tab.tsx",
-  "rs-resource-dropdown": "platform/components/ui/resource-dropdown/index.tsx"
+  "rs-resource-dropdown": "platform/components/ui/resource-dropdown/index.tsx",
+
+  "i18n": "platform/components/sari/i18n/I18nComponent.tsx",
+  "sari-image-upload": "platform/components/sari/ui/ImageUpload.ts",
+  "sari-resource-thumbnail": "platform/components/sari/ui/ResourceThumbnail.ts",
+  "semantic-update": "platform/components/sari/semantic/update/SemanticUpdate.tsx",
+  "semantic-sigma-graph": "platform/components/sari/semantic/sigma-graph/SigmaGraph.tsx"
 }
