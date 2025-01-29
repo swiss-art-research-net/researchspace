@@ -1,25 +1,32 @@
-<div>
+<div class="sari-page-header">
+    <div class="sari-page-header-thumbnail">
+        <mp-resource-thumbnail no-image-uri='/images/default-thumbnail.png' iri='[[this]]'></mp-resource-thumbnail>
+    </div>
+    <div class="sar-ipage-header-content">
+        <h1>
+            <mp-label iri='[[this]]'></mp-label>
+        </h1>
 
-  <h1>
-    <mp-label iri='[[this]]'></mp-label>
-  </h1>
+        <p>
+            <b>URI</b>:
+            <a href='[[this]]' style="font-size: 12px; text-decoration: underline;" target='_blank'>
+                <span>[[this]]</span>
+            </a>
+        </p>
 
-  <p>
-    <b>URI</b>: 
-    <a href='[[this]]' style="font-size: 12px; text-decoration: underline;" target='_blank'>
-      <span>[[this]]</span>
-    </a>
-  </p>
+        <!--Types -->
+        <p>
+            <b>Type</b>: <semantic-query
+                query="SELECT DISTINCT ?type WHERE { <[[this]]> [[#if type]][[type]][[else]]a[[/if]] ?type }"
+                style="display:inline;"></semantic-query>
+        </p>
 
-  <!--Types -->    
-  <p>
-    <b>Type</b>: <semantic-query query="SELECT DISTINCT ?type WHERE { <[[this]]> [[#if type]][[type]][[else]]a[[/if]] ?type }" style="display:inline;"></semantic-query>
-  </p>
-
-  <!--Description -->
-  <p>
-    <semantic-query query='SELECT ?description WHERE { <[[this]]> [[#if description]][[description]][[else]]rdfs:comment[[/if]] ?description } LIMIT 1' 
-                    template='{{#each bindings}}<span><b>Description</b>: {{description.value}}</span>{{/each}}'>
-    </semantic-query>
-  </p>
+        <!--Description -->
+        <p>
+            <semantic-query
+                query='SELECT ?description WHERE { <[[this]]> [[#if description]][[description]][[else]]rdfs:comment[[/if]] ?description } LIMIT 1'
+                template='{{#each bindings}}<span><b>Description</b>: {{description.value}}</span>{{/each}}'>
+            </semantic-query>
+        </p>
+    </div>
 </div>

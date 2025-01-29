@@ -1,0 +1,24 @@
+// out: ./no_auth/sari
+
+.sari {
+  &-page-header {
+    display: flex;
+    align-items: center;
+
+    &-thumbnail {
+      max-width: 60px;
+      width: 100%;
+      margin-right: 16px;
+
+      img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+      }
+    }
+
+    &-content {
+      flex-grow: 1;
+    }
+  }
+}
