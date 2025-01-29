@@ -4,6 +4,9 @@ config.storage.help.classpathLocation = org/researchspace/apps/help
 config.storage.system.type = classpath
 config.storage.system.classpathLocation = org/researchspace/apps/system
 
+config.storage.native.type = classpath
+config.storage.native.classpathLocation = org/researchspace/apps/native
+
 config.storage.default.type = classpath
-config.storage.default.classpathLocation = org/researchspace/apps/default
+config.storage.default.classpathLocation = org/researchspace/apps/sari
 

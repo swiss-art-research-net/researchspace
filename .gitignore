@@ -26,7 +26,7 @@ node_modules/
 tsconfig.tsbuildinfo
 dist/docker/
 src/main/webapp/assets/bundles-manifest.json
-
+src/main/webapp/assets/*
 # emacs
 .#*
 \#*
@@ -41,3 +41,9 @@ src/main/webapp/assets/bundles-manifest.json
 
 # Mac
 .DS_Store
+
+# Local
+.discard/
+.env
+docker-compose.override.yml
+buildDockerImage.sh

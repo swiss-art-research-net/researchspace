@@ -1,0 +1,3 @@
+data/templates/http%3A%2F%2Fwww.researchspace.org%2F*
+ldp/
+config/repositories/

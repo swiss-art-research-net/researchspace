@@ -93,9 +93,9 @@ farms {
             overlays: [':blazegraph-vocabularies']
 
         // setup digilib for local development
-        webapp 'digilib:digilib-webapp:2.9.1',
-            contextPath: '/digilib',
-            initParameters: ["config-file": "./bundle-config/digilib-config.xml"]
+        //webapp 'digilib:digilib-webapp:2.9-20200421.092548-16',
+        //    contextPath: '/digilib',
+        //    initParameters: ["config-file": "./bundle-config/digilib-config.xml"]
 
         webapp project,
             contextPath: '/'
@@ -210,14 +210,14 @@ gretty {
 // install npm dependencies in development mode
 task npmInstall(type: Exec) {
     executable 'npm'
-    args 'i', '--no-audit', '--no-fund', '--loglevel=error'
+    args 'i', '--no-audit', '--no-fund', '--legacy-peer-deps', '--loglevel=error'
 }
 
 // we want to get clean node_modules when we are building on CI or production version locally
 // see https://docs.npmjs.com/cli/ci
 task npmInstallCi(type: Exec) {
     executable 'npm'
-    args 'ci', '--no-audit', '--no-fund', '--loglevel=error'
+    args 'ci', '--no-audit', '--no-fund', '--legacy-peer-deps', '--loglevel=error'
 }
 
 // execute webpack in production mode with minifications, etc

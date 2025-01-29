@@ -32,6 +32,7 @@
                             <li> <semantic-link iri="[[resolvePrefix "Help:CSSLayout"]]">CSS Layout</semantic-link></li>
                             <li> <semantic-link  iri="[[resolvePrefix "Help:ReactBootstrap"]]">React Bootstrap Components</semantic-link></li>
                             <li> <semantic-link  iri="[[resolvePrefix "Help:MPComponents"]]">Utility Components</semantic-link> </li>
+                            <li> <semantic-link  iri="[[resolvePrefix "Help:i18n"]]">i18n Component</semantic-link> </li>
   
                             <li>Semantic Components</li>
   
@@ -43,12 +44,14 @@
                                                 (<[[resolvePrefix "Help:SemanticCarousel"]]> "Carousel" )
                                                 (<[[resolvePrefix "Help:SemanticTable"]]> "Table")
                                                 (<[[resolvePrefix "Help:SemanticGraph"]]> "Graph" )
+                                                (<[[resolvePrefix "Help:SigmaGraph"]]> "Sigma Graph" )
                                                 (<[[resolvePrefix "Help:SemanticTree"]]> "Tree" )
                                                 (<[[resolvePrefix "Help:SemanticTimeline"]]> "Timeline" )
                                                 (<[[resolvePrefix "Help:SemanticMap"]]> "Map" )
                                                 (<[[resolvePrefix "Help:SemanticChart"]]> "Chart" )
                                                 (<[[resolvePrefix "Help:SemanticSimpleSearch"]]> "Keyword Search" )
                                                 (<[[resolvePrefix "Help:SemanticForm"]]> "Form (Data Input / Authoring)")
+                                                (<[[resolvePrefix "Help:SemanticUpdate"]]> "Update")
                                                 (<[[resolvePrefix "Help:Ontodia"]]> "Ontodia")
                                             }
                                             }    
@@ -59,7 +62,7 @@
                                 <div>
                                   {{#each bindings}}
                                   <li>
-                                    <semantic-link iri="{{link.value}}">
+                                    <semantic-link uri="{{link.value}}">
                                       {{title.value}} 
                                     </semantic-link>
                                   </li>
@@ -67,7 +70,7 @@
                                 </div>
                               </template>
                             </semantic-query>
-                            <li><semantic-link iri="[[resolvePrefix "Help:SemanticSearch"]]">Structured Search</semantic-link> 
+                            <li><semantic-link uri="[[resolvePrefix "Help:SemanticSearch"]]">Structured Search</semantic-link> 
                                 <ul>
                                     <li>
                                     <semantic-link iri="[[resolvePrefix "Help:StructuredSearchExample"]]">
