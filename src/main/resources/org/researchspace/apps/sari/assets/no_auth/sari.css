@@ -1,0 +1,16 @@
+.sari-page-header {
+  display: flex;
+  align-items: center;
+}
+.sari-page-header-thumbnail {
+  max-width: 80px;
+  margin-right: 16px;
+}
+.sari-page-header-thumbnail img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+.sari-page-header-content {
+  flex-grow: 1;
+}
