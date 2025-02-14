@@ -1,7 +1,7 @@
 FROM maven:3-jdk-11 AS builder
 
 RUN apt update
-RUN apt -y --fix-broken install curl dirmngr apt-transport-https lsb-release ca-certificates openjdk-11-jdk python2 build-essential
+RUN apt -y install curl ca-certificates build-essential
 
 # Install Gradle
 RUN wget https://services.gradle.org/distributions/gradle-8.11.1-bin.zip -P /tmp
