@@ -1,27 +1,38 @@
-FROM maven:3-jdk-11 AS builder
+# Use a multi-arch compatible base image
+FROM eclipse-temurin:11 AS builder
 
-RUN apt update
-RUN apt -y install curl ca-certificates build-essential
+# Set environment variables for Gradle and Java
+ENV GRADLE_VERSION=8.11.1
+ENV GRADLE_HOME=/opt/gradle
+ENV PATH="$GRADLE_HOME/bin:$PATH"
+
+# Install necessary dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    ca-certificates \
+    unzip \
+    build-essential \
+  && rm -rf /var/lib/apt/lists/*
 
 # Install Gradle
-RUN wget https://services.gradle.org/distributions/gradle-8.11.1-bin.zip -P /tmp
-RUN unzip -d /opt/gradle /tmp/gradle-8.11.1-bin.zip
-RUN ln -s /opt/gradle/gradle-8.11.1 /opt/gradle/latest
-RUN echo "export GRADLE_HOME=/opt/gradle/latest" >> /etc/profile.d/gradle.sh
-RUN echo "export PATH=${GRADLE_HOME}/bin:${PATH}" >> /etc/profile.d/gradle.sh
-RUN chmod +x /etc/profile.d/gradle.sh
+RUN curl -fsSL "https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip" -o /tmp/gradle.zip \
+  && unzip -d /opt/gradle /tmp/gradle.zip \
+  && ln -s /opt/gradle/gradle-${GRADLE_VERSION} /opt/gradle/latest \
+  && rm /tmp/gradle.zip
 
-# Install Node.js v14x
-RUN curl -sL https://deb.nodesource.com/setup_22.x | bash -
-RUN apt-get install -y nodejs
+# Install Node.js (adjust to LTS version)
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+  && apt-get install -y --no-install-recommends nodejs \
+  && rm -rf /var/lib/apt/lists/*
 
-# Add source data
-ADD . /workdir
+# Copy application source
 WORKDIR /workdir
-# Build war artefact
+ADD . /workdir
+
+# Build the application
 RUN ./gradlew clean war
 
-# Move war artefact to platform folder
+# Move the artifact to the target directory
 RUN mv build/libs/ROOT-*.war /workdir/dist/docker/platform/ROOT.war
 
 # Build image
