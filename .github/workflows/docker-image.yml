@@ -7,59 +7,76 @@ on:
 jobs:
 
   build:
-
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        platform: [linux/amd64, linux/arm64]
     steps:
-      -
-        name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v3
-      -
-        name: Set up QEMU
+
+      - name: Set up QEMU (only for arm64)
+        if: matrix.platform == 'linux/arm64'
         uses: docker/setup-qemu-action@v2
-      -
-        name: Set up Docker Buildx
+
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-      -
-        name: Login to Docker Hub
+
+      - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - 
-        name: Extract branch name
+
+      - name: Extract Branch Name
         shell: bash
-        run: echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >>$GITHUB_OUTPUT
-        id: extract_branch
-      -
-        name: Build and push with SHA tag
+        run: echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_ENV
+
+      - name: Normalize Platform Name
+        shell: bash
+        run: echo "PLATFORM_TAG=$(echo '${{ matrix.platform }}' | sed 's/\//-/g')" >> $GITHUB_ENV
+
+      - name: Build and Push Platform-Specific Image
         uses: docker/build-push-action@v4
         with:
           context: .
-          platforms: linux/amd64,linux/arm64
+          platforms: ${{ matrix.platform }}
           push: true
-          tags: swissartresearx/researchspace:${{github.sha}}
-          cache-from: type=registry,ref=swissartresearx/researchspace:latest
-          cache-to: type=inline
-      -
-        name: Build and push with latest tag
-        uses: docker/build-push-action@v4
+          tags: |
+            swissartresearx/researchspace:${{ github.sha }}-${{ env.PLATFORM_TAG }}
+
+  # Merge the architecture-specific images into one multi-arch image
+  manifest:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Inspect Built Images (Debugging)
+        run: |
+          docker buildx imagetools inspect swissartresearx/researchspace:${{ github.sha }}-linux-amd64 || true
+          docker buildx imagetools inspect swissartresearx/researchspace:${{ github.sha }}-linux-arm64 || true
+
+      - name: Create and Push Multi-Arch Manifest
+        run: |
+          docker buildx imagetools create -t swissartresearx/researchspace:${{ github.sha }} \
+            swissartresearx/researchspace:${{ github.sha }}-linux-amd64 \
+            swissartresearx/researchspace:${{ github.sha }}-linux-arm64
+
+      - name: Create and Push "latest" Manifest (only for master)
         if: github.ref == 'refs/heads/master'
-        with:
-          context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: swissartresearx/researchspace:latest
-          cache-from: type=registry,ref=swissartresearx/researchspace:latest
-          cache-to: type=inline
-      -
-        name: Build and push for develop
-        uses: docker/build-push-action@v4
-        if: contains('refs/heads/develop', github.ref)
-        with:
-          context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: swissartresearx/researchspace:${{ steps.extract_branch.outputs.branch }}
-          cache-from: type=registry,ref=swissartresearx/researchspace:latest
-          cache-to: type=inline
+        run: |
+          docker buildx imagetools create -t swissartresearx/researchspace:latest \
+            swissartresearx/researchspace:${{ github.sha }}-linux-amd64 \
+            swissartresearx/researchspace:${{ github.sha }}-linux-arm64
+
+      - name: Create and Push "develop" Manifest (only for develop branch)
+        if: github.ref == 'refs/heads/develop'
+        run: |
+          docker buildx imagetools create -t swissartresearx/researchspace:develop \
+            swissartresearx/researchspace:${{ github.sha }}-linux-amd64 \
+            swissartresearx/researchspace:${{ github.sha }}-linux-arm64
