@@ -47,7 +47,7 @@ jobs:
 
   # Merge the architecture-specific images into one multi-arch image
   manifest:
-    needs: build
+    needs: [build]
     runs-on: ubuntu-latest
     steps:
       - name: Login to Docker Hub
