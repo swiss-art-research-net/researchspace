@@ -39,7 +39,7 @@ jobs:
           platforms: ${{ matrix.platform }}
           push: true
           tags: |
-            swissartresearx/researchspace:${{ github.sha }}-${{ matrix.platform }}
+            swissartresearx/researchspace:${{ github.sha }}-${{ matrix.platform//\//- }}
             swissartresearx/researchspace:${{ github.sha }}
 
       - name: Build and Push Latest Tag (only for master)
@@ -49,7 +49,7 @@ jobs:
           context: .
           platforms: ${{ matrix.platform }}
           push: true
-          tags: swissartresearx/researchspace:latest-${{ matrix.platform }}
+          tags: swissartresearx/researchspace:latest-${{ matrix.platform//\//- }}
 
       - name: Build and Push Develop Tag (only for develop branch)
         if: github.ref == 'refs/heads/develop'
@@ -58,4 +58,4 @@ jobs:
           context: .
           platforms: ${{ matrix.platform }}
           push: true
-          tags: swissartresearx/researchspace:${{ env.branch }}-${{ matrix.platform }}
+          tags: swissartresearx/researchspace:${{ env.branch }}-${{ matrix.platform//\//- }}
