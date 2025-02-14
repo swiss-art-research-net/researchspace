@@ -56,6 +56,11 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Inspect Built Images (Debugging)
+        run: |
+          docker buildx imagetools inspect swissartresearx/researchspace:${{ github.sha }}-linux-amd64 || true
+          docker buildx imagetools inspect swissartresearx/researchspace:${{ github.sha }}-linux-arm64 || true
+
       - name: Create and Push Multi-Arch Manifest
         run: |
           docker buildx imagetools create -t swissartresearx/researchspace:${{ github.sha }} \
