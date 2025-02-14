@@ -58,26 +58,20 @@ jobs:
 
       - name: Create and Push Multi-Arch Manifest
         run: |
-          docker manifest create swissartresearx/researchspace:${{ github.sha }} \
-            --amend swissartresearx/researchspace:${{ github.sha }}-linux-amd64 \
-            --amend swissartresearx/researchspace:${{ github.sha }}-linux-arm64
-          
-          docker manifest push swissartresearx/researchspace:${{ github.sha }}
+          docker buildx imagetools create -t swissartresearx/researchspace:${{ github.sha }} \
+            swissartresearx/researchspace:${{ github.sha }}-linux-amd64 \
+            swissartresearx/researchspace:${{ github.sha }}-linux-arm64
 
       - name: Create and Push "latest" Manifest (only for master)
         if: github.ref == 'refs/heads/master'
         run: |
-          docker manifest create swissartresearx/researchspace:latest \
-            --amend swissartresearx/researchspace:${{ github.sha }}-linux-amd64 \
-            --amend swissartresearx/researchspace:${{ github.sha }}-linux-arm64
-          
-          docker manifest push swissartresearx/researchspace:latest
+          docker buildx imagetools create -t swissartresearx/researchspace:latest \
+            swissartresearx/researchspace:${{ github.sha }}-linux-amd64 \
+            swissartresearx/researchspace:${{ github.sha }}-linux-arm64
 
       - name: Create and Push "develop" Manifest (only for develop branch)
         if: github.ref == 'refs/heads/develop'
         run: |
-          docker manifest create swissartresearx/researchspace:${{ env.branch }} \
-            --amend swissartresearx/researchspace:${{ github.sha }}-linux-amd64 \
-            --amend swissartresearx/researchspace:${{ github.sha }}-linux-arm64
-          
-          docker manifest push swissartresearx/researchspace:${{ env.branch }}
+          docker buildx imagetools create -t swissartresearx/researchspace:${{ env.branch }} \
+            swissartresearx/researchspace:${{ github.sha }}-linux-amd64 \
+            swissartresearx/researchspace:${{ github.sha }}-linux-arm64
