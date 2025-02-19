@@ -224,13 +224,6 @@ You should see console output similar to:
 21:24:49 INFO    http://localhost:10214/blazegraph
 21:24:49 INFO  digilib runs at:
 21:24:49 INFO    http://localhost:10214/digilib
-
-***********************************************************************************************
-***********************************************************************************************
-**THIS IS REALLY IMPORTANT - THESE COMPONENTS ARE IMPORTANT **
-**THIS IS REALLY IMPORTANT - THESE COMPONENTS ARE IMPORTANT **
-**THIS IS REALLY IMPORTANT - THESE COMPONENTS ARE IMPORTANT **
-**THIS IS REALLY IMPORTANT - THESE COMPONENTS ARE IMPORTANT **
 ```
 
 ### ResearchSpace with your own triplestore and IIIF server

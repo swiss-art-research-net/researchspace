@@ -98,6 +98,11 @@ public class RESTSailConfig extends AbstractServiceWrappingSailConfig {
     private String inputFormat;
 
     /**
+     * A form field name used as input
+     */
+    private String inputFormfield;
+
+    /**
      * Accept HTTP header
      */
     private String mediaType = MediaType.APPLICATION_JSON;
@@ -132,6 +137,10 @@ public class RESTSailConfig extends AbstractServiceWrappingSailConfig {
         // Get input format
         Models.objectLiteral(model.filter(implNode, MpRepositoryVocabulary.INPUT_FORMAT, null))
                 .ifPresentOrElse(lit -> setInputFormat(lit.stringValue()), () -> setInputFormat(JSON));
+
+        // Get input form name
+        Models.objectLiteral(model.filter(implNode, MpRepositoryVocabulary.INPUT_FORMFIELD, null))
+                .ifPresent(lit -> setInputFormfield(lit.stringValue()));
 
         // Get media_type
         Models.objectLiteral(model.filter(implNode, MpRepositoryVocabulary.MEDIA_TYPE, null)).ifPresentOrElse(
@@ -178,6 +187,10 @@ public class RESTSailConfig extends AbstractServiceWrappingSailConfig {
 
         if (!StringUtils.isEmpty(getInputFormat())) {
             model.add(implNode, MpRepositoryVocabulary.INPUT_FORMAT, vf.createLiteral(getInputFormat()));
+        }
+
+        if (!StringUtils.isEmpty(getInputFormfield())) {
+            model.add(implNode, MpRepositoryVocabulary.INPUT_FORMFIELD, vf.createLiteral(getInputFormfield()));
         }
 
         if (!StringUtils.isEmpty(getMediaType())) {
@@ -235,8 +248,16 @@ public class RESTSailConfig extends AbstractServiceWrappingSailConfig {
         return this.inputFormat;
     }
 
+    public String getInputFormfield() {
+        return this.inputFormfield;
+    }
+
     public void setInputFormat(String inputFormat) {
         this.inputFormat = inputFormat;
+    }
+
+    public void setInputFormfield(String inputFormfield) {
+        this.inputFormfield = inputFormfield;
     }
 
     public String getMediaType() {
