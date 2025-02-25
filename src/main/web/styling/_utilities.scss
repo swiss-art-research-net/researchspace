@@ -144,6 +144,10 @@
   padding-right: 0px;
 }
 
+.p-0 {
+  padding: 0 !important;
+}
+
 .m-0 {
   margin: 0 !important;
 }
@@ -407,4 +411,10 @@ i.resource-thumbnail-small-fallback-icon {
 .resource-thumbnail-small {
   
   border-radius: 2px;
+}
+
+.img-fluid {
+
+  max-width: 100%;
+  height: auto;
 }
