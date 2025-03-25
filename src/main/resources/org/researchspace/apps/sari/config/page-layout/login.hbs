@@ -9,6 +9,8 @@
   {{#each assetsMap.app.css}}
   <link href="{{this}}" rel="stylesheet" type="text/css">
   {{/each}}
+  <link href="/assets/no_auth/overrides.css" rel="stylesheet" type="text/css">
+  <link href="/assets/no_auth/sari.css" rel="stylesheet" type="text/css">
 
 </head>
 
@@ -20,7 +22,7 @@
       <div class="login-title-row">
         <div class="login-title">{{deploymentTitle}}</div>
         <div class="powered-by">
-          <div>by</div>
+          <div>powered by</div>
           <a href="https://www.researchspace.org/" target="_blank">
           <img src="/assets/no_auth/researchspace_black.svg"
           alt="Researchspace" /></a>

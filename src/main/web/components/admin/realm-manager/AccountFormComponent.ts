@@ -1,5 +1,6 @@
 /**
  * ResearchSpace
+ * Copyright (C) 2022-2024, © Kartography Community Interest Company
  * Copyright (C) 2020, © Trustees of the British Museum
  * Copyright (C) 2015-2019, metaphacts GmbH
  *
@@ -209,11 +210,11 @@ class AccountFormComponent extends Component<Props, State> {
           },
           FormGroup(
             { controlId: 'principal' },
-            ControlLabel({}, 'Principal'),
+            ControlLabel({}, 'Email'),
             Input({
               name: 'principal',
               type: 'text',
-              placeholder: 'Unique username',
+              placeholder: 'Enter email',
               disabled: !create,
               value: this.state.principal,
               onChange: this.onChangeAccount,
@@ -273,25 +274,28 @@ class AccountFormComponent extends Component<Props, State> {
             Btn(
               {
                 type: 'submit',
-                bsSize: 'small',
-                bsStyle: 'primary',
+                bsStyle: 'default',
+                className: 'btn-action',
                 disabled: this.submitDisabled(),
               },
-              create ? 'Create' : 'Update'
+              create ? 'Create account' : 'Update account'
             )
           )
         ), // end of form
         create
           ? null
-          : Btn(
-              {
-                key: 'delete-account-btn',
-                type: 'submit',
-                bsSize: 'small',
-                bsStyle: 'primary',
-                onClick: this.onClickDeleteAccount,
-              },
-              'Delete'
+          :  D.div(
+              {className: 'delete-account-btn'},
+              Btn(
+                {
+                  key: 'delete-account-btn',
+                  type: 'submit',
+                  bsStyle: 'default',
+                  className: 'btn-action',
+                  onClick: this.onClickDeleteAccount,
+                },
+                'Delete account'
+              )
             )
       ) // end of panel
     );

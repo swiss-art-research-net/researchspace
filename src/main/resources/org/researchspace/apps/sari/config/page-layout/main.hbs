@@ -10,9 +10,13 @@
 
     <link rel="icon" href="/assets/no_auth/favicon.ico" type="image/x-icon">
 
+    <link href="/assets/css_variables.css" rel="stylesheet" type="text/css">
+
     {{#each assetsMap.app.css}}
     <link href="{{this}}" rel="stylesheet" type="text/css">
     {{/each}}
+    <link href="/assets/no_auth/overrides.css" rel="stylesheet" type="text/css">
+    <link href="/assets/no_auth/sari.css" rel="stylesheet" type="text/css">
 
     {{{html-head}}}
 
