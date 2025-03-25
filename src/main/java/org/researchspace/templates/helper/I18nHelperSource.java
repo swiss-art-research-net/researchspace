@@ -19,32 +19,77 @@
 
 package org.researchspace.templates.helper;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
+import java.util.MissingResourceException;
+import java.util.PropertyResourceBundle;
+import java.util.ResourceBundle;
+import java.util.Locale;
+import java.util.Optional;
 import javax.inject.Inject;
 
 import org.researchspace.templates.TemplateContext;
+import org.researchspace.cache.CacheManager;
 import org.researchspace.config.Configuration;
+import org.researchspace.services.storage.api.ObjectKind;
+import org.researchspace.services.storage.api.PlatformStorage;
+import org.researchspace.services.storage.api.StoragePath;
 
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
 import java.text.MessageFormat;
-import com.github.jknack.handlebars.Options;
 import org.apache.commons.text.StringEscapeUtils;
+import com.github.jknack.handlebars.Options;
 import com.github.jknack.handlebars.Handlebars;
 
 
 public class I18nHelperSource {
 
     private final Configuration config;
+    private final ResourceBundle.Control control;
     public static final String DEFAULT_BUNDLE = "messages";
 
     @Inject
-    public I18nHelperSource(Configuration config) {
+    public I18nHelperSource(Configuration config, PlatformStorage platformStorage, CacheManager cacheManager) {
         this.config = config;
+        this.control = new StorageResourceBundleControl(platformStorage);
     }
 
     public String getDefaultPreferredLanguage() {
         return config.getUiConfig().getPreferredLanguages().get(0);
+    }
+
+    public static class StorageResourceBundleControl extends ResourceBundle.Control {
+
+        private final PlatformStorage platformStorage;
+
+        public StorageResourceBundleControl(PlatformStorage platformStorage) {
+            this.platformStorage = platformStorage;
+        }
+
+        @Override
+        public ResourceBundle newBundle(String baseName, Locale locale, String format,
+                                        ClassLoader loader, boolean reload)
+                throws IllegalAccessException, InstantiationException, IOException {
+            if (!"java.properties".equals(format)) return null;
+
+            String bundleName = toBundleName(baseName, locale);
+            String resourceName = bundleName + ".properties";
+            Optional<StoragePath> maybePath = StoragePath.tryParse(resourceName);
+            if (!maybePath.isPresent()) return null;
+
+            StoragePath storagePath = ObjectKind.I18N.resolve(maybePath.get());
+
+            Optional<PlatformStorage.FindResult> result = platformStorage.findObject(storagePath);
+            if (result.isPresent()) {
+                try (Reader reader = new InputStreamReader(result.get().getRecord().getLocation().readContent(), StandardCharsets.UTF_8)) {
+                    return new PropertyResourceBundle(reader);
+                }
+            }
+
+            // fallback to classpath
+            return super.newBundle(baseName, locale, format, loader, reload);
+        }
     }
 
     public CharSequence i18n(final String key, final Options options) {
@@ -56,7 +101,7 @@ public class I18nHelperSource {
         ResourceBundle bundle;
 
         try {
-            bundle = ResourceBundle.getBundle(bundleName, locale, getClass().getClassLoader());
+            bundle = ResourceBundle.getBundle(bundleName, locale, getClass().getClassLoader(), control);
         } catch (MissingResourceException e) {
             return key + " (bundle not found)";
         }
