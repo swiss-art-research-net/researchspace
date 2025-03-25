@@ -29,9 +29,12 @@ import java.util.ResourceBundle;
 import java.util.Locale;
 import java.util.Optional;
 import javax.inject.Inject;
+import java.util.Set;
+
 
 import org.researchspace.templates.TemplateContext;
 import org.researchspace.cache.CacheManager;
+import org.researchspace.cache.PlatformCache;
 import org.researchspace.config.Configuration;
 import org.researchspace.services.storage.api.ObjectKind;
 import org.researchspace.services.storage.api.PlatformStorage;
@@ -41,6 +44,7 @@ import java.text.MessageFormat;
 import org.apache.commons.text.StringEscapeUtils;
 import com.github.jknack.handlebars.Options;
 import com.github.jknack.handlebars.Handlebars;
+import org.eclipse.rdf4j.model.IRI;
 
 
 public class I18nHelperSource {
@@ -52,13 +56,30 @@ public class I18nHelperSource {
     @Inject
     public I18nHelperSource(Configuration config, PlatformStorage platformStorage, CacheManager cacheManager) {
         this.config = config;
-        this.control = new StorageResourceBundleControl(platformStorage);
+        this.control = new StorageResourceBundleControl(platformStorage);    
+        cacheManager.register(new I18nCache());
+
     }
 
     public String getDefaultPreferredLanguage() {
         return config.getUiConfig().getPreferredLanguages().get(0);
     }
+    public static class I18nCache implements PlatformCache {
+        @Override
+        public void invalidate() {
+            ResourceBundle.clearCache(I18nHelperSource.class.getClassLoader());
+        }
 
+        @Override
+        public void invalidate(Set<IRI> iris) {
+            // No-op
+        }
+        
+        @Override
+        public String getId() {
+            return "org.researchspace.i18n";
+        }
+    }
     public static class StorageResourceBundleControl extends ResourceBundle.Control {
 
         private final PlatformStorage platformStorage;
