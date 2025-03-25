@@ -27,5 +27,6 @@ public final class ObjectKind {
     public static final StoragePath TEMPLATE = StoragePath.parse("data/templates");
     public static final StoragePath LDP = StoragePath.parse("ldp");
     public static final StoragePath CONFIG = StoragePath.parse("config");
-    public static final StoragePath FILE = StoragePath.parse("file");
+    public static final StoragePath FILE = StoragePath.parse("file");    
+    public static final StoragePath I18N = StoragePath.parse("data/i18n");
 }
