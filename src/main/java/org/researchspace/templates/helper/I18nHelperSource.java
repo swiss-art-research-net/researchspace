@@ -24,12 +24,19 @@ import javax.inject.Inject;
 import org.researchspace.templates.TemplateContext;
 import org.researchspace.config.Configuration;
 
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+import java.text.MessageFormat;
 import com.github.jknack.handlebars.Options;
+import org.apache.commons.text.StringEscapeUtils;
+import com.github.jknack.handlebars.Handlebars;
 
 
 public class I18nHelperSource {
 
     private final Configuration config;
+    public static final String DEFAULT_BUNDLE = "messages";
 
     @Inject
     public I18nHelperSource(Configuration config) {
@@ -40,11 +47,34 @@ public class I18nHelperSource {
         return config.getUiConfig().getPreferredLanguages().get(0);
     }
 
-    public String i18n(final String key, final Options options) {
-
-        TemplateContext context =  (TemplateContext) options.context.model();
+    public CharSequence i18n(final String key, final Options options) {
+        TemplateContext context = (TemplateContext) options.context.model();
         String language = context.getPreferredLanguage().orElse(getDefaultPreferredLanguage());
+        String bundleName = options.hash("bundle", DEFAULT_BUNDLE);
 
-        return language;
+        Locale locale = Locale.forLanguageTag(language);
+        ResourceBundle bundle;
+
+        try {
+            bundle = ResourceBundle.getBundle(bundleName, locale, getClass().getClassLoader());
+        } catch (MissingResourceException e) {
+            return key + " (bundle not found)";
+        }
+
+        if (!bundle.containsKey(key)) {
+            return key + " (message key not found)";
+        }
+
+        String message = bundle.getString(key);
+
+        Object[] args = options.params;
+        if (args != null && args.length > 0) {
+            message = new MessageFormat(message, locale).format(args);
+        }
+
+        boolean escapeHtml = options.hash("escapeHTML", Boolean.TRUE);
+        return escapeHtml
+            ? StringEscapeUtils.escapeHtml4(message)
+            : new Handlebars.SafeString(message);
     }
 }
