@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
- package org.researchspace.api.sparql;
+package org.researchspace.api.sparql;
 
  import static com.google.common.base.Preconditions.checkNotNull;
  

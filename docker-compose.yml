@@ -1,8 +1,8 @@
-version: "3"
 services:
   rs-dev:
-    container_name: rs-dev-orig
-    image: fkraeutli/rs-dev:latest
+    container_name: "rs-dev"
+    build: dev/.
+    image: fkraeutli/rs-dev
     ports:
       - "3000:3000"
       - "10214:10214"
@@ -10,27 +10,11 @@ services:
       - .:/workdir
     networks:
       - default
-
-  blazegraph:
-    image: robcast/researchspace-blazegraph:2.2.0-20160908
-    container_name: rs-dev-blazegraph
-    restart: unless-stopped
-    environment:
-      - JAVA_OPTS=-Xmx4g
-    logging:
-      driver: json-file
-      options:
-        max-size: "200k"
-        max-file: "10"
-    volumes:
-      - blazegraph-data:/blazegraph-data
   
 # Define network default as external docker network.
 # Specify the network name in the .env file as follows:
 # DOCKER_NETWORK=my-network
-#networks:
-#  default:
-#    name: ${DOCKER_NETWORK}
-
-volumes:
-  blazegraph-data:
+networks:
+  default:
+    name: ${DOCKER_NETWORK}
+    external: true

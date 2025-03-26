@@ -269,7 +269,7 @@ export class LazyTreeSelector extends Component<LazyTreeSelectorProps, State> {
             }}
           />
         )}
-        <div className={styles.itemContent} onClick={() => this.toggleExpanded(item, expanded)}>
+        <div className={styles.itemContent} onClick={() => { this.toggleExpanded(item, expanded); if (this.props.onItemClick) { this.props.onItemClick(item); }}}>
           {this.props.renderItem(item)}
         </div>
       </div>
