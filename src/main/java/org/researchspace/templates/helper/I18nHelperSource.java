@@ -23,29 +23,27 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.MissingResourceException;
+import java.util.Optional;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
-import java.util.Locale;
-import java.util.Optional;
-import javax.inject.Inject;
 import java.util.Set;
+import java.text.MessageFormat;
+import javax.inject.Inject;
 
+import org.apache.commons.text.StringEscapeUtils;
+import org.eclipse.rdf4j.model.IRI;
+import com.github.jknack.handlebars.Handlebars;
+import com.github.jknack.handlebars.Options;
 
-import org.researchspace.templates.TemplateContext;
 import org.researchspace.cache.CacheManager;
 import org.researchspace.cache.PlatformCache;
 import org.researchspace.config.Configuration;
 import org.researchspace.services.storage.api.ObjectKind;
 import org.researchspace.services.storage.api.PlatformStorage;
 import org.researchspace.services.storage.api.StoragePath;
-
-import java.text.MessageFormat;
-import org.apache.commons.text.StringEscapeUtils;
-import com.github.jknack.handlebars.Options;
-import com.github.jknack.handlebars.Handlebars;
-import org.eclipse.rdf4j.model.IRI;
-
+import org.researchspace.templates.TemplateContext;
 
 public class I18nHelperSource {
 
@@ -64,6 +62,7 @@ public class I18nHelperSource {
     public String getDefaultPreferredLanguage() {
         return config.getUiConfig().getPreferredLanguages().get(0);
     }
+    
     public static class I18nCache implements PlatformCache {
         @Override
         public void invalidate() {
