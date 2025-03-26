@@ -62,6 +62,7 @@ public class I18nHelperSource {
     public String getDefaultPreferredLanguage() {
         return config.getUiConfig().getPreferredLanguages().get(0);
     }
+    
     public static class I18nCache implements PlatformCache {
         @Override
         public void invalidate() {
