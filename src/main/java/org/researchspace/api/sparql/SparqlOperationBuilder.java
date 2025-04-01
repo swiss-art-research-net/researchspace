@@ -23,6 +23,7 @@ package org.researchspace.api.sparql;
  
  import java.util.Map;
  import java.util.Optional;
+ import java.util.function.Supplier;
  
  import org.apache.commons.lang3.StringUtils;
  import org.apache.logging.log4j.LogManager;
@@ -38,7 +39,7 @@ package org.researchspace.api.sparql;
  import org.eclipse.rdf4j.repository.RepositoryConnection;
  import org.eclipse.rdf4j.repository.RepositoryException;
  import org.researchspace.api.sparql.SparqlUtil.SparqlOperation;
- 
+ import org.researchspace.config.Configuration;
  import com.google.common.collect.Maps;
  
  /**
@@ -54,6 +55,7 @@ package org.researchspace.api.sparql;
      private String queryString;
      private Resource thisResource;
      private Resource userURI;
+     private Supplier<String> userPreferredLanguage;;
      private String baseURI;
      private Map<String, Value> bindings;
      private Dataset dataset;
@@ -67,6 +69,8 @@ package org.researchspace.api.sparql;
          this.queryString = queryString;
          this.bindings = Maps.newHashMap();
          this.clazz = clazz;
+         // fallback
+         this.userPreferredLanguage = () -> "en";
      }
  
      public static <T extends Operation> SparqlOperationBuilder<T> create(String queryString,
@@ -264,6 +268,9 @@ package org.researchspace.api.sparql;
          if (this.queryString.contains(SparqlMagicVariables.USERURI) && this.userURI != null) {
              op.setBinding(SparqlMagicVariables.USERURI, userURI);
          }
+         if (this.queryString.contains(SparqlMagicVariables.USER_PREFERRED_LANGUAGE) && this.userPreferredLanguage != null) {
+            op.setBinding(SparqlMagicVariables.USER_PREFERRED_LANGUAGE, userPreferredLanguage);
+        }
          if (this.queryString.contains(SparqlMagicVariables.THIS) && this.thisResource != null) {
              op.setBinding(SparqlMagicVariables.THIS, thisResource);
          }
@@ -291,6 +298,7 @@ package org.researchspace.api.sparql;
       */
      public static class SparqlMagicVariables {
          public static final String USERURI = "__useruri__";
+         public static final String USER_PREFERRED_LANGUAGE = "__userPreferredLanguage__";
          public static final String THIS = "__this__";
      }
  
