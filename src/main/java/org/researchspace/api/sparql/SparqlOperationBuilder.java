@@ -31,6 +31,7 @@ package org.researchspace.api.sparql;
  import org.eclipse.rdf4j.model.IRI;
  import org.eclipse.rdf4j.model.Resource;
  import org.eclipse.rdf4j.model.Value;
+ import org.eclipse.rdf4j.model.util.Values;
  import org.eclipse.rdf4j.query.Dataset;
  import org.eclipse.rdf4j.query.MalformedQueryException;
  import org.eclipse.rdf4j.query.Operation;
@@ -269,7 +270,10 @@ package org.researchspace.api.sparql;
              op.setBinding(SparqlMagicVariables.USERURI, userURI);
          }
          if (this.queryString.contains(SparqlMagicVariables.USER_PREFERRED_LANGUAGE) && this.userPreferredLanguage != null) {
-            op.setBinding(SparqlMagicVariables.USER_PREFERRED_LANGUAGE, userPreferredLanguage);
+            String lang = this.userPreferredLanguage.get();
+            if (lang != null) {
+                op.setBinding(SparqlMagicVariables.USER_PREFERRED_LANGUAGE, Values.literal(lang));
+            }
         }
          if (this.queryString.contains(SparqlMagicVariables.THIS) && this.thisResource != null) {
              op.setBinding(SparqlMagicVariables.THIS, thisResource);
