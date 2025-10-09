@@ -22,11 +22,10 @@
   	$subject crm:P122_borders_with $value . 
     $value crm:P122_borders_with $subject .
 } WHERE { 
-	  $subject crm:P122_borders_with $value .
+	 $subject crm:P122_borders_with $value .
     $value crm:P122_borders_with $subject .
     
-    ?value a ?ontologyClass .
-    ?ontologyClass rdfs:subClassOf* crm:E53_Place .
+    ?value a crm:E53_Place .
     ?value crm:P1_is_identified_by ?appellation .
     ?appellation a crm:E41_Appellation .
     ?appellation crm:P2_has_type <http://www.researchspace.org/resource/system/vocab/resource_type/primary_appellation> . 
@@ -36,8 +35,7 @@
   
   _:genid-c7d416a1112a455c95c2ee0422d3beca-vlrm4 a <http://spinrdf.org/sp#Query>;
     <http://spinrdf.org/sp#text> """SELECT DISTINCT ?value ?label WHERE {
-  ?value a ?ontologyClass .
-  ?ontologyClass rdfs:subClassOf* crm:E53_Place .
+  ?value a crm:E53_Place .
   ?value crm:P1_is_identified_by ?appellation .
   ?appellation a crm:E41_Appellation .
   ?appellation crm:P2_has_type <http://www.researchspace.org/resource/system/vocab/resource_type/primary_appellation> . 
@@ -49,8 +47,7 @@
     <http://spinrdf.org/sp#text> """SELECT DISTINCT ?value ?label WHERE {
   $subject crm:P122_borders_with ?value . 
    
-  ?value a ?ontologyClass .
-  ?ontologyClass rdfs:subClassOf* crm:E53_Place .
+  ?value a crm:E53_Place .
   ?value crm:P1_is_identified_by ?appellation .
   ?appellation a crm:E41_Appellation .
   ?appellation crm:P2_has_type <http://www.researchspace.org/resource/system/vocab/resource_type/primary_appellation> . 
@@ -66,8 +63,7 @@
   
   _:genid-c7d416a1112a455c95c2ee0422d3beca-6lz0t a <http://spinrdf.org/sp#Query>;
     <http://spinrdf.org/sp#text> """SELECT DISTINCT ?value ?label WHERE {
-  ?value a ?ontologyClass .
-  ?ontologyClass rdfs:subClassOf* crm:E53_Place .
+  ?value a crm:E53_Place .
   ?value crm:P1_is_identified_by ?appellation .
   ?appellation a crm:E41_Appellation .
   ?appellation crm:P2_has_type <http://www.researchspace.org/resource/system/vocab/resource_type/primary_appellation> . 

@@ -1,25 +1,18 @@
 {{#if knowledgeMapPreviewCard}}
   [[> resourceCardQuery]]
 {{else if resourceConfig}}
-  <div>{{> rsp:ResourceCardTemplate resourceConfig=resourceConfig resourceOntologyClass=(getResourceConfigurationValue resourceConfig "resourceOntologyClass")
-                resourceLabel=(getResourceConfigurationValue resourceConfig "resourceLabel")
-                resourceIcon=(getResourceConfigurationValue resourceConfig "resourceIcon")}}</div>
+  <div>{{> rsp:ResourceCardTemplate}}</div>
 {{else}}
   [[> resourceCardQuery]]
 {{/if}}
 
 [[#*inline "resourceCardQuery"]]
- {{#if (getResourceConfiguration iri)}}
- <div>{{> rsp:ResourceCardTemplate resourceConfig=(getResourceConfiguration iri) resourceOntologyClass=(getResourceConfigurationValue (getResourceConfiguration iri) "resourceOntologyClass")
-  resourceLabel=(getResourceConfigurationValue (getResourceConfiguration iri) "resourceLabel")
-  resourceIcon=(getResourceConfigurationValue (getResourceConfiguration iri) "resourceIcon")}}</div>
- {{else}}
- <semantic-query query='SELECT ?iri ?resourceOntologyClass ?resourceConfig ?resourceLabel ?resourceIcon WHERE {
+  <semantic-query query='SELECT ?iri ?resourceOntologyClass ?resourceConfig ?resourceLabel ?resourceIcon WHERE {
                           BIND(<{{iri}}> as ?iri)
+                          
                           OPTIONAL {  
-                            ?iri a ?resourceOntologyClass . 
-                            ?resourceOntologyClass a ?resourceOntologyClassType .
-                            FILTER(?resourceOntologyClassType in (rdfs:Class, owl:Class))
+                            ?iri a ?resourceOntologyClass .
+                            ?resourceOntologyClass a owl:Class .                          
                             ?resourceConfigWithP2 <http://www.researchspace.org/pattern/system/resource_configuration/resource_ontology_class> ?resourceOntologyClass  .
                             ?resourceConfigWithP2 a <http://www.researchspace.org/resource/system/resource_configuration> .
                             ?iri crm:P2_has_type ?resourceType . 
@@ -29,8 +22,7 @@
                           }
                           OPTIONAL {  
                             ?iri a ?resourceOntologyClass .
-                            ?resourceOntologyClass a ?resourceOntologyClassType .
-                            FILTER(?resourceOntologyClassType in (rdfs:Class, owl:Class))                  
+                            ?resourceOntologyClass a owl:Class .                       
                             ?resourceConfigWithoutP2 <http://www.researchspace.org/pattern/system/resource_configuration/resource_ontology_class> ?resourceOntologyClass  .
                             ?resourceConfigWithoutP2 a <http://www.researchspace.org/resource/system/resource_configuration> .
                             ?resourceConfigWithoutP2 <http://www.researchspace.org/pattern/system/resource_configuration/resource_name> ?resourceConfigWithoutP2Label .
@@ -50,7 +42,6 @@
     <template id='template'>
       <div>
         {{#if bindings.0.resourceConfig.value}}
-           
           {{> rsp:ResourceCardTemplate  resourceConfig=bindings.0.resourceConfig.value
                                         resourceOntologyClass=bindings.0.resourceOntologyClass.value
                                         resourceLabel=bindings.0.resourceLabel.value
@@ -58,12 +49,8 @@
           }}
         {{else}}
           <semantic-query query='SELECT ?resourceOntologyClass WHERE {
-                                      BIND(<{{iri}}> as ?iri)
-                                     {{#if data.types}}
-                                      ?iri a <{{data.types}}> . 
-                                     {{else}}
-                                       	?iri a ?resourceOntologyClass .
-                                     {{/if}}
+                                    BIND(<{{iri}}> as ?iri)
+                                    ?iri a ?resourceOntologyClass .
                                   } LIMIT 1'
                         template='{{> template}}'
                         no-result-template='{{> noResults}}'>
@@ -81,5 +68,4 @@
     </template>
 
   </semantic-query>
-  {{/if}}
 [[/inline]]

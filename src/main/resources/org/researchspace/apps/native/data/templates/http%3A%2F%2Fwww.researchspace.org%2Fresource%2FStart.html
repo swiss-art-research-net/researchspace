@@ -115,7 +115,7 @@
                         <semantic-link-container  uri='http://www.researchspace.org/resource/ThinkingFrames'
                                                   urlqueryparam-view="resource-editor"
                                                   urlqueryparam-resource-iri='{{project.value}}'>
-                          <bs-menu-item draggable="false">
+                          <bs-menu-item>
                             {{projectName.value}}
                           </bs-menu-item>
                         </semantic-link-container>
@@ -249,11 +249,6 @@
 
                                                           MINUS { ?subject a Platform:resource_configuration .}
 
-                                                          MINUS {
-                                                            ?subject crm:P71i_is_listed_in|skos:inScheme ?systemAuthorityDoc .
-                                                            ?systemAuthorityDoc crm:P2_has_type Platform:System_Resource .
-                                                          }
-
                                                           ?entityFormRecord crmdig:L11i_was_output_of ?entityFormRecordOutput .
                                                           ?entityFormRecordOutput crm:P2_has_type ?entityFormRecordOutputType .
                                                           FILTER(?entityFormRecordOutputType IN (<http://www.researchspace.org/resource/system/vocab/resource_type/entity_form_record_creation>, 
@@ -266,7 +261,9 @@
                                                             ?appellation crm:P2_has_type <http://www.researchspace.org/resource/system/vocab/resource_type/primary_appellation> . 
                                                             ?appellation crm:P190_has_symbolic_content ?label .
                                                           } UNION {
-                                                            ?subject crm:P170i_time_is_defined_by ?label .
+                                                            ?subject crm:P170i_time_is_defined_by ?timePrimitive .
+                                                            ?timePrimitive crm:P2_has_type <http://www.researchspace.org/resource/system/vocab/resource_type/primary_time_primitive> .
+                                                            ?timePrimitive crm:P190_has_symbolic_content ?label .
                                                           } UNION {
                                                             ?subject skos:prefLabel ?label .
                                                           } UNION {
@@ -318,10 +315,6 @@
                                                                 BIND(IF(BOUND(?complexDate),?complexDate,IF(BOUND(?date1),?date1,IF(BOUND(?date2),?date2,""))) as ?date)
 
                                                                 MINUS { ?subject a Platform:resource_configuration .}
-                                                                MINUS {
-                                                                  ?subject crm:P71i_is_listed_in|skos:inScheme ?systemAuthorityDoc .
-                                                                  ?systemAuthorityDoc crm:P2_has_type Platform:System_Resource .
-                                                                }
                                                                 FILTER (?date > "2024-10-22T00:00:00.000Z"^^xsd:dateTime)
                                                               }'
                                                 debounce=500
@@ -346,7 +339,7 @@
                                       class-name="activity-result-grid"
                                       query='SELECT DISTINCT ?subject ?iri WHERE {
                                                   BIND(?subject as ?iri) .
-                                              } ORDER BY DESC(?date) ?subject
+                                              } ORDER BY DESC(?date)
                                               LIMIT 20'
                                       tuple-template='{{> gridItem }}'
                                       options='{"showFilter":false,
@@ -388,10 +381,6 @@
                                         ?entityFormRecordCreation crm:P4_has_time-span ?creation .
                                         ?creation crm:P82_at_some_time_within ?date .
                                         MINUS { ?subject a Platform:resource_configuration .}
-                                        MINUS {
-                                          ?subject crm:P71i_is_listed_in|skos:inScheme ?systemAuthorityDoc .
-                                          ?systemAuthorityDoc crm:P2_has_type Platform:System_Resource .
-                                        }
                                       }
                                       FILTER (?date > "2024-10-22T00:00:00.000Z"^^xsd:dateTime)
                                     }'
@@ -566,7 +555,7 @@
                                       header="text/csv"
                                       filename="project-[[label]].csv"
                   >
-                    <bs-menu-item draggable="false">Export as CSV</bs-menu-item>
+                    <bs-menu-item>Export as CSV</bs-menu-item>
                   </mp-sparql-download>
           
                   <mp-sparql-download id='json-result' 
@@ -620,7 +609,7 @@
                                       header="application/sparql-results+json"
                                       filename="project-[[label]].json"
                   >
-                  <bs-menu-item draggable="false">Export as JSON</bs-menu-item>
+                  <bs-menu-item>Export as JSON</bs-menu-item>
                   </mp-sparql-download>
                 </bs-dropdown-menu>
               </bs-dropdown>
@@ -824,7 +813,10 @@
                       <semantic-query query='SELECT ?timespan ?timespanLabel ?projectStartDate ?projectEndDate WHERE {
                                               <{{subject.value}}> crm:P4_has_time-span ?timespan . 
                                               ?timespan a crm:E52_Time-Span . 
-                                              ?timespan crm:P170i_time_is_defined_by ?timespanLabel . 
+                                              ?timespan crm:P170i_time_is_defined_by ?timePrimitive .
+                                              ?timePrimitive a crm:E61_Time_Primitive .
+                                              ?timePrimitive crm:P2_has_type <http://www.researchspace.org/resource/system/vocab/resource_type/primary_time_primitive> .
+                                              ?timePrimitive crm:P190_has_symbolic_content ?timespanLabel . 
                                             
                                               OPTIONAL {
                                                 ?timespan crm:P82a_begin_of_the_begin ?projectStartDate .

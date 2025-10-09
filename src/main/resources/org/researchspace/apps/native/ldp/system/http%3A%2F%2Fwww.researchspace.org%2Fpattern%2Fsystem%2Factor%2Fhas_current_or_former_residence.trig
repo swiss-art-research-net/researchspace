@@ -19,9 +19,7 @@
   
   _:genid-706807d6363c40b7a043d44a148b0522-s7zc6 a <http://spinrdf.org/sp#Query>;
     <http://spinrdf.org/sp#text> """SELECT DISTINCT ?value ?label WHERE {
-
-    ?value a ?ontologyClass .
-    ?ontologyClass rdfs:subClassOf* crm:E53_Place .
+    $value a crm:E53_Place .
     ?value crm:P1_is_identified_by ?appellation .
     ?appellation a crm:E41_Appellation .
     ?appellation crm:P2_has_type <http://www.researchspace.org/resource/system/vocab/resource_type/primary_appellation> . 
@@ -32,8 +30,7 @@
     <http://spinrdf.org/sp#text> """SELECT DISTINCT ?value ?label WHERE {
     $subject crm:P74_has_current_or_former_residence $value .
       
-    ?value a ?ontologyClass .
-    ?ontologyClass rdfs:subClassOf* crm:E53_Place .
+    $value a crm:E53_Place .
     ?value crm:P1_is_identified_by ?appellation .
     ?appellation a crm:E41_Appellation .
     ?appellation crm:P2_has_type <http://www.researchspace.org/resource/system/vocab/resource_type/primary_appellation> . 
@@ -48,8 +45,7 @@
   
   _:genid-706807d6363c40b7a043d44a148b0522-477e8k3 a <http://spinrdf.org/sp#Query>;
     <http://spinrdf.org/sp#text> """SELECT DISTINCT ?value ?label WHERE {
-    ?value a ?ontologyClass .
-    ?ontologyClass rdfs:subClassOf* crm:E53_Place .
+    $value a crm:E53_Place .
     ?value crm:P1_is_identified_by ?appellation .
     ?appellation a crm:E41_Appellation .
     ?appellation crm:P2_has_type <http://www.researchspace.org/resource/system/vocab/resource_type/primary_appellation> . 
@@ -68,8 +64,7 @@
     $subject crm:P74_has_current_or_former_residence $value .
     $value crm:P74i_is_current_or_former_residence_of $subject .
       
-    ?value a ?ontologyClass .
-    ?ontologyClass rdfs:subClassOf* crm:E53_Place .
+    $value a crm:E53_Place .
     ?value crm:P1_is_identified_by ?appellation .
     ?appellation a crm:E41_Appellation .
     ?appellation crm:P2_has_type <http://www.researchspace.org/resource/system/vocab/resource_type/primary_appellation> . 

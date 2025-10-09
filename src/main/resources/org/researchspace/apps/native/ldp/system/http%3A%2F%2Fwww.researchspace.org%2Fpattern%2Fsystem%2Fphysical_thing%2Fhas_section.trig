@@ -1,3 +1,4 @@
+
 <http://www.researchspace.org/pattern/system/physical_thing/has_section/context> {
   <http://www.researchspace.org/pattern/system/physical_thing/has_section> a <http://www.researchspace.org/resource/system/fields/Field>,
       <http://www.w3.org/ns/prov#Entity>, <http://www.w3.org/ns/ldp#Resource>;
@@ -18,8 +19,7 @@
   
   _:genid-8ad95368ffb94259904f3f81a9c2f8bb-0j46x a <http://spinrdf.org/sp#Query>;
     <http://spinrdf.org/sp#text> """SELECT DISTINCT ?value ?label WHERE {
-  ?value a ?ontologyClass .
-  ?ontologyClass rdfs:subClassOf* crm:E53_Place .
+  ?value a crm:E53_Place .
   ?value crm:P1_is_identified_by ?appellation .
   ?appellation a crm:E41_Appellation .
   ?appellation crm:P2_has_type <http://www.researchspace.org/resource/system/vocab/resource_type/primary_appellation> .  
@@ -37,8 +37,7 @@
 	$subject crm:P59_has_section $value . 
     $value crm:P59i_is_located_on_or_within $subject .
       
-    ?value a ?ontologyClass .
-    ?ontologyClass rdfs:subClassOf* crm:E53_Place .
+    ?value a crm:E53_Place .
     ?value crm:P1_is_identified_by ?appellation .
     ?appellation a crm:E41_Appellation .
     ?appellation crm:P2_has_type <http://www.researchspace.org/resource/system/vocab/resource_type/primary_appellation> .      
@@ -53,8 +52,7 @@
   
   _:genid-8ad95368ffb94259904f3f81a9c2f8bb-j7gj2 a <http://spinrdf.org/sp#Query>;
     <http://spinrdf.org/sp#text> """SELECT DISTINCT ?value ?label WHERE {
-    ?value a ?ontologyClass .
-    ?ontologyClass rdfs:subClassOf* crm:E53_Place .
+    ?value a crm:E53_Place .
     ?value crm:P1_is_identified_by ?appellation .
     ?appellation a crm:E41_Appellation .
     ?appellation crm:P2_has_type <http://www.researchspace.org/resource/system/vocab/resource_type/primary_appellation> .      
@@ -65,8 +63,7 @@
     <http://spinrdf.org/sp#text> """SELECT DISTINCT ?value ?label WHERE {
    $subject crm:P59_has_section $value .
       
-  ?value a ?ontologyClass .
-  ?ontologyClass rdfs:subClassOf* crm:E53_Place .
+  ?value a crm:E53_Place .
   ?value crm:P1_is_identified_by ?appellation .
   ?appellation a crm:E41_Appellation .
   ?appellation crm:P2_has_type <http://www.researchspace.org/resource/system/vocab/resource_type/primary_appellation> .    

@@ -365,10 +365,11 @@
                       </template>
 
                       <template id='vocabulary'>
-                        <semantic-link  iri='http://www.researchspace.org/resource/ThinkingFrames'
-                                        urlqueryparam-view='authority-list' 
-                                        urlqueryparam-resource='{{vocabulary.value}}'
-                                      >
+                        <semantic-link iri='http://www.researchspace.org/resource/ThinkingFrames'
+                              urlqueryparam-view='authority-list' 
+                              urlqueryparam-resource='{{vocabulary.value}}'
+                              urlqueryparam-mode='new'
+                            >
                               {{vocabularyLabel.value}}
                         </semantic-link>
                       </template>
@@ -377,7 +378,8 @@
                         <div class="btn-inline-container">
                           <semantic-link-container  uri='http://www.researchspace.org/resource/ThinkingFrames'
                                                     urlqueryparam-view='authority-list' 
-                                                    urlqueryparam-resource='{{vocabulary.value}}'>
+                                                    urlqueryparam-resource='{{vocabulary.value}}'
+                                                    urlqueryparam-mode='new'>
                             <button class="btn btn-default btn-textAndIcon">
                               <rs-icon icon-type='rounded' icon-name='list' symbol='true'></rs-icon> List of resources
                             </button>

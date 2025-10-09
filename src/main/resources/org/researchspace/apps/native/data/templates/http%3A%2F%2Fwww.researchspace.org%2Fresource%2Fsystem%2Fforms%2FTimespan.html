@@ -55,33 +55,39 @@
     <rs-tabs id="{{viewId}}-form-tabs" class-name="form-tabs"> 
       <rs-tab event-key="detail" title="Details">
         <div class="form-details-container">
-          <div class="form-details-inputs-container">
-            <semantic-form-text-input for='timespan_text_value' label="Timespan (text value)" placeholder="Enter timespan (text value)"></semantic-form-text-input>
-
+          <div style="overflow-x: auto;">
+            <semantic-form-text-input for='timespan_text_value' label="Timespan (text value)"  placeholder="Enter timespan (text value)"></semantic-form-text-input>
+            
             <div class="form-inline-inputs">
               <div style="flex: 1;">
-                <semantic-form-datetime-input for="timespan_date" label="Date" placeholder="Enter date (date value)"></semantic-form-datetime-input>
+                <semantic-form-text-input for='timespan_beginning' label="Timespan beginning"  placeholder="Enter timespan"></semantic-form-text-input>
               </div>
               <div style="flex: 1;">
-                <semantic-form-datetime-input for="timespan_start_date" label="Start date" placeholder="Enter start date (date value)"></semantic-form-datetime-input>
-              </div>
-              <div style="flex: 1;">
-                <semantic-form-datetime-input for="timespan_end_date" label="End date" placeholder="Enter end date (date value)"></semantic-form-datetime-input>
+                <semantic-form-text-input for='timespan_end' label="Timespan end"  placeholder="Enter timespan"></semantic-form-text-input>
               </div>
             </div>
 
-            <semantic-form-text-input for='timespan_beginning' label="Beginning" placeholder="Enter timespan beginning (text value)"></semantic-form-text-input>
-          
-            <semantic-form-text-input for='timespan_end' label="End" placeholder="Enter timespan end (text value)"></semantic-form-text-input>
-           
-            <semantic-form-text-input for="timespan_ongoing_throughout" label="Ongoing throughout" placeholder="Enter ongoing throughout (text value)"></semantic-form-text-input>
+            <div class="form-inline-inputs">
+              <div style="flex: 1;">
+                <semantic-form-datetime-input for="timespan_date" label="Date (date value)"  placeholder="Enter date (date value)"></semantic-form-datetime-input>
+              </div>
+              <div style="flex: 1;">
+                <semantic-form-datetime-input for="timespan_start_date" label="Start date"  placeholder="Enter start date"></semantic-form-datetime-input>
+              </div>
+              <div style="flex: 1;">
+                <semantic-form-datetime-input for="timespan_end_date" label="End date"  placeholder="Enter end date"></semantic-form-datetime-input>
+              </div>
+            </div>
 
             <div class="form-inline-inputs">
               <div style="flex: 1;">
-                <semantic-form-datetime-input for="timespan_end_of_the_begin" label="End of the begin" placeholder="Enter end of the begin (date value)"></semantic-form-datetime-input>
+                <semantic-form-text-input for="timespan_ongoing_throughout" label="Timespan ongoing throughout"  placeholder="Enter value"></semantic-form-text-input>
               </div>
               <div style="flex: 1;">
-                <semantic-form-datetime-input for="timespan_begin_of_the_end" label="Begin of the end" placeholder="Enter begin of the end (date value)"></semantic-form-datetime-input>
+                <semantic-form-datetime-input for="timespan_end_of_the_begin" label="End of the begin"  placeholder="Enter date"></semantic-form-datetime-input>
+              </div>
+              <div style="flex: 1;">
+                <semantic-form-datetime-input for="timespan_begin_of_the_end" label="Begin of the end"  placeholder="Enter date"></semantic-form-datetime-input>
               </div>
             </div>
             
@@ -147,7 +153,6 @@
             <semantic-form-autocomplete-input   for="entity_id" 
                                                 label="Other identifier"
                                                 placeholder="Select other identifier" 
-                                                show-dropdown-filter="false"
                                                 nested-form-templates='[[> Platform:NestedFormTemplates_appellations]]'>
             </semantic-form-autocomplete-input>
 
@@ -166,10 +171,16 @@
                                               tree-patterns='{"scheme": "{{scheme}}",
                                                               "schemePattern": "?item crm:P71i_is_listed_in <{{scheme}}>",
                                                               "relationPattern": "?item crm:P86_falls_within ?parent",
-                                                              "labelPattern": "?item crm:P170i_time_is_defined_by ?label ."}'
+                                                              "labelPattern": "?item crm:P170i_time_is_defined_by ?timePrimitive .
+                                                                              ?timePrimitive a crm:E61_Time_Primitive .
+                                                                              ?timePrimitive crm:P2_has_type <http://www.researchspace.org/resource/system/vocab/resource_type/primary_time_primitive> .
+                                                                              ?timePrimitive crm:P190_has_symbolic_content ?label ."}'
 
                                               query-item-label='SELECT ?label WHERE {
-                                                                  ?item crm:P170i_time_is_defined_by ?label .
+                                                                  ?item crm:P170i_time_is_defined_by ?timePrimitive .
+                                                                  ?timePrimitive a crm:E61_Time_Primitive .
+                                                                  ?timePrimitive crm:P2_has_type <http://www.researchspace.org/resource/system/vocab/resource_type/primary_time_primitive> .
+                                                                  ?timePrimitive crm:P190_has_symbolic_content ?label .
                                                               }'> 
           </semantic-form-tree-picker-input>   
 
@@ -179,10 +190,16 @@
                                           tree-patterns='{"scheme": "{{scheme}}",
                                                           "schemePattern": "?item crm:P71i_is_listed_in <{{scheme}}>",
                                                           "relationPattern": "?item crm:P86_falls_within ?parent",
-                                                          "labelPattern": "?item crm:P170i_time_is_defined_by ?label ."}'
+                                                          "labelPattern": "?item crm:P170i_time_is_defined_by ?timePrimitive .
+                                                                              ?timePrimitive a crm:E61_Time_Primitive .
+                                                                              ?timePrimitive crm:P2_has_type <http://www.researchspace.org/resource/system/vocab/resource_type/primary_time_primitive> .
+                                                                              ?timePrimitive crm:P190_has_symbolic_content ?label ."}'
 
                                           query-item-label='SELECT ?label WHERE {
-                                                                  ?item crm:P170i_time_is_defined_by ?label .
+                                                                  ?item crm:P170i_time_is_defined_by ?timePrimitive .
+                                                                  ?timePrimitive a crm:E61_Time_Primitive .
+                                                                  ?timePrimitive crm:P2_has_type <http://www.researchspace.org/resource/system/vocab/resource_type/primary_time_primitive> .
+                                                                  ?timePrimitive crm:P190_has_symbolic_content ?label .
                                                           }'>
           </semantic-form-tree-picker-input> 
         {{else}}
@@ -194,12 +211,18 @@
                                                     tree-patterns='{"scheme": "crm:E52_Time-Span",
                                                                     "schemePattern": "?item a crm:E52_Time-Span",
                                                                     "relationPattern": "?item crm:P86_falls_within ?parent",
-                                                                    "labelPattern": "?item crm:P170i_time_is_defined_by ?label ."}'
+                                                                    "labelPattern": "?item crm:P170i_time_is_defined_by ?timePrimitive .
+                                                                                    ?timePrimitive a crm:E61_Time_Primitive .
+                                                                                    ?timePrimitive crm:P2_has_type <http://www.researchspace.org/resource/system/vocab/resource_type/primary_time_primitive> .
+                                                                                    ?timePrimitive crm:P190_has_symbolic_content ?label ."}'
 
                                                     nested-form-template='{{{{raw}}}}{{> forms:Timespan nested=true editable=true mode="new"}}{{{{/raw}}}}' 
 
                                                     query-item-label='SELECT ?label WHERE {
-                                                                        ?item crm:P170i_time_is_defined_by ?label .
+                                                                        ?item crm:P170i_time_is_defined_by ?timePrimitive .
+                                                                        ?timePrimitive a crm:E61_Time_Primitive .
+                                                                        ?timePrimitive crm:P2_has_type <http://www.researchspace.org/resource/system/vocab/resource_type/primary_time_primitive> .
+                                                                        ?timePrimitive crm:P190_has_symbolic_content ?label .
                                                                     }'> 
                 </semantic-form-tree-picker-input>   
 
@@ -209,12 +232,18 @@
                                                 tree-patterns='{"scheme": "crm:E52_Time-Span",
                                                                 "schemePattern": "?item a crm:E52_Time-Span",
                                                                 "relationPattern": "?item crm:P86_falls_within ?parent",
-                                                                "labelPattern": "?item crm:P170i_time_is_defined_by ?label ."}'
+                                                                "labelPattern": "?item crm:P170i_time_is_defined_by ?timePrimitive .
+                                                                                    ?timePrimitive a crm:E61_Time_Primitive .
+                                                                                    ?timePrimitive crm:P2_has_type <http://www.researchspace.org/resource/system/vocab/resource_type/primary_time_primitive> .
+                                                                                    ?timePrimitive crm:P190_has_symbolic_content ?label ."}'
 
                                                 nested-form-template='{{{{raw}}}}{{> forms:Timespan nested=true editable=true mode="new"}}{{{{/raw}}}}'
 
                                                 query-item-label='SELECT ?label WHERE {
-                                                                        ?item crm:P170i_time_is_defined_by ?label .
+                                                                        ?item crm:P170i_time_is_defined_by ?timePrimitive .
+                                                                        ?timePrimitive a crm:E61_Time_Primitive .
+                                                                        ?timePrimitive crm:P2_has_type <http://www.researchspace.org/resource/system/vocab/resource_type/primary_time_primitive> .
+                                                                        ?timePrimitive crm:P190_has_symbolic_content ?label .
                                                                 }'>
                 </semantic-form-tree-picker-input> 
               </div>
@@ -257,22 +286,24 @@
                                 <template id='nodeTemplate'>
                                     <semantic-query query='SELECT ?node ?nodeLabel WHERE {
                                                             BIND (<{{node.value}}> as ?node)
-                                                            ?node crm:P170i_time_is_defined_by ?nodeLabel .  
+                                                            ?node crm:P170i_time_is_defined_by ?timePrimitive .
+                                                            ?timePrimitive a crm:E61_Time_Primitive .
+                                                            ?timePrimitive crm:P2_has_type <http://www.researchspace.org/resource/system/vocab/resource_type/primary_time_primitive> .
+                                                            ?timePrimitive crm:P190_has_symbolic_content ?nodeLabel .  
                                                             }'
                                                     template='{{> template}}'>
                                         
                                         <template id='template'>
                                             <div>
                                                 {{#ifCond bindings.0.node.value "===" timespan}}
-                                                  <span class="Tree--itemLink active" style="font-weight: 600;">{{bindings.0.nodeLabel.value}}</span>
+                                                    <span class="Tree--itemLink active" style="font-weight: 600;">{{bindings.0.nodeLabel.value}}</span>
                                                 {{else}}
-                                                  <mp-draggable iri="{{node.value}}">
-                                                    <semantic-link-container  uri="http://www.researchspace.org/resource/ThinkingFrames"
-                                                                              urlqueryparam-view='resource-editor' 
-                                                                              urlqueryparam-resource-iri='{{node.value}}'>
+                                                    <semantic-link  iri="http://www.researchspace.org/resource/ThinkingFrames"
+                                                                    urlqueryparam-view='resource-editor' 
+                                                                    urlqueryparam-resource-iri='{{node.value}}'
+                                                                    >
                                                         <span class="Tree--itemLink" style="font-weight: 600;">{{bindings.0.nodeLabel.value}}</span>
-                                                    </semantic-link-container>
-                                                  </mp-draggable>
+                                                    </semantic-link>
                                                 {{/ifCond}}
                                             </div>
                                         </template>
@@ -300,13 +331,27 @@
         <semantic-form-autocomplete-input for='entity_attributed_by_attribute_assignment' 
                                           label="Attributed by"
                                           placeholder="Select what assigned attribute to the timespan" 
-                                          nested-form-templates='[[> Platform:NestedFormTemplates_attributeAssignments]]'>  
+                                          nested-form-templates='[ 
+                                              {
+                                                  "label": "Attribute assignment",
+                                                  "nestedForm": "{{{{raw}}}}
+                                                                  {{> \"http://www.researchspace.org/resource/system/forms/AttributeAssignment\" nested=true editable=true mode=\"new\"}}
+                                                              {{{{/raw}}}}"
+                                              }
+                                          ]'>  
         </semantic-form-autocomplete-input>
   
         <semantic-form-autocomplete-input for='entity_assigned_by_attribute_assignment' 
                                           label="Assigned by"
                                           placeholder="Select what assigned the timespan" 
-                                          nested-form-templates='[[> Platform:NestedFormTemplates_attributeAssignments]]'>  
+                                          nested-form-templates='[ 
+                                              {
+                                                  "label": "Attribute assignment",
+                                                  "nestedForm": "{{{{raw}}}}
+                                                                  {{> \"http://www.researchspace.org/resource/system/forms/AttributeAssignment\" nested=true editable=true mode=\"new\"}}
+                                                              {{{{/raw}}}}"
+                                              }
+                                          ]'>  
         </semantic-form-autocomplete-input>
 
         <semantic-form-autocomplete-input for='entity_measurement' 
