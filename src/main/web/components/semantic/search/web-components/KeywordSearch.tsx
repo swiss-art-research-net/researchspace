@@ -118,7 +118,7 @@ class KeywordSearchInner extends React.Component<InnerProps, State> {
     if (nextCtx.searchProfileStore.isJust && nextCtx.domain.isNothing) {
       setSearchDomain(this.props.domain, nextCtx);
     }
-}
+  }
 
   render() {
     const { placeholder, style, className } = this.props;
