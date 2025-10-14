@@ -94,6 +94,7 @@ class KeywordSearchInner extends React.Component<InnerProps, State> {
   };
 
   private keys = Action<string>();
+  private persist = Action<string>();
 
   constructor(props: InnerProps) {
     super(props);
@@ -118,9 +119,16 @@ class KeywordSearchInner extends React.Component<InnerProps, State> {
       this.setState({ value: text });
       if (emit) {
         this.keys(text);
-        this.saveStateIntoHistory(text);
+        this.persist(text)
       }
     }
+  };
+
+  private onChange = (e: React.FormEvent<FormControl>) => {
+    const v = (e.target as any).value as string;
+    this.setState({ value: v });
+    this.keys(v);
+    this.persist(v);
   };
 
   componentWillReceiveProps(props: InnerProps) {
@@ -145,12 +153,6 @@ class KeywordSearchInner extends React.Component<InnerProps, State> {
     );
   }
 
-  private onChange = (e: React.FormEvent<FormControl>) => {
-    const v = (e.target as any).value as string;
-    this.setState({ value: v });
-    this.keys(v);
-    this.saveStateIntoHistory(v);
-  };
 
   private initialize = (props: InnerProps) => {
     const query = SparqlUtil.parseQuerySync<SparqlJs.SelectQuery>(props.query);
@@ -169,14 +171,19 @@ class KeywordSearchInner extends React.Component<InnerProps, State> {
 
     Kefir.merge([queryProp, ...(props.defaultQuery ? [Kefir.constant(defaultQuery.get()), defaultQueryProp] : [])])
       .onValue((q) => this.props.context.setBaseQuery(Maybe.Just(q)));
+
+    this.persist.$property
+      .debounce(this.props.debounce)
+      .onValue((val) => this.saveStateIntoHistory(val));
   };
 
   private saveStateIntoHistory = (text: string) => {
     const { context } = this.props;
     const domain = context.domain.isJust ? context.domain.get() : null;
+    if (!domain) return;
 
-    if (!domain || text.length < this.props.minSearchTermLength) {
-      context.setBaseQueryStructure(Maybe.Nothing());
+    if (text.length < this.props.minSearchTermLength) {
+      // Do nothing: keep existing ?semanticSearch (facets etc.) intact.
       return;
     }
 
