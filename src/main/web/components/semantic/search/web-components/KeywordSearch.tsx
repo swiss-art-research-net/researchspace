@@ -108,17 +108,17 @@ class KeywordSearchInner extends React.Component<InnerProps, State> {
   }
 
   componentDidUpdate(prevProps: InnerProps) {
-    if (!_.isEqual(prevProps.context.baseQueryStructure, this.props.context.baseQueryStructure)) {
+    const prevCtx = prevProps.context;
+    const nextCtx = this.props.context;
+
+    if (!_.isEqual(prevCtx.baseQueryStructure, nextCtx.baseQueryStructure)) {
       this.retrieveStateFromHistory(true);
     }
-  }
 
-  componentWillReceiveProps(props: InnerProps) {
-    const { context } = props;
-    if (context.searchProfileStore.isJust && context.domain.isNothing) {
-      setSearchDomain(props.domain, context);
+    if (nextCtx.searchProfileStore.isJust && nextCtx.domain.isNothing) {
+      setSearchDomain(this.props.domain, nextCtx);
     }
-  }
+}
 
   render() {
     const { placeholder, style, className } = this.props;
@@ -200,7 +200,6 @@ class KeywordSearchInner extends React.Component<InnerProps, State> {
     if (!domain) return;
 
     if (text.length < this.props.minSearchTermLength) {
-      // Do nothing: keep existing ?semanticSearch (facets etc.) intact.
       return;
     }
 
