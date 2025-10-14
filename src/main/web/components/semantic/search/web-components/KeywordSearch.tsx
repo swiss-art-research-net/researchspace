@@ -104,22 +104,22 @@ class KeywordSearchInner extends React.Component<InnerProps, State> {
   componentDidMount() {
     setSearchDomain(this.props.domain, this.props.context);
     this.initialize(this.props);
-    this.hydrateFromContext(/*emit*/ true);
+    this.retrieveStateFromHistory(/*emit*/ true);
   }
 
   componentDidUpdate(prevProps: InnerProps) {
     if (!_.isEqual(prevProps.context.baseQueryStructure, this.props.context.baseQueryStructure)) {
-      this.hydrateFromContext(/*emit*/ false);
+      this.retrieveStateFromHistory(/*emit*/ false);
     }
   }
 
-  private hydrateFromContext = (emit: boolean) => {
+  private retrieveStateFromHistory = (emit: boolean) => {
     const text = this.extractTextFromBaseQueryStructure();
     if (text != null && text !== this.state.value) {
       this.setState({ value: text });
       if (emit) {
         this.keys(text);
-        this.setBaseQueryStructureFromText(text);
+        this.saveStateIntoHistory(text);
       }
     }
   };
@@ -150,7 +150,7 @@ class KeywordSearchInner extends React.Component<InnerProps, State> {
     const v = (e.target as any).value as string;
     this.setState({ value: v });
     this.keys(v);
-    this.setBaseQueryStructureFromText(v);
+    this.saveStateIntoHistory(v);
   };
 
   private initialize = (props: InnerProps) => {
@@ -172,7 +172,7 @@ class KeywordSearchInner extends React.Component<InnerProps, State> {
       .onValue((q) => this.props.context.setBaseQuery(Maybe.Just(q)));
   };
 
-  private setBaseQueryStructureFromText = (text: string) => {
+  private saveStateIntoHistory = (text: string) => {
     const { context } = this.props;
     const domain = context.domain.isJust ? context.domain.get() : null;
 
