@@ -113,16 +113,27 @@ class KeywordSearchInner extends React.Component<InnerProps, State> {
     }
   }
 
-  private retrieveStateFromHistory = (emit: boolean) => {
-    const text = this.extractTextFromBaseQueryStructure();
-    if (text != null && text !== this.state.value) {
-      this.setState({ value: text });
-      if (emit) {
-        this.keys(text);
-        this.persist(text)
-      }
+  componentWillReceiveProps(props: InnerProps) {
+    const { context } = props;
+    if (context.searchProfileStore.isJust && context.domain.isNothing) {
+      setSearchDomain(props.domain, context);
     }
-  };
+  }
+
+  render() {
+    const { placeholder, style, className } = this.props;
+    return (
+      <FormGroup controlId="semantic-search-text-input">
+        <FormControl
+          className={className}
+          style={style}
+          value={this.state.value}
+          placeholder={placeholder}
+          onChange={this.onChange}
+        />
+      </FormGroup>
+    );
+  }
 
   private onChange = (e: React.FormEvent<FormControl>) => {
     const v = (e.target as any).value as string;
@@ -130,13 +141,23 @@ class KeywordSearchInner extends React.Component<InnerProps, State> {
     this.keys(v);
     this.persist(v);
   };
-
-  componentWillReceiveProps(props: InnerProps) {
-    const { context } = props;
-    if (context.searchProfileStore.isJust && context.domain.isNothing) {
-      setSearchDomain(props.domain, context);
-    }
+  private extractTextFromBaseQueryStructure(): string | null {
+    const { baseQueryStructure } = this.props.context;
+    if (baseQueryStructure.isNothing) return null;
+    const search = baseQueryStructure.get();
+    const first = search?.conjuncts?.[0];
+    if (!first || first.kind !== Model.ConjunctKinds.Text) return null;
+    const d0 = first.disjuncts?.[0];
+    if (!d0 || d0.kind !== Model.TextDisjunctKind) return null;
+    const val = d0.value as string;
+    return typeof val === 'string' ? val : null;
   }
+
+  private buildQuery = (baseQuery: SparqlJs.SelectQuery) => (token: string): SparqlJs.SelectQuery => {
+    const { searchTermVariable, escapeLuceneSyntax, tokenizeLuceneQuery } = this.props;
+    const value = SparqlUtil.makeLuceneQuery(token, escapeLuceneSyntax, tokenizeLuceneQuery);
+    return SparqlClient.setBindings(baseQuery, { [searchTermVariable]: value });
+  };
 
   private initialize = (props: InnerProps) => {
     const query = SparqlUtil.parseQuerySync<SparqlJs.SelectQuery>(props.query);
@@ -159,6 +180,17 @@ class KeywordSearchInner extends React.Component<InnerProps, State> {
     this.persist.$property
       .debounce(this.props.debounce)
       .onValue((val) => this.saveStateIntoHistory(val));
+  };
+
+  private retrieveStateFromHistory = (emit: boolean) => {
+    const text = this.extractTextFromBaseQueryStructure();
+    if (text != null && text !== this.state.value) {
+      this.setState({ value: text });
+      if (emit) {
+        this.keys(text);
+        this.persist(text)
+      }
+    }
   };
 
   private saveStateIntoHistory = (text: string) => {
@@ -189,37 +221,5 @@ class KeywordSearchInner extends React.Component<InnerProps, State> {
     context.setBaseQueryStructure(Maybe.Just(search));
   };
 
-  private extractTextFromBaseQueryStructure(): string | null {
-    const { baseQueryStructure } = this.props.context;
-    if (baseQueryStructure.isNothing) return null;
-    const search = baseQueryStructure.get();
-    const first = search?.conjuncts?.[0];
-    if (!first || first.kind !== Model.ConjunctKinds.Text) return null;
-    const d0 = first.disjuncts?.[0];
-    if (!d0 || d0.kind !== Model.TextDisjunctKind) return null;
-    const val = d0.value as string;
-    return typeof val === 'string' ? val : null;
-  }
-
-  private buildQuery = (baseQuery: SparqlJs.SelectQuery) => (token: string): SparqlJs.SelectQuery => {
-    const { searchTermVariable, escapeLuceneSyntax, tokenizeLuceneQuery } = this.props;
-    const value = SparqlUtil.makeLuceneQuery(token, escapeLuceneSyntax, tokenizeLuceneQuery);
-    return SparqlClient.setBindings(baseQuery, { [searchTermVariable]: value });
-  };
-
-  render() {
-    const { placeholder, style, className } = this.props;
-    return (
-      <FormGroup controlId="semantic-search-text-input">
-        <FormControl
-          className={className}
-          style={style}
-          value={this.state.value}
-          placeholder={placeholder}
-          onChange={this.onChange}
-        />
-      </FormGroup>
-    );
-  }
 }
 export default KeywordSearch;
