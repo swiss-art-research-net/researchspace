@@ -109,7 +109,7 @@ class KeywordSearchInner extends React.Component<InnerProps, State> {
 
   componentDidUpdate(prevProps: InnerProps) {
     if (!_.isEqual(prevProps.context.baseQueryStructure, this.props.context.baseQueryStructure)) {
-      this.retrieveStateFromHistory(false);
+      this.retrieveStateFromHistory(true);
     }
   }
 
@@ -141,6 +141,7 @@ class KeywordSearchInner extends React.Component<InnerProps, State> {
     this.keys(v);
     this.persist(v);
   };
+
   private extractTextFromBaseQueryStructure(): string | null {
     const { baseQueryStructure } = this.props.context;
     if (baseQueryStructure.isNothing) return null;
