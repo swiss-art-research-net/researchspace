@@ -104,14 +104,25 @@ class KeywordSearchInner extends React.Component<InnerProps, State> {
   componentDidMount() {
     setSearchDomain(this.props.domain, this.props.context);
     this.initialize(this.props);
+    this.hydrateFromContext(/*emit*/ true);
+  }
 
-    const hydrated = this.extractTextFromBaseQueryStructure();
-    if (hydrated) {
-      this.setState({ value: hydrated });
-      this.keys(hydrated);                  // issue SPARQL query
-      this.setBaseQueryStructureFromText(hydrated); // ensure structure is in sync
+  componentDidUpdate(prevProps: InnerProps) {
+    if (!_.isEqual(prevProps.context.baseQueryStructure, this.props.context.baseQueryStructure)) {
+      this.hydrateFromContext(/*emit*/ false);
     }
   }
+
+  private hydrateFromContext = (emit: boolean) => {
+    const text = this.extractTextFromBaseQueryStructure();
+    if (text != null && text !== this.state.value) {
+      this.setState({ value: text });
+      if (emit) {
+        this.keys(text);
+        this.setBaseQueryStructureFromText(text);
+      }
+    }
+  };
 
   componentWillReceiveProps(props: InnerProps) {
     const { context } = props;
