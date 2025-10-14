@@ -24,7 +24,6 @@ import * as _ from 'lodash';
 import { FormControl, FormGroup } from 'react-bootstrap';
 import * as SparqlJs from 'sparqljs';
 
-import { Rdf } from 'platform/api/rdf';
 import { SparqlUtil, SparqlClient } from 'platform/api/sparql';
 import { Component } from 'platform/api/components';
 import { Action } from 'platform/components/utils';
