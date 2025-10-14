@@ -18,6 +18,7 @@
  */
 import * as React from 'react';
 import * as Maybe from 'data.maybe';
+import * as Model from 'platform/components/semantic/search/data/search/Model';
 import * as Kefir from 'kefir';
 import * as _ from 'lodash';
 import { FormControl, FormGroup } from 'react-bootstrap';
@@ -97,14 +98,19 @@ class KeywordSearchInner extends React.Component<InnerProps, State> {
 
   constructor(props: InnerProps) {
     super(props);
-    this.state = {
-      value: undefined,
-    };
+    this.state = { value: '' }; 
   }
 
   componentDidMount() {
     setSearchDomain(this.props.domain, this.props.context);
     this.initialize(this.props);
+
+    const hydrated = this.extractTextFromBaseQueryStructure();
+    if (hydrated) {
+      this.setState({ value: hydrated });
+      this.keys(hydrated);                  // issue SPARQL query
+      this.setBaseQueryStructureFromText(hydrated); // ensure structure is in sync
+    }
   }
 
   componentWillReceiveProps(props: InnerProps) {
@@ -123,11 +129,18 @@ class KeywordSearchInner extends React.Component<InnerProps, State> {
           style={style}
           value={this.state.value}
           placeholder={placeholder}
-          onChange={this.onKeyPress}
+          onChange={this.onChange}
         />
       </FormGroup>
     );
   }
+
+  private onChange = (e: React.FormEvent<FormControl>) => {
+    const v = (e.target as any).value as string;
+    this.setState({ value: v });
+    this.keys(v);
+    this.setBaseQueryStructureFromText(v);
+  };
 
   private initialize = (props: InnerProps) => {
     const query = SparqlUtil.parseQuerySync<SparqlJs.SelectQuery>(props.query);
@@ -144,15 +157,48 @@ class KeywordSearchInner extends React.Component<InnerProps, State> {
       .filter((str) => props.defaultQuery && _.isEmpty(str))
       .map(() => defaultQuery.get());
 
-    const initializers = [queryProp];
-    if (props.defaultQuery) {
-      initializers.push(Kefir.constant(defaultQuery.get()), defaultQueryProp);
-    }
-
-    Kefir.merge(initializers).onValue((q) => this.props.context.setBaseQuery(Maybe.Just(q)));
+    Kefir.merge([queryProp, ...(props.defaultQuery ? [Kefir.constant(defaultQuery.get()), defaultQueryProp] : [])])
+      .onValue((q) => this.props.context.setBaseQuery(Maybe.Just(q)));
   };
 
-  private onKeyPress = (event: React.FormEvent<FormControl>) => this.keys((event.target as any).value);
+  private setBaseQueryStructureFromText = (text: string) => {
+    const { context } = this.props;
+    const domain = context.domain.isJust ? context.domain.get() : null;
+
+    if (!domain || text.length < this.props.minSearchTermLength) {
+      context.setBaseQueryStructure(Maybe.Nothing());
+      return;
+    }
+
+    const search: Model.Search = {
+      domain,
+      conjuncts: [{
+        uniqueId: 0,
+        kind: Model.ConjunctKinds.Text,
+        range: domain,
+        conjunctIndex: [0],
+        disjuncts: [{
+          kind: Model.TextDisjunctKind,
+          value: text,
+          disjunctIndex: [0, 0],
+        }],
+      }],
+    } as any;
+
+    context.setBaseQueryStructure(Maybe.Just(search));
+  };
+
+  private extractTextFromBaseQueryStructure(): string | null {
+    const { baseQueryStructure } = this.props.context;
+    if (baseQueryStructure.isNothing) return null;
+    const search = baseQueryStructure.get();
+    const first = search?.conjuncts?.[0];
+    if (!first || first.kind !== Model.ConjunctKinds.Text) return null;
+    const d0 = first.disjuncts?.[0];
+    if (!d0 || d0.kind !== Model.TextDisjunctKind) return null;
+    const val = d0.value as string;
+    return typeof val === 'string' ? val : null;
+  }
 
   private buildQuery = (baseQuery: SparqlJs.SelectQuery) => (token: string): SparqlJs.SelectQuery => {
     const { searchTermVariable, escapeLuceneSyntax, tokenizeLuceneQuery } = this.props;
@@ -160,5 +206,4 @@ class KeywordSearchInner extends React.Component<InnerProps, State> {
     return SparqlClient.setBindings(baseQuery, { [searchTermVariable]: value });
   };
 }
-
 export default KeywordSearch;
