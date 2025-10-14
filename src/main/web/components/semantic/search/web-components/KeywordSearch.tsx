@@ -104,12 +104,12 @@ class KeywordSearchInner extends React.Component<InnerProps, State> {
   componentDidMount() {
     setSearchDomain(this.props.domain, this.props.context);
     this.initialize(this.props);
-    this.retrieveStateFromHistory(/*emit*/ true);
+    this.retrieveStateFromHistory(true);
   }
 
   componentDidUpdate(prevProps: InnerProps) {
     if (!_.isEqual(prevProps.context.baseQueryStructure, this.props.context.baseQueryStructure)) {
-      this.retrieveStateFromHistory(/*emit*/ false);
+      this.retrieveStateFromHistory(false);
     }
   }
 
@@ -137,22 +137,6 @@ class KeywordSearchInner extends React.Component<InnerProps, State> {
       setSearchDomain(props.domain, context);
     }
   }
-
-  render() {
-    const { placeholder, style, className } = this.props;
-    return (
-      <FormGroup controlId="semantic-search-text-input">
-        <FormControl
-          className={className}
-          style={style}
-          value={this.state.value}
-          placeholder={placeholder}
-          onChange={this.onChange}
-        />
-      </FormGroup>
-    );
-  }
-
 
   private initialize = (props: InnerProps) => {
     const query = SparqlUtil.parseQuerySync<SparqlJs.SelectQuery>(props.query);
@@ -222,5 +206,20 @@ class KeywordSearchInner extends React.Component<InnerProps, State> {
     const value = SparqlUtil.makeLuceneQuery(token, escapeLuceneSyntax, tokenizeLuceneQuery);
     return SparqlClient.setBindings(baseQuery, { [searchTermVariable]: value });
   };
+
+  render() {
+    const { placeholder, style, className } = this.props;
+    return (
+      <FormGroup controlId="semantic-search-text-input">
+        <FormControl
+          className={className}
+          style={style}
+          value={this.state.value}
+          placeholder={placeholder}
+          onChange={this.onChange}
+        />
+      </FormGroup>
+    );
+  }
 }
 export default KeywordSearch;
