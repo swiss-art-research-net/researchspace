@@ -92,7 +92,7 @@ export class SemanticSearch extends Component<Props, State> {
     super(props, context);
     const availableDatasets = this.availableDatasets(props);
     this.savedStateQueryKey = props.id
-      ? `${DEFAULT_SAVED_STATE_QUERY_KEY}:${props.id}`
+      ? `${DEFAULT_SAVED_STATE_QUERY_KEY}-${props.id}`
       : DEFAULT_SAVED_STATE_QUERY_KEY;
     this.state = {
       domain: Maybe.Nothing<Model.Category>(),
