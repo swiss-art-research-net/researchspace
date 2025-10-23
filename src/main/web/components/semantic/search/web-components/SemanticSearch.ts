@@ -372,7 +372,7 @@ export class SemanticSearch extends Component<Props, State> {
     this.savingState.cancelAll();
     this.savingState = this.cancellation.derive();
     // when updating query string we need to make sure that we keep all
-    // other query parameters, e.g repository    
+    // other query parameters, e.g repository
     const currentUrl = getCurrentUrl().clone();
     currentUrl.removeSearch(this.savedStateQueryKey).addSearch({ [this.savedStateQueryKey]: compressed });
 
