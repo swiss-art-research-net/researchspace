@@ -93,6 +93,10 @@ public class RestApplication extends AbstractPlatformApplication {
          */
         register(URLMinifierEndpoint.class);
         /*
+         * /rest/user/preferences
+         */
+        register(org.researchspace.rest.endpoint.UserPreferencesEndpoint.class);
+        /*
          * /rest/sets
          */
         register(SetManagementEndpoint.class);
