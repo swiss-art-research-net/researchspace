@@ -286,8 +286,12 @@ public class SparqlServlet extends HttpServlet {
         String repId = getRepositoryIdFromRequest(req);
 
         try (RepositoryConnection con = repositoryManager.getRepository(repId).getConnection()) {
+            // resolve preferred language from session or cookie and pass it explicitly
+            Optional<String> userLang = resolvePreferredLanguageFromRequest(req);
             Operation sparqlOperation = SparqlOperationBuilder.create(queryString)
-                    .setDataset(getDatasetForTheRequest(req)).resolveUser(nsRegistry.getUserIRI()).build(con);
+                    .setDataset(getDatasetForTheRequest(req)).resolveUser(nsRegistry.getUserIRI())
+                    .withUserPreferredLanguage(userLang.orElse(null))
+                    .build(con);
             SparqlOperation operationType = SparqlUtil.getOperationType(sparqlOperation);
             if (logger.isTraceEnabled()) {
                 logger.trace("Query with hash \"{}\" is of type \"{}\"", queryString.hashCode(), operationType);
@@ -417,5 +421,38 @@ public class SparqlServlet extends HttpServlet {
         all.add(ContentType.HTML);
         return all;
     }
+
+    /**
+     * Resolve preferred language: session attribute __userPreferredLanguage__ first,
+     * then cookie "preferredLanguage"
+     */
+    private Optional<String> resolvePreferredLanguageFromRequest(HttpServletRequest req) {
+        if (req == null) return Optional.empty();
+        try {
+            javax.servlet.http.HttpSession session = req.getSession(false);
+            if (session != null) {
+                Object v = session.getAttribute("__userPreferredLanguage__");
+                if (v instanceof String) {
+                    String s = ((String) v).trim();
+                    if (!s.isEmpty()) return Optional.of(s);
+                }
+            }
+        } catch (Exception ignored) {}
+        try {
+            javax.servlet.http.Cookie[] cookies = req.getCookies();
+            if (cookies != null) {
+                for (javax.servlet.http.Cookie c : cookies) {
+                    if ("preferredLanguage".equals(c.getName())) {
+                        String val = c.getValue();
+                        if (val != null && !val.trim().isEmpty()) {
+                            try { return Optional.of(java.net.URLDecoder.decode(val, "UTF-8")); } catch (Exception e) { return Optional.of(val); }
+                        }
+                    }
+                }
+            }
+        } catch (Exception ignored) {}
+        return Optional.empty();
+    }
+
 
 }
