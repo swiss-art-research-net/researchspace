@@ -23,7 +23,6 @@ package org.researchspace.api.sparql;
  
  import java.util.Map;
  import java.util.Optional;
- import java.util.function.Supplier;
  
  import org.apache.commons.lang3.StringUtils;
  import org.apache.logging.log4j.LogManager;
@@ -40,7 +39,7 @@ package org.researchspace.api.sparql;
  import org.eclipse.rdf4j.repository.RepositoryConnection;
  import org.eclipse.rdf4j.repository.RepositoryException;
  import org.researchspace.api.sparql.SparqlUtil.SparqlOperation;
- import org.researchspace.config.Configuration;
+ 
  import com.google.common.collect.Maps;
  
  /**
@@ -56,13 +55,13 @@ package org.researchspace.api.sparql;
      private String queryString;
      private Resource thisResource;
      private Resource userURI;
-     private Supplier<String> userPreferredLanguage;;
      private String baseURI;
      private Map<String, Value> bindings;
      private Dataset dataset;
      private Boolean includeInferred = false;
      private Optional<Integer> maxExecutionTime = Optional.empty();
      private Map<String, String> namespaces = Maps.newHashMap();
+     private String userPreferredLanguage;
  
      private SparqlOperationBuilder(String queryString, Class<? extends Operation> clazz) {
          checkNotNull(queryString, "queryString must not be null.");
@@ -70,8 +69,6 @@ package org.researchspace.api.sparql;
          this.queryString = queryString;
          this.bindings = Maps.newHashMap();
          this.clazz = clazz;
-         // fallback
-         this.userPreferredLanguage = () -> "en";
      }
  
      public static <T extends Operation> SparqlOperationBuilder<T> create(String queryString,
@@ -221,6 +218,10 @@ package org.researchspace.api.sparql;
  
          return this;
      }
+     public SparqlOperationBuilder<T> withUserPreferredLanguage(String lang) {
+         this.userPreferredLanguage = lang;
+         return this;
+     }
  
      public T build(RepositoryConnection con)
              throws RepositoryException, MalformedQueryException, IllegalArgumentException {
@@ -269,8 +270,10 @@ package org.researchspace.api.sparql;
          if (this.queryString.contains(SparqlMagicVariables.USERURI) && this.userURI != null) {
              op.setBinding(SparqlMagicVariables.USERURI, userURI);
          }
-         if (this.queryString.contains(SparqlMagicVariables.USER_PREFERRED_LANGUAGE) && this.userPreferredLanguage != null) {
-            String lang = this.userPreferredLanguage.get();
+         if (this.queryString.contains(SparqlMagicVariables.USER_PREFERRED_LANGUAGE)) {
+            String lang = this.userPreferredLanguage;
+            
+            logger.debug("Resolved userPreferredLanguage='{}' for query (contains magic var: {})", lang, this.queryString.contains(SparqlMagicVariables.USER_PREFERRED_LANGUAGE));
             if (lang != null) {
                 op.setBinding(SparqlMagicVariables.USER_PREFERRED_LANGUAGE, Values.literal(lang));
             }
