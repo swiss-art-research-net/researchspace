@@ -35,7 +35,7 @@ export const DefaultHelpers = {
   ...UriComponentFunctions,
   ...NumbersFunctions,
   ...StringsFunctions,
-  ...LanguageFunctions
+  ...LanguageFunctions,
   ...ResourceConfigurationFunctions
 };
 
