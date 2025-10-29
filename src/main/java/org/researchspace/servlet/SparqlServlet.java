@@ -68,6 +68,7 @@ import org.researchspace.api.sparql.SparqlOperationBuilder;
 import org.researchspace.api.sparql.SparqlUtil;
 import org.researchspace.api.sparql.SparqlUtil.SparqlOperation;
 import org.researchspace.config.NamespaceRegistry;
+import org.researchspace.config.groups.UIConfiguration;
 import org.researchspace.data.rdf.PrettyPrintTurtleWriter;
 import org.researchspace.di.MainGuiceModule.MainTemplateProvider;
 import org.researchspace.repository.RepositoryManager;
@@ -97,6 +98,9 @@ public class SparqlServlet extends HttpServlet {
 
     @Inject
     private NamespaceRegistry nsRegistry;
+
+    @Inject
+    private UIConfiguration uiConfig;
 
     static class ContentType {
         static String FORM_URLENCODED = "application/x-www-form-urlencoded";
@@ -288,9 +292,11 @@ public class SparqlServlet extends HttpServlet {
         try (RepositoryConnection con = repositoryManager.getRepository(repId).getConnection()) {
             // resolve preferred language from session or cookie and pass it explicitly
             Optional<String> userLang = resolvePreferredLanguageFromRequest(req);
+            // fallback to ui.prop via UIConfiguration.resolvePreferredLanguage on first startup
+            String lang = userLang.orElse(uiConfig.resolvePreferredLanguage(null));
             Operation sparqlOperation = SparqlOperationBuilder.create(queryString)
                     .setDataset(getDatasetForTheRequest(req)).resolveUser(nsRegistry.getUserIRI())
-                    .withUserPreferredLanguage(userLang.orElse(null))
+                    .withUserPreferredLanguage(lang)
                     .build(con);
             SparqlOperation operationType = SparqlUtil.getOperationType(sparqlOperation);
             if (logger.isTraceEnabled()) {
