@@ -25,6 +25,7 @@ import { UriComponentFunctions } from './UriComponentFunctions';
 import { NumbersFunctions } from './NumbersFunctions';
 import { StringsFunctions } from './StringsFunctions';
 import { LanguageFunctions } from './LanguageFunctions';
+import {ResourceConfigurationFunctions} from './ResourceConfigurationFunctions';
 
 export const DefaultHelpers = {
   ...DataContextFunctions,
@@ -35,6 +36,7 @@ export const DefaultHelpers = {
   ...NumbersFunctions,
   ...StringsFunctions,
   ...LanguageFunctions
+  ...ResourceConfigurationFunctions
 };
 
 export { ContextCapturer, CapturedContext } from './DataContextFunctions';
