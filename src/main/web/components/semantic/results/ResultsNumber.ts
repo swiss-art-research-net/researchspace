@@ -84,9 +84,9 @@ export class ResultsNumberComponent extends Component<Props, State> {
   }
 
   public componentWillReceiveProps(nextProps: Props) {
-    if (!_.isEqual(nextProps.query, this.props.query)) {
+    //if (!_.isEqual(nextProps.query, this.props.query)) {
       this.calcResultsNumber(nextProps.query);
-    }
+    //}
   }
 
   private calcResultsNumber = (query: string) => {
