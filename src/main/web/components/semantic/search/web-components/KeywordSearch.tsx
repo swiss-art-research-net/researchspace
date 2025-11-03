@@ -199,10 +199,6 @@ class KeywordSearchInner extends React.Component<InnerProps, State> {
     const domain = context.domain.isJust ? context.domain.get() : null;
     if (!domain) return;
 
-    if (text.length < this.props.minSearchTermLength) {
-      return;
-    }
-
     const search: Model.Search = {
       domain,
       conjuncts: [{
