@@ -56,6 +56,13 @@ export interface BaseConfig<T> extends SemanticSimpleSearchBaseConfig {
    * @default 300
    */
   debounce?: number;
+
+  /**
+   * Persist search term in URL history state
+   * 
+   * @default true
+   */
+  persistInHistory?: boolean;
 }
 
 export interface SemanticSearchKeywordConfig extends BaseConfig<string> {}
@@ -90,6 +97,7 @@ class KeywordSearchInner extends React.Component<InnerProps, State> {
     searchTermVariable: '__token__',
     minSearchTermLength: 3,
     debounce: 300,
+    persistInHistory: true,
     escapeLuceneSyntax: true,
   };
 
@@ -178,9 +186,11 @@ class KeywordSearchInner extends React.Component<InnerProps, State> {
     Kefir.merge([queryProp, ...(props.defaultQuery ? [Kefir.constant(defaultQuery.get()), defaultQueryProp] : [])])
       .onValue((q) => this.props.context.setBaseQuery(Maybe.Just(q)));
 
-    this.persist.$property
-      .debounce(this.props.debounce)
-      .onValue((val) => this.saveStateIntoHistory(val));
+    if (this.props.persistInHistory) {
+      this.persist.$property
+        .debounce(this.props.debounce)
+        .onValue((val) => this.saveStateIntoHistory(val));
+    }
   };
 
   private retrieveStateFromHistory = (emit: boolean) => {
