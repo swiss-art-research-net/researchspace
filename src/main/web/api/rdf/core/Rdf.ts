@@ -368,7 +368,7 @@ module Rdf {
   ): Data.Maybe<T> {
     const values = getValuesFromPropertyPath(propertyPath, pg);
     if (values.length > 1) {
-      throw new Error('more than one value found in the graph for property path ' + propertyPath);
+      throw new Error('more than one value found in the graph for property path ' + propertyPath + ' and pointed graph pointer ' + pg.pointer);
     }
     return Maybe.fromNullable(getValuesFromPropertyPath(propertyPath, pg)[0]) as Data.Maybe<T>;
   }
