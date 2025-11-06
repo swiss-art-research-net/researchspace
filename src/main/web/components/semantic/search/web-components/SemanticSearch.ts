@@ -62,7 +62,7 @@ interface State {
   visualizationContext?: Data.Maybe<Model.Relation>;
 }
 
-const SAVED_STATE_QUERY_KEY = 'semanticSearch';
+const DEFAULT_SAVED_STATE_QUERY_KEY = 'semanticSearch';
 
 export class SemanticSearch extends Component<Props, State> {
   static defaultProps: Partial<Props> = {
@@ -86,9 +86,14 @@ export class SemanticSearch extends Component<Props, State> {
   private activeResultOperations = 0;
   private resultCount: number | undefined;
 
+  private readonly savedStateQueryKey: string;
+
   constructor(props: Props, context: any) {
     super(props, context);
     const availableDatasets = this.availableDatasets(props);
+    this.savedStateQueryKey = props.id
+      ? `${DEFAULT_SAVED_STATE_QUERY_KEY}-${props.id}`
+      : DEFAULT_SAVED_STATE_QUERY_KEY;
     this.state = {
       domain: Maybe.Nothing<Model.Category>(),
       availableDomains: Maybe.Nothing<Model.AvailableDomains>(),
@@ -318,7 +323,7 @@ export class SemanticSearch extends Component<Props, State> {
   ): Data.Maybe<RawState> => {
     const compressed =
       params.reload || this.serializedState === undefined
-        ? getCurrentUrl().query(true)[SAVED_STATE_QUERY_KEY]
+        ? getCurrentUrl().query(true)[this.savedStateQueryKey]
         : this.serializedState;
 
     if (typeof compressed === 'string') {
@@ -366,11 +371,11 @@ export class SemanticSearch extends Component<Props, State> {
 
     this.savingState.cancelAll();
     this.savingState = this.cancellation.derive();
-
     // when updating query string we need to make sure that we keep all
     // other query parameters, e.g repository
     const currentUrl = getCurrentUrl().clone();
-    currentUrl.removeSearch(SAVED_STATE_QUERY_KEY).addSearch({ [SAVED_STATE_QUERY_KEY]: compressed });
+    currentUrl.removeSearch(this.savedStateQueryKey).addSearch({ [this.savedStateQueryKey]: compressed });
+
     this.savingState.map(Kefir.constant(currentUrl)).onValue((url) => {
       window.history.replaceState({}, '', url.toString());
     });
@@ -379,8 +384,8 @@ export class SemanticSearch extends Component<Props, State> {
   private clearCurrentHistoryItem() {
     this.savingState.cancelAll();
     const currentUri = getCurrentUrl();
-    if (SAVED_STATE_QUERY_KEY in currentUri.query(true)) {
-      window.history.replaceState({}, '', currentUri.clone().removeQuery(SAVED_STATE_QUERY_KEY).toString());
+    if (this.savedStateQueryKey in currentUri.query(true)) {
+      window.history.replaceState({}, '', currentUri.clone().removeQuery(this.savedStateQueryKey).toString());
     }
   }
 

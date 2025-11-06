@@ -24,7 +24,8 @@ import { RdfFunctions } from './RdfFunctions';
 import { UriComponentFunctions } from './UriComponentFunctions';
 import { NumbersFunctions } from './NumbersFunctions';
 import { StringsFunctions } from './StringsFunctions';
-import {ResourceConfigurationFunctions} from './ResourceConfigurationFunctions';
+import { LanguageFunctions } from './LanguageFunctions';
+import { ResourceConfigurationFunctions } from './ResourceConfigurationFunctions';
 
 export const DefaultHelpers = {
   ...DataContextFunctions,
@@ -34,6 +35,7 @@ export const DefaultHelpers = {
   ...UriComponentFunctions,
   ...NumbersFunctions,
   ...StringsFunctions,
+  ...LanguageFunctions,
   ...ResourceConfigurationFunctions
 };
 

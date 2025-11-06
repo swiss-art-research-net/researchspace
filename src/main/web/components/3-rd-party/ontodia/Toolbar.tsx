@@ -95,7 +95,7 @@ export class Toolbar<P extends ToolbarProps = ToolbarProps, S = {}> extends Comp
           </Button>
           <Dropdown.Toggle bsStyle="default" className="btn-action" />
           <Dropdown.Menu>
-            <MenuItem href="#" onClick={onPersistChangesAndSaveDiagram} draggable={false}>
+            <MenuItem href="#" onClick={onPersistChangesAndSaveDiagram}>
               {persistChangesLabel} &amp; {saveDiagramLabel}
             </MenuItem>
           </Dropdown.Menu>
@@ -109,10 +109,10 @@ export class Toolbar<P extends ToolbarProps = ToolbarProps, S = {}> extends Comp
             {saveDiagramLabel}
           </Dropdown.Toggle>
           <Dropdown.Menu>
-            <MenuItem href="#" onClick={onSaveDiagram} draggable={false}>
+            <MenuItem href="#" onClick={onSaveDiagram}>
               {saveDiagramLabel}
             </MenuItem>
-            <MenuItem href="#" onClick={onSaveDiagramAs} draggable={false}>
+            <MenuItem href="#" onClick={onSaveDiagramAs}>
               {saveDiagramLabel} as...
             </MenuItem>
           </Dropdown.Menu>
@@ -146,7 +146,7 @@ export class Toolbar<P extends ToolbarProps = ToolbarProps, S = {}> extends Comp
         </Button>
         <Dropdown.Toggle bsStyle="default" className="btn-action" />
         <Dropdown.Menu>
-          <MenuItem href="#" onClick={onPersistChangesAndSaveDiagram} draggable={false}>
+          <MenuItem href="#" onClick={onPersistChangesAndSaveDiagram}>
             <Icon iconType="rounded" iconName="save" symbol className="icon-left" />
             {persistChangesLabel} and map
           </MenuItem>
@@ -169,7 +169,7 @@ export class Toolbar<P extends ToolbarProps = ToolbarProps, S = {}> extends Comp
         bsStyle="default"
         className="btn-action btn-split"
       >
-        <MenuItem href="#" onClick={onSaveDiagramAs} draggable={false}>
+        <MenuItem href="#" onClick={onSaveDiagramAs}>
           <Icon iconType="rounded" iconName="save" symbol className="icon-left" />
           {saveDiagramLabel} as...
         </MenuItem>
@@ -181,10 +181,10 @@ export class Toolbar<P extends ToolbarProps = ToolbarProps, S = {}> extends Comp
           {saveDiagramLabel}
         </Dropdown.Toggle>
         <Dropdown.Menu>
-        <MenuItem href="#" onClick={onSaveDiagram} draggable={false}>
+        <MenuItem href="#" onClick={onSaveDiagram}>
             {saveDiagramLabel}
           </MenuItem>
-          <MenuItem href="#" onClick={onSaveDiagramAs} draggable={false}>
+          <MenuItem href="#" onClick={onSaveDiagramAs}>
             {saveDiagramLabel} as...
           </MenuItem>
         </Dropdown.Menu>
@@ -288,11 +288,11 @@ export class Toolbar<P extends ToolbarProps = ToolbarProps, S = {}> extends Comp
                 <Icon iconType="rounded" iconName="download" symbol />
               </Dropdown.Toggle>
               <Dropdown.Menu>
-                <MenuItem href="#" onClick={this.onExportPng} draggable={false}>
+                <MenuItem href="#" onClick={this.onExportPng}>
                   <Icon iconType="rounded" iconName="download" symbol className="icon-left" />
                   Export as PNG
                 </MenuItem>
-                <MenuItem href="#" onClick={this.onExportSvg} draggable={false}>
+                <MenuItem href="#" onClick={this.onExportSvg}>
                   <Icon iconType="rounded" iconName="download" symbol className="icon-left" />
                   Export as SVG
                 </MenuItem>
@@ -309,8 +309,9 @@ export class Toolbar<P extends ToolbarProps = ToolbarProps, S = {}> extends Comp
                 urlqueryparam-view="ontology-page-view"
                 urlqueryparam-open-as-drag-and-drop="true"
                 urlqueryparam-custom-label="Ontology Elements Descriptions" 
+                draggable={false}
               >
-                <MenuItem draggable={false}>
+                <MenuItem>
                   <Icon iconType="rounded" iconName='search' className="icon-left" symbol />
                   Ontology Elements descriptions
                 </MenuItem>
@@ -321,8 +322,9 @@ export class Toolbar<P extends ToolbarProps = ToolbarProps, S = {}> extends Comp
                 urlqueryparam-view="ontology-page-view"
                 urlqueryparam-open-as-drag-and-drop="true"
                 urlqueryparam-custom-label="Ontology Properties by Class" 
+                draggable={false}
               >
-                <MenuItem draggable={false}>
+                <MenuItem>
                   <Icon iconType="rounded" iconName='search' className="icon-left" symbol />
                   Ontology Properties by class
                 </MenuItem>
@@ -333,8 +335,9 @@ export class Toolbar<P extends ToolbarProps = ToolbarProps, S = {}> extends Comp
                 urlqueryparam-view="ontology-page-view"
                 urlqueryparam-open-as-drag-and-drop="true"
                 urlqueryparam-custom-label="Ontology Properties between Classes" 
+                draggable={false}
               >
-                <MenuItem draggable={false}>
+                <MenuItem>
                   <Icon iconType="rounded" iconName='search' className="icon-left" symbol />
                   Ontology Properties between classes
                 </MenuItem>

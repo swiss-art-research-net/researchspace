@@ -55,9 +55,7 @@ module.exports = function() {
     config.devServer = {
         host: '0.0.0.0',
         port: 3000,
-        static: {
-            directory: './src/main/webapp',
-        },
+        static: './src/main/webapp',
         headers: {
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',

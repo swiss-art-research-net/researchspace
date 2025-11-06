@@ -96,10 +96,21 @@ export class UserLanguageSwitch extends Component<UserLanguagePropsProps, State>
     );
   }
 
-  private onLanguageChanged(language: string): void {
+  private async onLanguageChanged(language: string): Promise<void> {
     setPreferredUserLanguage(language);
-    this.setState({ language: language });
-    window.location.reload();
+
+    // set JS cookie so backend that checks cookies will pick it up
+    try {
+      const cookieName = 'preferredLanguage';
+      const cookieValue = encodeURIComponent(language || '');
+      const maxAge = 365 * 24 * 60 * 60; // 1 year
+      document.cookie = `${cookieName}=${cookieValue}; max-age=${maxAge}; path=/`;
+    } catch (e) {
+      // ignore cookie failures
+    }
+    // update UI state and trigger client-side refresh (no hard reload)
+    this.setState({ language });
+    try { refresh(); } catch (e) {}
   }
 }
 
