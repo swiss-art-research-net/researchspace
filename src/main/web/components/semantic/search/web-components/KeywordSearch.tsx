@@ -18,12 +18,12 @@
  */
 import * as React from 'react';
 import * as Maybe from 'data.maybe';
-import * as Model from 'platform/components/semantic/search/data/search/Model';
 import * as Kefir from 'kefir';
 import * as _ from 'lodash';
 import { FormControl, FormGroup } from 'react-bootstrap';
 import * as SparqlJs from 'sparqljs';
 
+import * as Model from 'platform/components/semantic/search/data/search/Model';
 import { SparqlUtil, SparqlClient } from 'platform/api/sparql';
 import { Component } from 'platform/api/components';
 import { Action } from 'platform/components/utils';
@@ -106,7 +106,9 @@ class KeywordSearchInner extends React.Component<InnerProps, State> {
 
   constructor(props: InnerProps) {
     super(props);
-    this.state = { value: '' }; 
+    this.state = {
+      value: undefined,
+    };
   }
 
   componentDidMount() {
@@ -116,15 +118,15 @@ class KeywordSearchInner extends React.Component<InnerProps, State> {
   }
 
   componentDidUpdate(prevProps: InnerProps) {
-    const prevCtx = prevProps.context;
-    const nextCtx = this.props.context;
+    const prevContext = prevProps.context;
+    const nextContext = this.props.context;
 
-    if (!_.isEqual(prevCtx.baseQueryStructure, nextCtx.baseQueryStructure)) {
+    if (!_.isEqual(prevContext.baseQueryStructure, nextContext.baseQueryStructure)) {
       this.retrieveStateFromHistory(true);
     }
 
-    if (nextCtx.searchProfileStore.isJust && nextCtx.domain.isNothing) {
-      setSearchDomain(this.props.domain, nextCtx);
+    if (nextContext.searchProfileStore.isJust && nextContext.domain.isNothing) {
+      setSearchDomain(this.props.domain, nextContext);
     }
   }
 
@@ -137,18 +139,11 @@ class KeywordSearchInner extends React.Component<InnerProps, State> {
           style={style}
           value={this.state.value}
           placeholder={placeholder}
-          onChange={this.onChange}
+          onChange={this.onKeyPress}
         />
       </FormGroup>
     );
   }
-
-  private onChange = (e: React.FormEvent<FormControl>) => {
-    const v = (e.target as any).value as string;
-    this.setState({ value: v });
-    this.keys(v);
-    this.persist(v);
-  };
 
   private extractTextFromBaseQueryStructure(): string | null {
     const { baseQueryStructure } = this.props.context;
@@ -161,12 +156,6 @@ class KeywordSearchInner extends React.Component<InnerProps, State> {
     const val = d0.value as string;
     return typeof val === 'string' ? val : null;
   }
-
-  private buildQuery = (baseQuery: SparqlJs.SelectQuery) => (token: string): SparqlJs.SelectQuery => {
-    const { searchTermVariable, escapeLuceneSyntax, tokenizeLuceneQuery } = this.props;
-    const value = SparqlUtil.makeLuceneQuery(token, escapeLuceneSyntax, tokenizeLuceneQuery);
-    return SparqlClient.setBindings(baseQuery, { [searchTermVariable]: value });
-  };
 
   private initialize = (props: InnerProps) => {
     const query = SparqlUtil.parseQuerySync<SparqlJs.SelectQuery>(props.query);
@@ -183,15 +172,26 @@ class KeywordSearchInner extends React.Component<InnerProps, State> {
       .filter((str) => props.defaultQuery && _.isEmpty(str))
       .map(() => defaultQuery.get());
 
-    Kefir.merge([queryProp, ...(props.defaultQuery ? [Kefir.constant(defaultQuery.get()), defaultQueryProp] : [])])
-      .onValue((q) => this.props.context.setBaseQuery(Maybe.Just(q)));
+    const initializers = [queryProp];
+    if (props.defaultQuery) {
+      initializers.push(Kefir.constant(defaultQuery.get()), defaultQueryProp);
+    }
 
+    Kefir.merge(initializers).onValue((q) => this.props.context.setBaseQuery(Maybe.Just(q)));
+    
     if (this.props.persistInHistory) {
       this.persist.$property
         .debounce(this.props.debounce)
         .onValue((val) => this.saveStateIntoHistory(val));
     }
   };
+
+  private onKeyPress = (event: React.FormEvent<FormControl>) => {
+    const v = (event.target as any).value as string;
+    this.setState({ value: v });
+    this.keys(v);
+    this.persist(v);
+  }
 
   private retrieveStateFromHistory = (emit: boolean) => {
     const text = this.extractTextFromBaseQueryStructure();
@@ -204,6 +204,12 @@ class KeywordSearchInner extends React.Component<InnerProps, State> {
     }
   };
 
+  private buildQuery = (baseQuery: SparqlJs.SelectQuery) => (token: string): SparqlJs.SelectQuery => {
+    const { searchTermVariable, escapeLuceneSyntax, tokenizeLuceneQuery } = this.props;
+    const value = SparqlUtil.makeLuceneQuery(token, escapeLuceneSyntax, tokenizeLuceneQuery);
+    return SparqlClient.setBindings(baseQuery, { [searchTermVariable]: value });
+  };
+  
   private saveStateIntoHistory = (text: string) => {
     const { context } = this.props;
     const domain = context.domain.isJust ? context.domain.get() : null;
@@ -226,6 +232,6 @@ class KeywordSearchInner extends React.Component<InnerProps, State> {
 
     context.setBaseQueryStructure(Maybe.Just(search));
   };
-
 }
+
 export default KeywordSearch;
