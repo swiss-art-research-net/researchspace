@@ -2,7 +2,7 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "master", "develop" ]
+    branches: [ "master", "develop", "v3" ]
 
 jobs:
 
@@ -78,5 +78,12 @@ jobs:
         if: github.ref == 'refs/heads/develop'
         run: |
           docker buildx imagetools create -t swissartresearx/researchspace:develop \
+            swissartresearx/researchspace:${{ github.sha }}-linux-amd64 \
+            swissartresearx/researchspace:${{ github.sha }}-linux-arm64
+
+      - name: Create and Push "v3" Manifest (only for v3 branch)
+        if: github.ref == 'refs/heads/develop'
+        run: |
+          docker buildx imagetools create -t swissartresearx/researchspace:v3 \
             swissartresearx/researchspace:${{ github.sha }}-linux-amd64 \
             swissartresearx/researchspace:${{ github.sha }}-linux-arm64
