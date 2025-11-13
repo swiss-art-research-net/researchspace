@@ -82,7 +82,7 @@ jobs:
             swissartresearx/researchspace:${{ github.sha }}-linux-arm64
 
       - name: Create and Push "v3" Manifest (only for v3 branch)
-        if: github.ref == 'refs/heads/develop'
+        if: github.ref == 'refs/heads/v3'
         run: |
           docker buildx imagetools create -t swissartresearx/researchspace:v3 \
             swissartresearx/researchspace:${{ github.sha }}-linux-amd64 \
