@@ -82,9 +82,9 @@ war {
 farms {
     farm 'researchspace', {
         // setup blazegraph for local development
-        webapp 'com.blazegraph:blazegraph-war:2.2.0-20160908.003514-6',
-            contextPath: '/blazegraph',
-            overlays: [':blazegraph-vocabularies']
+        //webapp 'com.blazegraph:blazegraph-war:2.2.0-20160908.003514-6',
+        //    contextPath: '/blazegraph',
+        //    overlays: [':blazegraph-vocabularies']
 
         // setup digilib for local development
         webapp 'digilib:digilib-webapp:2.9.1',
@@ -245,9 +245,9 @@ project.afterEvaluate {
 
 
     // for some reason overlay explode task that is needed for farm overlays is not added as a dependency
-    tasks.farmRunresearchspace.dependsOn tasks['farmOverlayArchiveresearchspaceblazegraph-war-2.2.0-20160908.003514-6.war']
-    tasks.farmRunDebugresearchspace.dependsOn tasks['farmOverlayArchiveresearchspaceblazegraph-war-2.2.0-20160908.003514-6.war']
-    tasks.buildProductresearchspace.dependsOn tasks['farmOverlayArchiveresearchspaceblazegraph-war-2.2.0-20160908.003514-6.war']
+    //tasks.farmRunresearchspace.dependsOn tasks['farmOverlayArchiveresearchspaceblazegraph-war-2.2.0-20160908.003514-6.war']
+    //tasks.farmRunDebugresearchspace.dependsOn tasks['farmOverlayArchiveresearchspaceblazegraph-war-2.2.0-20160908.003514-6.war']
+    //tasks.buildProductresearchspace.dependsOn tasks['farmOverlayArchiveresearchspaceblazegraph-war-2.2.0-20160908.003514-6.war']
 
     // connect our custom tasks with tasks from gretty
     tasks.debugAll.dependsOn tasks.farmRunDebugresearchspace
