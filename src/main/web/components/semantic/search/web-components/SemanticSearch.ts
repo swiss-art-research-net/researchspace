@@ -60,11 +60,9 @@ interface State {
   selectedAlignment?: Data.Maybe<Alignment>;
   isConfigurationEditable?: boolean;
   visualizationContext?: Data.Maybe<Model.Relation>;
-  graphScopeStructure?: Data.Maybe<Model.GraphScopeSearch>;
-  graphScopeResults?: Data.Maybe<Model.GraphScopeResults>;
 }
 
-const SAVED_STATE_QUERY_KEY = 'semanticSearch';
+const DEFAULT_SAVED_STATE_QUERY_KEY = 'semanticSearch';
 
 export class SemanticSearch extends Component<Props, State> {
   static defaultProps: Partial<Props> = {
@@ -88,9 +86,14 @@ export class SemanticSearch extends Component<Props, State> {
   private activeResultOperations = 0;
   private resultCount: number | undefined;
 
+  private readonly savedStateQueryKey: string;
+
   constructor(props: Props, context: any) {
     super(props, context);
     const availableDatasets = this.availableDatasets(props);
+    this.savedStateQueryKey = props.id
+      ? `${DEFAULT_SAVED_STATE_QUERY_KEY}-${props.id}`
+      : DEFAULT_SAVED_STATE_QUERY_KEY;
     this.state = {
       domain: Maybe.Nothing<Model.Category>(),
       availableDomains: Maybe.Nothing<Model.AvailableDomains>(),
@@ -109,8 +112,6 @@ export class SemanticSearch extends Component<Props, State> {
       selectedAlignment: this.getDefaultAlignments(availableDatasets),
       isConfigurationEditable: true,
       visualizationContext: Maybe.Nothing<Model.Relation>(),
-      graphScopeStructure: Maybe.Nothing<Model.GraphScopeSearch>(),
-      graphScopeResults: Maybe.Nothing<Model.GraphScopeResults>(),
     };
   }
 
@@ -148,10 +149,6 @@ export class SemanticSearch extends Component<Props, State> {
       availableDatasets: this.state.availableDatasets,
       visualizationContext: this.state.visualizationContext,
       setVisualizationContext: this.setVisualizationContext,
-      graphScopeStructure: this.state.graphScopeStructure,
-      setGraphScopeStructure: this.setGraphScopeStructure,
-      graphScopeResults: this.state.graphScopeResults,
-      setGraphScopeResults: this.setGraphScopeResults,
     };
   }
 
@@ -170,7 +167,6 @@ export class SemanticSearch extends Component<Props, State> {
           baseQueryStructure: savedState.chain((state) => Maybe.fromNullable(state.search)),
           facetStructure: savedState.chain((state) => Maybe.fromNullable(state.facet)).getOrElse(undefined),
           resultState: savedState.map((state) => state.result).getOrElse({}),
-          graphScopeStructure: savedState.map((state) => state.graphScopeSearch).getOrElse(s.graphScopeStructure),
         }));
       });
     }
@@ -253,7 +249,6 @@ export class SemanticSearch extends Component<Props, State> {
         result: {},
         datasets: this.state.selectedDatasets,
         alignment: this.state.selectedAlignment,
-        graphScopeSearch: this.state.graphScopeStructure,
       });
     } else {
       this.setState({
@@ -273,7 +268,6 @@ export class SemanticSearch extends Component<Props, State> {
       result: this.state.resultState,
       datasets: this.state.selectedDatasets,
       alignment: this.state.selectedAlignment,
-      graphScopeSearch: this.state.graphScopeStructure,
     });
   };
 
@@ -309,22 +303,6 @@ export class SemanticSearch extends Component<Props, State> {
     this.setState({ searchProfileStore: Maybe.Just(profileStore) });
   };
 
-  private setGraphScopeStructure = (graphScopeStructure: Data.Maybe<Model.GraphScopeSearch>) => {
-    this.setState({ graphScopeStructure });
-    this.saveStateIntoHistory({
-      search: this.state.baseQueryStructure.getOrElse(undefined),
-      facet: this.state.facetStructure,
-      result: this.state.resultState,
-      datasets: this.state.selectedDatasets,
-      alignment: this.state.selectedAlignment,
-      graphScopeSearch: graphScopeStructure,
-    });
-  };
-
-  private setGraphScopeResults = (graphScopeResults: Data.Maybe<Model.GraphScopeResults>) => {
-    this.setState({ graphScopeResults });
-  };
-
   private listenForResultsLoading() {
     this.loadingResults = this.cancellation.deriveAndCancel(this.loadingResults);
     this.activeResultOperations = 0;
@@ -345,7 +323,7 @@ export class SemanticSearch extends Component<Props, State> {
   ): Data.Maybe<RawState> => {
     const compressed =
       params.reload || this.serializedState === undefined
-        ? getCurrentUrl().query(true)[SAVED_STATE_QUERY_KEY]
+        ? getCurrentUrl().query(true)[this.savedStateQueryKey]
         : this.serializedState;
 
     if (typeof compressed === 'string') {
@@ -384,7 +362,6 @@ export class SemanticSearch extends Component<Props, State> {
       state.result,
       state.datasets,
       state.alignment,
-      state.graphScopeSearch
     );
 
     if (compressed === this.serializedState) {
@@ -394,11 +371,11 @@ export class SemanticSearch extends Component<Props, State> {
 
     this.savingState.cancelAll();
     this.savingState = this.cancellation.derive();
-
     // when updating query string we need to make sure that we keep all
     // other query parameters, e.g repository
     const currentUrl = getCurrentUrl().clone();
-    currentUrl.removeSearch(SAVED_STATE_QUERY_KEY).addSearch({ [SAVED_STATE_QUERY_KEY]: compressed });
+    currentUrl.removeSearch(this.savedStateQueryKey).addSearch({ [this.savedStateQueryKey]: compressed });
+
     this.savingState.map(Kefir.constant(currentUrl)).onValue((url) => {
       window.history.replaceState({}, '', url.toString());
     });
@@ -407,8 +384,8 @@ export class SemanticSearch extends Component<Props, State> {
   private clearCurrentHistoryItem() {
     this.savingState.cancelAll();
     const currentUri = getCurrentUrl();
-    if (SAVED_STATE_QUERY_KEY in currentUri.query(true)) {
-      window.history.replaceState({}, '', currentUri.clone().removeQuery(SAVED_STATE_QUERY_KEY).toString());
+    if (this.savedStateQueryKey in currentUri.query(true)) {
+      window.history.replaceState({}, '', currentUri.clone().removeQuery(this.savedStateQueryKey).toString());
     }
   }
 
@@ -443,7 +420,6 @@ export class SemanticSearch extends Component<Props, State> {
           result: this.state.resultState,
           datasets: this.state.selectedDatasets,
           alignment: this.state.selectedAlignment,
-          graphScopeSearch: this.state.graphScopeStructure,
         })
     );
   };
