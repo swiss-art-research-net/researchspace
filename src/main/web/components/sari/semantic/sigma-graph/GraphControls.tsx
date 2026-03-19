@@ -27,7 +27,7 @@ import { MdFilterCenterFocus } from "react-icons/md";
 import { ControlsContainer } from "@react-sigma/core";
 import ZoomControl from "./ZoomControl";
 
-export class GraphControls extends Component<{position: string, reset: any}> {
+export class GraphControls extends Component<{position: "bottom-right" | "top-right" | "bottom-left" | "top-left", reset: any}> {
 
     render() {
         const position = this.props.position || "bottom-right";
