@@ -30,6 +30,7 @@ import { getThumbnails } from 'platform/api/services/resource-thumbnail';
 import { SemanticGraphConfig, configWithHidePredicates, configWithShowPredicates, Stylesheets } from './Config';
 
 const DEFAULT_THUMBNAIL = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+const RDF_TYPE = '<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>';
 
 /**
  * Mapping from Node to parent Node. It is used to construct compound nodes in Cytoscape.
@@ -125,6 +126,10 @@ export function addLabelsToGraphData(
   return map(elements, (element) => {
     element.data.label = labels.get(element.data.node);
     element.data.thumbnail = thumbnails.get(element.data.node) || DEFAULT_THUMBNAIL;
+    const types = element.data[RDF_TYPE] as Rdf.Node[] | undefined;
+    if (types) {
+      element.data['typeLabels'] = types.filter((type) => type.isIri()).map((type) => labels.get(type as Rdf.Iri) || type.value);
+    }
     return element;
   });
 }
@@ -154,7 +159,14 @@ function fetchLabelsForResources(
 ): Kefir.Property<Map<Rdf.Iri, string>> {
   const elementsWithIri = filter(elements, (e) => e.data.node.isIri());
   const iris = map(elementsWithIri, (e) => e.data.node as Rdf.Iri);
-  return getLabels(iris, { context });
+  const typeIris: Rdf.Iri[] = [];
+  for (const element of elementsWithIri) {
+    const types = element.data[RDF_TYPE] as Rdf.Node[] | undefined;
+    if (types) {
+      typeIris.push(...types.filter((type) => type.isIri()) as Rdf.Iri[]);
+    }
+  }
+  return getLabels(iris.concat(typeIris), { context });
 }
 
 /**
