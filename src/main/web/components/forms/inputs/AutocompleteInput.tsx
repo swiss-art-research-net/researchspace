@@ -114,6 +114,13 @@ export class AutocompleteInput extends AtomicValueInput<AutocompleteInputProps, 
       this.setState({
         nestedFormTemplates: this.props.nestedFormTemplates
       })
+    } else {
+      tryExtractNestedForm(this.props.children, this.context, this.props.nestedFormTemplate)
+        .then(nestedForm => {
+          if (nestedForm != undefined) {
+            this.setState({nestedForm});
+          }
+        });
     }
 
     if (FieldValue.isAtomic(this.props.value)) {
