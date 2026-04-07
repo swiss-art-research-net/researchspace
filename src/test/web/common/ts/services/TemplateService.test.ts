@@ -22,6 +22,7 @@ import { expect } from 'chai';
 import { Rdf } from 'platform/api/rdf';
 import { SparqlUtil } from 'platform/api/sparql';
 import { TemplateScope, parseTemplate, ContextCapturer } from 'platform/api/services/template';
+import { escapeRemoteTemplateHtml } from 'platform/api/services/template/TemplateParser';
 
 const MOCKED_REMOTE_TEMPLATES: { [iri: string]: string } = {
   'test:elephant': 'elephant and {{> test:lion}}',
@@ -196,6 +197,23 @@ describe('TemplateService', () => {
             ].join('')
           );
         });
+    });
+  });
+
+  describe('template escaping', () => {
+    it('defers nested semantic-query template attributes to the child query context', () => {
+      const html =
+        '<semantic-query ' +
+        'query="SELECT * WHERE { VALUES ?person { {{person.value}} } }" ' +
+        'template="{{#each bindings}}{{person.value}}{{/each}}">' +
+        '</semantic-query>';
+
+      return escapeRemoteTemplateHtml(html).then((escaped) => {
+        expect(escaped).to.contain(
+          'template="{{{{capture}}}}{{#each bindings}}{{person.value}}{{/each}}{{{{/capture}}}}"'
+        );
+        expect(escaped).to.contain('query="SELECT * WHERE { VALUES ?person { {{person.value}} } }"');
+      });
     });
   });
 });

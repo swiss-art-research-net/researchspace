@@ -134,7 +134,7 @@ function escapeTemplateBody(node: Node): Node {
       continue;
     }
     const value = node.attribs[key];
-    const escaped = escapePartialReferences(value);
+    const escaped = escapeAttributeValue(key, value);
     if (escaped !== value) {
       if (!newAttributes) {
         newAttributes = {};
@@ -147,6 +147,18 @@ function escapeTemplateBody(node: Node): Node {
     children: node.children ? node.children.map(escapeChild) : node.children,
   };
   return { ...node, ...override };
+}
+
+function escapeAttributeValue(name: string, content: string): string {
+  if (isDeferredTemplateAttribute(name) && content.indexOf('{{') >= 0) {
+    const { start, end } = generateEscapeBrackets();
+    return `${start}${content}${end}`;
+  }
+  return escapePartialReferences(content);
+}
+
+function isDeferredTemplateAttribute(name: string): boolean {
+  return name === 'template' || name === 'no-result-template' || name === 'noResultTemplate';
 }
 
 function escapeChild(child: Node) {
