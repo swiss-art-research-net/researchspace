@@ -114,6 +114,13 @@ export class AutocompleteInput extends AtomicValueInput<AutocompleteInputProps, 
       this.setState({
         nestedFormTemplates: this.props.nestedFormTemplates
       })
+    } else {
+      tryExtractNestedForm(this.props.children, this.context, this.props.nestedFormTemplate)
+        .then(nestedForm => {
+          if (nestedForm != undefined) {
+            this.setState({nestedForm});
+          }
+        });
     }
 
     if (FieldValue.isAtomic(this.props.value)) {
@@ -242,8 +249,10 @@ export class AutocompleteInput extends AtomicValueInput<AutocompleteInputProps, 
     
     const showLinkResourceButton = !isFieldValueEmpty && !this.props.readonlyResource
     const showEditButton = !isFieldValueEmpty && !this.props.readonlyResource
-    const showCreateNewDropdown = !_.isEmpty(this.state.nestedFormTemplates) && this.state.nestedFormTemplates.length > 1 && !this.state.valueSelectedWithoutEditForm && isFieldValueEmpty
-    const showCreateNewButton = !_.isEmpty(this.state.nestedFormTemplates) && this.state.nestedFormTemplates.length === 1 && !this.state.valueSelectedWithoutEditForm && isFieldValueEmpty
+    const hasNestedFormTemplates = !_.isEmpty(this.state.nestedFormTemplates)
+    const hasLegacyNestedForm = !hasNestedFormTemplates && !_.isNil(this.state.nestedForm)
+    const showCreateNewDropdown = hasNestedFormTemplates && this.state.nestedFormTemplates.length > 1 && !this.state.valueSelectedWithoutEditForm && isFieldValueEmpty
+    const showCreateNewButton = (hasLegacyNestedForm || (hasNestedFormTemplates && this.state.nestedFormTemplates.length === 1)) && !this.state.valueSelectedWithoutEditForm && isFieldValueEmpty
 
     return (
       <div className={`${CLASS_NAME}__main-row`}>
@@ -276,7 +285,16 @@ export class AutocompleteInput extends AtomicValueInput<AutocompleteInputProps, 
           minimumInput={this.props.minimumInput || MINIMUM_LIMIT}
         />
         { showCreateNewButton && (
-          <Button className={`${CLASS_NAME}__create-button btn-textAndIcon`} onClick={() => this.onDropdownSelectHandler(this.state.nestedFormTemplates[0].label)}>
+          <Button
+            className={`${CLASS_NAME}__create-button btn-textAndIcon`}
+            onClick={() => {
+              if (hasLegacyNestedForm) {
+                this.toggleNestedForm();
+              } else {
+                this.onDropdownSelectHandler(this.state.nestedFormTemplates[0].label);
+              }
+            }}
+          >
             <Icon iconType='round' iconName='add'/>
           </Button>
         )}
