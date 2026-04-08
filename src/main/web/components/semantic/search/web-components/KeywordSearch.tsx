@@ -27,6 +27,7 @@ import * as SparqlJs from 'sparqljs';
 import { SparqlUtil, SparqlClient } from 'platform/api/sparql';
 import { Component } from 'platform/api/components';
 import { Action } from 'platform/components/utils';
+import { defaultKeywordSearchConfig, textConfirmsToConfig } from "platform/components/shared/KeywordSearchConfig";
 
 import { setSearchDomain } from '../commons/Utils';
 import { SemanticSimpleSearchBaseConfig } from '../../simple-search/Config';
@@ -95,7 +96,6 @@ class KeywordSearchInner extends React.Component<InnerProps, State> {
     placeholder: 'Search all, minimum 3 characters',
     className: "input-keyword-search",
     searchTermVariable: '__token__',
-    minSearchTermLength: 3,
     debounce: 300,
     persistInHistory: true,
     escapeLuceneSyntax: true,
