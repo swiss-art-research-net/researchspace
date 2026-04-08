@@ -1,0 +1,31 @@
+@import '~basic-styles.scss';
+
+.semantic-data-table__toolbar {
+  margin-bottom: 10px;
+}
+
+.semantic-data-table__header-content {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.semantic-data-table__filter-cell {
+  min-width: 120px;
+  vertical-align: top;
+}
+
+.semantic-data-table__number-filter {
+  display: flex;
+  gap: 6px;
+}
+
+.semantic-data-table__grouped-cell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.semantic-data-table__tuple-row {
+  padding: 0 !important;
+}

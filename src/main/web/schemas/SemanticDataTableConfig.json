@@ -1,0 +1,268 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "anyOf": [
+    {
+      "$ref": "#/definitions/TableBaseConfig"
+    },
+    {
+      "$ref": "#/definitions/TableColumnConfig"
+    },
+    {
+      "$ref": "#/definitions/TableRowConfig"
+    }
+  ],
+  "definitions": {
+    "ColumnAggregateConfigurationType": {
+      "enum": [
+        "average",
+        "concat",
+        "count",
+        "default",
+        "sum",
+        "uniqueCount"
+      ],
+      "type": "string"
+    },
+    "ColumnFilterConfigurationType": {
+      "enum": [
+        "default",
+        "multiselect",
+        "number",
+        "select"
+      ],
+      "type": "string"
+    },
+    "GroupingOptions": {
+      "properties": {
+        "defaultAggregation": {
+          "$ref": "#/definitions/ColumnAggregateConfigurationType",
+          "description": "Aggregation to use if no aggregation is specified for a column."
+        },
+        "defaultAggregationCellTemplate": {
+          "description": "Template for aggregated values to use if no template is specified for a column.",
+          "type": "string"
+        },
+        "expandByDefault": {
+          "default": false,
+          "description": "Whether grouped rows should be expanded by default.",
+          "type": "boolean"
+        },
+        "groupedBy": {
+          "description": "Groups rows by default by the provided column IDs.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "showOnlyAggregatedValue": {
+          "default": false,
+          "description": "If enabled, grouped rows only display the aggregated values.",
+          "type": "boolean"
+        }
+      },
+      "propertyOrder": [
+        "groupedBy",
+        "defaultAggregation",
+        "defaultAggregationCellTemplate",
+        "expandByDefault",
+        "showOnlyAggregatedValue"
+      ],
+      "type": "object"
+    },
+    "SemanticColumnConfiguration": {
+      "properties": {
+        "aggregation": {
+          "$ref": "#/definitions/ColumnAggregateConfigurationType",
+          "description": "Type of aggregation to use for this column."
+        },
+        "aggregationCellTemplate": {
+          "description": "Template for aggregated values.",
+          "type": "string"
+        },
+        "cellTemplate": {
+          "description": "Custom cell visualization template.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Cell heading label override.",
+          "type": "string"
+        },
+        "filterType": {
+          "$ref": "#/definitions/ColumnFilterConfigurationType",
+          "description": "Type of column filter to use."
+        },
+        "id": {
+          "description": "Optional ID to reference this column.",
+          "type": "string"
+        },
+        "showFilter": {
+          "default": false,
+          "description": "Whether column filtering should be enabled for this column.",
+          "type": "boolean"
+        },
+        "variableName": {
+          "description": "SPARQL projection variable name that this column is bound to.",
+          "type": "string"
+        },
+        "visible": {
+          "default": true,
+          "description": "Whether this column should be visible by default.",
+          "type": "boolean"
+        }
+      },
+      "propertyOrder": [
+        "displayName",
+        "variableName",
+        "cellTemplate",
+        "showFilter",
+        "filterType",
+        "aggregation",
+        "visible",
+        "aggregationCellTemplate",
+        "id"
+      ],
+      "type": "object"
+    },
+    "SemanticDataTableOptions": {
+      "properties": {
+        "defaultCellTemplate": {
+          "description": "Template applied to cells unless a column-specific template is defined.",
+          "type": "string"
+        },
+        "enableGrouping": {
+          "default": false,
+          "description": "Whether or not to enable interactive grouping of rows.",
+          "type": "boolean"
+        },
+        "enableSort": {
+          "default": true,
+          "description": "Determines if sorting is enabled.",
+          "type": "boolean"
+        },
+        "groupingOptions": {
+          "$ref": "#/definitions/GroupingOptions"
+        },
+        "showColumnFilters": {
+          "default": false,
+          "description": "Whether column filter controls should be displayed.",
+          "type": "boolean"
+        },
+        "showFilter": {
+          "default": true,
+          "description": "Whether or not to display the global table filter.",
+          "type": "boolean"
+        },
+        "showTableHeading": {
+          "default": true,
+          "description": "Determines if the table heading should be displayed.",
+          "type": "boolean"
+        }
+      },
+      "propertyOrder": [
+        "enableGrouping",
+        "groupingOptions",
+        "defaultCellTemplate",
+        "showColumnFilters",
+        "showFilter",
+        "showTableHeading",
+        "enableSort"
+      ],
+      "type": "object"
+    },
+    "TableBaseConfig": {
+      "properties": {
+        "className": {
+          "type": "string"
+        },
+        "currentPage": {
+          "description": "In controlled mode sets the current page; in uncontrolled mode only sets the initial page.",
+          "type": "number"
+        },
+        "id": {
+          "description": "ID for issuing component events.",
+          "type": "string"
+        },
+        "linkParams": {
+          "description": "Add parameters to URLs. This option is applicable only to default cell templates.",
+          "properties": {},
+          "type": "object"
+        },
+        "noResultTemplate": {
+          "description": "Template applied when the query returns no results.",
+          "type": "string"
+        },
+        "numberOfDisplayedRows": {
+          "default": 10,
+          "description": "Number of rows to show on one page.",
+          "type": "number"
+        },
+        "options": {
+          "$ref": "#/definitions/SemanticDataTableOptions"
+        },
+        "prefetchLabels": {
+          "default": false,
+          "description": "Prefetches labels for resource IRIs to support sorting and filtering by label.",
+          "type": "boolean"
+        },
+        "query": {
+          "description": "SPARQL Select query.",
+          "type": "string"
+        },
+        "showLabels": {
+          "default": true,
+          "description": "Determines if the table should automatically fetch and display labels for resource IRIs.",
+          "type": "boolean"
+        },
+        "showLiteralDatatype": {
+          "default": false,
+          "description": "Enable displaying datatypes of literals.",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "query"
+      ],
+      "type": "object"
+    },
+    "TableColumnConfig": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/TableBaseConfig"
+        },
+        {
+          "properties": {
+            "columnConfiguration": {
+              "items": {
+                "$ref": "#/definitions/SemanticColumnConfiguration"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "columnConfiguration"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "TableRowConfig": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/TableBaseConfig"
+        },
+        {
+          "properties": {
+            "tupleTemplate": {
+              "description": "Template for the whole table row.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "tupleTemplate"
+          ],
+          "type": "object"
+        }
+      ]
+    }
+  }
+}

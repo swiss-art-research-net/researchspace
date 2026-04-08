@@ -5,6 +5,7 @@
 
   "semantic-table": "platform/components/semantic/table/SemanticTable.ts",
   "semantic-table-row-selection": "platform/components/semantic/table/TableSelectionComponent.ts",
+  "semantic-data-table": "platform/components/semantic/data-table/SemanticDataTable.tsx",
 
   "semantic-query": "platform/components/semantic/query/SemanticQuery.ts",
   "semantic-carousel": "platform/components/semantic/carousel/SemanticCarousel.ts",
