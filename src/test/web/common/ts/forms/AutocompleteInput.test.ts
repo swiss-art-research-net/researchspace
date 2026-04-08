@@ -21,6 +21,7 @@ import { createElement, HTMLAttributes } from 'react';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 
+import { SparqlUtil } from 'platform/api/sparql';
 import { Rdf } from 'platform/api/rdf';
 import {
   AutocompleteInput,
@@ -28,6 +29,7 @@ import {
   FieldValue,
   normalizeFieldDefinition,
 } from 'platform/components/forms';
+import { AutoCompletionInput as UiAutoCompletionInput } from 'platform/components/ui/inputs';
 
 import { shallow } from 'platform-tests/configuredEnzyme';
 import { mockConfig } from 'platform-tests/mocks';
@@ -89,5 +91,23 @@ describe('AutocompleteInput Component', () => {
     const inputProps = wrapper.find(AUTOCOMPLETE_SELECTOR).props() as AutocompleteProps;
     inputProps.actions.onSelected();
     expect(callback.called).to.be.true;
+  });
+
+  it('replaces all legacy token placeholders in suggestion queries', () => {
+    const query = `SELECT ?value ?label WHERE {
+      {
+        ?subject rdfs:label ?label .
+        FILTER(REGEX(?label, "?token", "i"))
+      } UNION {
+        BIND(URI("?token") AS ?value)
+      }
+    }`;
+    const wrapper = shallow(createElement(UiAutoCompletionInput, { query }));
+    const instance = wrapper.instance() as any;
+    const parsedQuery = instance.replaceTokenAndParseQuery(query, 'token', 'https://example.com/resource');
+    const renderedQuery = SparqlUtil.serializeQuery(parsedQuery);
+
+    expect(renderedQuery).to.contain('"https://example.com/resource"');
+    expect(renderedQuery).not.to.contain('?token');
   });
 });
