@@ -5,7 +5,6 @@
 
   "semantic-table": "platform/components/semantic/table/SemanticTable.ts",
   "semantic-table-row-selection": "platform/components/semantic/table/TableSelectionComponent.ts",
-  "semantic-data-table": "platform/components/semantic/data-table/SemanticDataTable.tsx",
 
   "semantic-query": "platform/components/semantic/query/SemanticQuery.ts",
   "semantic-carousel": "platform/components/semantic/carousel/SemanticCarousel.ts",
@@ -314,6 +313,7 @@
   "i18n": "platform/components/sari/i18n/I18nComponent.tsx",
   "sari-image-upload": "platform/components/sari/ui/ImageUpload.ts",
   "sari-resource-thumbnail": "platform/components/sari/ui/ResourceThumbnail.ts",
+  "semantic-data-table": "platform/components/sari/semantic/data-table/SemanticDataTable.tsx",
   "semantic-update": "platform/components/sari/semantic/update/SemanticUpdate.tsx",
   "semantic-sigma-graph": "platform/components/sari/semantic/sigma-graph/SigmaGraph.tsx"
 }
