@@ -32,7 +32,7 @@ import { ErrorNotification } from 'platform/components/ui/notification';
 import { Spinner } from 'platform/components/ui/spinner';
 import { TemplateItem } from 'platform/components/ui/template';
 
-import { RdfValueDisplay } from '../table/RdfValueDisplay';
+import { RdfValueDisplay } from '../../../semantic/table/RdfValueDisplay';
 
 import { Pagination } from './Pagination';
 import {
