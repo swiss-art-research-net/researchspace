@@ -156,37 +156,33 @@ export class LazyTree extends Component<LazyTreeProps, State> {
   }
 
   componentDidMount() {
-    try {
-      const patterns =
-        this.props.type === 'query' ? this.props.config :
-        createDefaultTreeQueries(this.props.config);
-      const model = new SparqlNodeModel({
-        rootsQuery: SparqlUtil.parseQuery(patterns.rootsQuery),
-        childrenQuery: SparqlUtil.parseQuery(patterns.childrenQuery),
-        parentsQuery: SparqlUtil.parseQuery(patterns.parentsQuery),
-        sparqlOptions: () => ({ context: this.context.semanticContext }),
-        limit: this.props.pageSize,
-      });
-      const searchQuery = patterns.searchQuery ? SparqlUtil.parseQuery(patterns.searchQuery) : undefined;
+    const patterns =
+      this.props.type === 'query' ? this.props.config :
+      createDefaultTreeQueries(this.props.config);
+    const model = new SparqlNodeModel({
+      rootsQuery: SparqlUtil.parseQuery(patterns.rootsQuery),
+      childrenQuery: SparqlUtil.parseQuery(patterns.childrenQuery),
+      parentsQuery: SparqlUtil.parseQuery(patterns.parentsQuery),
+      sparqlOptions: () => ({ context: this.context.semanticContext }),
+      limit: this.props.pageSize,
+    });
+    const searchQuery = patterns.searchQuery ? SparqlUtil.parseQuery(patterns.searchQuery) : undefined;
 
-      model.loadMoreChildren(Node.readyToLoadRoot).observe({
-        value: node => {
-          this.setState({
-            loading: false,
-            expandingToScroll: false,
-            forest: KeyedForest.create(Node.keyOf, node),
-            patterns,
-            model,
-            searchQuery,
-          });
-        },
-        error: loadError => {
-          this.setState({ loading: false, loadError });
-        }
-      });
-    } catch (loadError) {
-      this.setState({ loading: false, loadError });
-    }
+    model.loadMoreChildren(Node.readyToLoadRoot).observe({
+      value: node => {
+        this.setState({
+          loading: false,
+          expandingToScroll: false,
+          forest: KeyedForest.create(Node.keyOf, node),
+          patterns,
+          model,
+          searchQuery,
+        });
+      },
+      error: loadError => {
+        this.setState({ loading: false, loadError });
+      }
+    });
 
     if (this.props.id) {
       this.cancel.map(
