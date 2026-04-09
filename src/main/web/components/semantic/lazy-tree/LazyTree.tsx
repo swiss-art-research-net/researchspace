@@ -205,9 +205,7 @@ export class LazyTree extends Component<LazyTreeProps, State> {
   }
 
   render() {
-    if (this.state.loadError) {
-      return <ErrorNotification errorMessage={this.state.loadError} />;
-    } else if (this.state.loading) {
+    if (this.state.loading) {
       return <div>Loading</div>;
     } else {
       return this.renderTree();
