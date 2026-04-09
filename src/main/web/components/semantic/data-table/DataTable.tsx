@@ -197,9 +197,21 @@ export function DataTable(props: DataTableProps) {
         if (!query) {
           return rows;
         }
-        return rows.filter((row) =>
-          row.allCells.some((cell) => cellMatchesQuery(cell.value, query, renderingState.getLabel))
-        );
+        return rows.filter((row) => {
+          const source = row.original || row.values;
+          if (typeof source !== 'object' || source === null) {
+            return false;
+          }
+          for (const key in source) {
+            if (!Object.hasOwnProperty.call(source, key)) {
+              continue;
+            }
+            if (cellMatchesQuery(source[key], query, renderingState.getLabel)) {
+              return true;
+            }
+          }
+          return false;
+        });
       },
     }),
     [renderingState]
