@@ -48,7 +48,8 @@ import {
   KeyedForest,
   loadPath,
   expandPath,
-  queryMoreChildren
+  queryMoreChildren,
+  sealLazyExpanding
 } from 'platform/components/semantic/lazy-tree';
 
 import { ItemToggleSelected, Focus, ItemSelected } from './LazyTreeEvents';
@@ -542,7 +543,7 @@ export class LazyTree extends Component<LazyTreeProps, State> {
 
     return this.state.model
       .loadFromLeafs(leafs, { transitiveReduction: true })
-      .map((treeRoot) => KeyedForest.create(Node.keyOf, treeRoot));
+      .map((treeRoot) => KeyedForest.create(Node.keyOf, sealLazyExpanding(treeRoot)));
   }
 
   private focusOnNode(iri: string) {
