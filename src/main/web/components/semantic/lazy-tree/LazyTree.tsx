@@ -285,7 +285,9 @@ export class LazyTree extends Component<LazyTreeProps, State> {
           (!searchResult.forest?.root.children || searchResult.forest.root.children.length === 0) ? (
             <span className={styles.searchMessage}>No results found</span>
           ) : null}
-          <LazyTreeSelector {...props} ref={this.onTreeMount} className={styles.alignmentTree} />
+          {!useLegacySearch || !awaitingSearchResponse ? (
+            <LazyTreeSelector {...props} ref={this.onTreeMount} className={styles.alignmentTree} />
+          ) : null}
         </div>
       </div>
     );
