@@ -48,7 +48,6 @@ import {defaults as interactionDefaults} from 'ol/interaction';
 import {extend} from 'ol/extent';
 import {createEmpty} from 'ol/extent';
 import { Coordinate } from 'ol/coordinate';
-import OSM from 'ol/source/OSM';
 import AnimatedCluster from 'ol-ext/layer/AnimatedCluster';
 
 import { BuiltInEvents, trigger } from 'platform/api/events';
@@ -58,6 +57,7 @@ import { Component, ComponentContext } from 'platform/api/components';
 import { ErrorNotification } from 'platform/components/ui/notification';
 import { Spinner } from 'platform/components/ui/spinner';
 import { TemplateItem } from 'platform/components/ui/template';
+import { createOpenStreetMapSource } from 'platform/components/utils';
 
 import * as Popup from 'ol-popup';
 
@@ -304,7 +304,7 @@ export class SemanticMap extends Component<SemanticMapProps, MapState> {
         interactions: interactionDefaults({}),
         layers: [
           new TileLayer({
-            source: new OSM(),
+            source: createOpenStreetMapSource(),
           }),
           ..._.values(layers),
         ],
