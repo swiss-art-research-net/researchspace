@@ -31,6 +31,14 @@ $dragAreaBackgroundLight: #ffffff;
   height: 100%;
 }
 
+.legacySearchField {
+  margin-bottom: 10px;
+}
+
+.legacySearchInput {
+  width: 100%;
+}
+
 .componentSpinner {
   position: unset;
   left: unset;
@@ -42,6 +50,16 @@ $dragAreaBackgroundLight: #ffffff;
   flex: auto;
   display: flex;
   flex-direction: column;
+}
+
+.searchMessage {
+  margin: 5px 0 10px;
+}
+
+.searchSpinner {
+  left: unset;
+  top: unset;
+  margin: 0 0 10px;
 }
 
 .alignmentTree {
@@ -76,6 +94,10 @@ $dragAreaBackgroundLight: #ffffff;
   }
   color: $pathHighlightColor;
   font-weight: 600;
+}
+
+.highlighted {
+  background: rgba($pathHighlightColor, 0.18);
 }
 
 .baseTerm {

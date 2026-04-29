@@ -18,15 +18,18 @@
 
 import * as React from 'react';
 import * as Immutable from 'immutable';
+import * as Kefir from 'kefir';
 
 import { Cancellation } from 'platform/api/async';
-import { SparqlUtil } from 'platform/api/sparql';
+import { SparqlClient, SparqlUtil } from 'platform/api/sparql';
 import { trigger, listen } from 'platform/api/events';
 
 import { Component } from 'platform/api/components';
 import { TemplateItem } from 'platform/components/ui/template';
 import { Spinner } from 'platform/components/ui/spinner';
 import { Draggable } from 'platform/components/dnd';
+import { ClearableInput, ClearableInputProps } from 'platform/components/ui/inputs';
+import { ErrorNotification } from 'platform/components/ui/notification';
 
 import {
   KeyPath,
@@ -45,7 +48,8 @@ import {
   KeyedForest,
   loadPath,
   expandPath,
-  queryMoreChildren
+  queryMoreChildren,
+  sealLazyExpanding
 } from 'platform/components/semantic/lazy-tree';
 
 import { ItemToggleSelected, Focus, ItemSelected } from './LazyTreeEvents';
@@ -87,7 +91,13 @@ interface BaseLazyTreeProps {
    *
    * @default true
    */
-  draggable?: boolean
+  draggable?: boolean;
+
+  /**
+   * Render a legacy inline search input that replaces the displayed tree with
+   * search results instead of using the selection dropdown search.
+   */
+  useLegacySearch?: boolean;
 }
 
 export type LazyTreeProps =
@@ -98,11 +108,26 @@ interface State {
   patterns?: ComplexTreePatterns;
   model?: SparqlNodeModel;
   forest?: KeyedForest<Node>;
+  searchQuery?: any;
   expandingToScroll?: boolean;
   expandTarget?: Node;
   highlightedPath?: KeyPath;
-  loading: boolean;
+  searchText?: string;
+  awaitingSearchResponse?: boolean;
+  searchResult?: SearchResult;
+  loadError?: any;
+  loading?: boolean;
 }
+
+interface SearchResult {
+  forest?: KeyedForest<Node>;
+  error?: any;
+  matchedCount?: number;
+  matchLimit?: number;
+}
+
+const LEGACY_SEARCH_DELAY_MS = 300;
+const LEGACY_MIN_SEARCH_TERM_LENGTH = 3;
 
 /**
  *   <semantic-lazy-tree id='scheme-tree' input-placeholder='Select' info-template='{{> template}}' type='simple' config='{"scheme": "[[this]]"}'>
@@ -115,6 +140,7 @@ export class LazyTree extends Component<LazyTreeProps, State> {
   private tree: LazyTreeSelector;
   private searchedPaths = Immutable.Set<Immutable.List<string>>();
   private expandingCancellation = Cancellation.cancelled;
+  private searchCancellation = Cancellation.cancelled;
   private treeSelectionRef: SemanticTreeInput;
 
   static defaultProps = {
@@ -140,17 +166,23 @@ export class LazyTree extends Component<LazyTreeProps, State> {
       sparqlOptions: () => ({ context: this.context.semanticContext }),
       limit: this.props.pageSize,
     });
+    const searchQuery = patterns.searchQuery ? SparqlUtil.parseQuery(patterns.searchQuery) : undefined;
 
-    model.loadMoreChildren(Node.readyToLoadRoot).onValue(
-      node => {
+    model.loadMoreChildren(Node.readyToLoadRoot).observe({
+      value: node => {
         this.setState({
           loading: false,
           expandingToScroll: false,
           forest: KeyedForest.create(Node.keyOf, node),
-          patterns, model
+          patterns,
+          model,
+          searchQuery,
         });
+      },
+      error: loadError => {
+        this.setState({ loading: false, loadError });
       }
-    );
+    });
 
     if (this.props.id) {
       this.cancel.map(
@@ -159,7 +191,15 @@ export class LazyTree extends Component<LazyTreeProps, State> {
           eventType: Focus,
         })
       ).onValue(
-        event => this.treeSelectionRef.setValue(Rdf.iri(event.data.iri))
+        event => {
+          if (this.props.useLegacySearch) {
+            this.focusOnNode(event.data.iri);
+            return;
+          }
+          if (this.treeSelectionRef) {
+            this.treeSelectionRef.setValue(Rdf.iri(event.data.iri));
+          }
+        }
       )
     }
   }
@@ -173,21 +213,22 @@ export class LazyTree extends Component<LazyTreeProps, State> {
   }
 
   renderTree() {
-    const { patterns, forest, expandingToScroll, highlightedPath } = this.state;
-    const { focused, config, draggable } = this.props;
+    const { patterns, forest, expandingToScroll, highlightedPath, searchText, searchResult, awaitingSearchResponse } = this.state;
+    const { focused, config, draggable, useLegacySearch } = this.props;
+    const renderedForest = this.getRenderedForest();
     
     let highlightedNodes: ReadonlyArray<Node> = [];
     if (highlightedPath) {
-      const highlightTarget = forest.fromKeyPath(highlightedPath);
+      const highlightTarget = renderedForest.fromKeyPath(highlightedPath);
       if (highlightTarget) {
-        highlightedNodes = forest.getNodePath(highlightTarget);
+        highlightedNodes = renderedForest.getNodePath(highlightTarget);
       }
     }
     const props: LazyTreeSelectorProps<Node> = {
-      forest,
+      forest: renderedForest,
       isLeaf: this.isLeaf,
       childrenOf: this.childrenOf,
-      renderItem: (node) => this.renderTreeNodeRow(node, highlightedNodes, draggable),
+      renderItem: (node) => this.renderTreeNodeRow(node, highlightedNodes, draggable, useLegacySearch ? searchText : undefined),
       requestMore: this.requestMore,
       hideCheckboxes: true,
       onExpandedOrCollapsed: this.onExpandedOrCollapsed,
@@ -204,27 +245,73 @@ export class LazyTree extends Component<LazyTreeProps, State> {
     
     return (
       <div className={styles.component}>
-        <SemanticTreeInput
-          {...patterns}
-          placeholder={this.props.inputPlaceholder}
-          ref={this.onSelectionReady}
-          multipleSelection={false}
-          onSelectionClick={this.onSearchBadgeClick}
-          onSelectionChanged={this.onSearchSelectionChanged}
-          initialSelection={focused && focused.length > 0 ? [Rdf.iri(focused)] : []}
-          queryItemLabel={queryItemLabelConfig}
-        />
+        {useLegacySearch ? this.renderLegacySearchField() : (
+          <SemanticTreeInput
+            {...patterns}
+            placeholder={this.props.inputPlaceholder}
+            ref={this.onSelectionReady}
+            multipleSelection={false}
+            onSelectionClick={this.onSearchBadgeClick}
+            onSelectionChanged={this.onSearchSelectionChanged}
+            initialSelection={focused && focused.length > 0 ? [Rdf.iri(focused)] : []}
+            queryItemLabel={queryItemLabelConfig}
+          />
+        )}
         <div className={styles.alignmentTreeContainer}>
           {expandingToScroll ? this.renderExpandToScrollMessage() : null}
-          <LazyTreeSelector {...props} ref={this.onTreeMount} className={styles.alignmentTree} />
+          {useLegacySearch && searchText && searchText.length < LEGACY_MIN_SEARCH_TERM_LENGTH ? (
+            <span className={styles.searchMessage}>
+              Minimum length of search term is {LEGACY_MIN_SEARCH_TERM_LENGTH} characters
+            </span>
+          ) : null}
+          {useLegacySearch && awaitingSearchResponse ? (
+            <Spinner className={styles.searchSpinner} spinnerDelay={0} messageDelay={Infinity} />
+          ) : null}
+          {useLegacySearch && !awaitingSearchResponse && searchResult?.error ? (
+            <ErrorNotification errorMessage={searchResult.error} />
+          ) : null}
+          {useLegacySearch && !awaitingSearchResponse && searchResult && !searchResult.error && searchResult.matchedCount === searchResult.matchLimit ? (
+            <span className={styles.searchMessage}>
+              Only first {searchResult.matchedCount} matches are shown. Please refine your search.
+            </span>
+          ) : null}
+          {useLegacySearch && !awaitingSearchResponse && searchResult && !searchResult.error &&
+          (!searchResult.forest?.root.children || searchResult.forest.root.children.length === 0) ? (
+            <span className={styles.searchMessage}>No results found</span>
+          ) : null}
+          {!useLegacySearch || !awaitingSearchResponse ? (
+            <LazyTreeSelector {...props} ref={this.onTreeMount} className={styles.alignmentTree} />
+          ) : null}
         </div>
       </div>
     );
   }
 
-  private renderTreeNodeRow(node: Node, highlightedNodes: ReadonlyArray<Node>, isDraggable) {
+  private renderLegacySearchField() {
+    const textFieldProps: ClearableInputProps & React.ClassAttributes<ClearableInput> = {
+      className: styles.legacySearchField,
+      inputClassName: styles.legacySearchInput,
+      value: this.state.searchText || '',
+      placeholder: this.props.inputPlaceholder,
+      onChange: e => this.searchFor(e.currentTarget.value),
+      onKeyDown: e => {
+        if (e.keyCode === 13) {
+          this.searchFor(this.state.searchText);
+        }
+      },
+      onClear: () => this.clearSearch(),
+    };
+    return <ClearableInput {...textFieldProps} />;
+  }
+
+  private renderTreeNodeRow(
+    node: Node,
+    highlightedNodes: ReadonlyArray<Node>,
+    isDraggable,
+    highlightedTerm?: string
+  ) {
     const decoratorsClass = this.computeDecoratorsClass(node, highlightedNodes);
-    const treeNode = this.renderTreeNode(node, decoratorsClass)
+    const treeNode = this.renderTreeNode(node, decoratorsClass, highlightedTerm);
     return (
       <span className={styles.alignmentNodeRow}>
         {
@@ -236,11 +323,24 @@ export class LazyTree extends Component<LazyTreeProps, State> {
     );
   }
 
-  private renderTreeNode(node: Node, decoratorsClass: string) {
+  private renderTreeNode(node: Node, decoratorsClass: string, highlightedTerm?: string) {
     const title = node.iri.value;
+    const label = Node.getLabel(node);
+    const highlightIndex = highlightedTerm ? label.toLowerCase().indexOf(highlightedTerm.toLowerCase()) : -1;
+    const content = highlightIndex >= 0
+      ? (
+        <>
+          <span>{label.substring(0, highlightIndex)}</span>
+          <span className={styles.highlighted}>
+            {label.substring(highlightIndex, highlightIndex + highlightedTerm.length)}
+          </span>
+          <span>{label.substring(highlightIndex + highlightedTerm.length)}</span>
+        </>
+      )
+      : <span>{label}</span>;
     return (
       <span className={decoratorsClass} title={title}>
-        <span>{Node.getLabel(node)}</span>
+        {content}
       </span>
     );
   }
@@ -326,26 +426,151 @@ export class LazyTree extends Component<LazyTreeProps, State> {
   };
 
   private requestMore = (node: Node): void => {
-    const path = this.state.forest.getKeyPath(node);
-    const { model, forest } = this.state;
-    const [loadingForest, forestChange] = queryMoreChildren((parent) => model.loadMoreChildren(parent), forest, path);
-    this.cancel.map(forestChange).observe({
-      value: (changeForest) => {
-        this.setState({
-          forest: changeForest(forest)
-        });
-      },
-    });
-    this.setState({
-      forest: loadingForest
+    const renderedForest = this.getRenderedForest();
+    const path = renderedForest.getKeyPath(node);
+    let changePromise: Kefir.Property<(forest: KeyedForest<Node>) => KeyedForest<Node>>;
+    this.updateForest((forest, state) => {
+      const [loadingForest, forestChange] = queryMoreChildren((parent) => state.model.loadMoreChildren(parent), forest, path);
+      changePromise = forestChange;
+      return loadingForest;
+    }, () => {
+      const cancellation = this.state.searchResult ? this.searchCancellation : this.cancel;
+      cancellation.map(changePromise).observe({
+        value: changeForest => this.updateForest(changeForest)
+      });
     });
   };
 
   private onExpandedOrCollapsed = (item: Node, expanded: boolean) => {
-    const path = this.state.forest.getKeyPath(item);
-    const forest = this.state.forest.updateNode(path, (node) => TreeNode.set(node, { expanded }));
-    this.setState({ forest });
+    const renderedForest = this.getRenderedForest();
+    const path = renderedForest.getKeyPath(item);
+    this.updateForest(forest => forest.updateNode(path, (node) => TreeNode.set(node, { expanded })));
   };
+
+  private getRenderedForest() {
+    return this.state.searchResult?.forest ?? this.state.forest;
+  }
+
+  private updateForest(
+    update: (forest: KeyedForest<Node>, state?: State) => KeyedForest<Node>,
+    callback?: () => void
+  ) {
+    this.setState((state: State): Partial<State> => {
+      if (state.searchResult) {
+        return {
+          searchResult: {
+            ...state.searchResult,
+            forest: update(state.searchResult.forest, state),
+          },
+        };
+      }
+      return { forest: update(state.forest, state) };
+    }, callback);
+  }
+
+  private clearSearch() {
+    this.searchCancellation.cancelAll();
+    this.setState({
+      searchText: undefined,
+      searchResult: undefined,
+      awaitingSearchResponse: false,
+    });
+  }
+
+  private searchFor(text: string) {
+    if (!this.props.useLegacySearch) {
+      return;
+    }
+
+    if (text.length >= LEGACY_MIN_SEARCH_TERM_LENGTH) {
+      const searchingSameText = this.state.awaitingSearchResponse && this.state.searchText === text;
+      if (!searchingSameText) {
+        this.setState({
+          searchText: text,
+          awaitingSearchResponse: true,
+        });
+        this.searchCancellation = this.cancel.deriveAndCancel(this.searchCancellation);
+        this.searchCancellation.map(this.performLegacySearch(text)).observe({
+          value: searchResult => this.setState({ searchResult, awaitingSearchResponse: false }),
+          error: error => this.setState({ searchResult: { error }, awaitingSearchResponse: false }),
+        });
+      }
+    } else {
+      this.searchCancellation.cancelAll();
+      this.setState({
+        searchText: text,
+        searchResult: undefined,
+        awaitingSearchResponse: false,
+      });
+    }
+  }
+
+  private performLegacySearch(text: string) {
+    const parametrized = SparqlClient.setBindings(this.state.searchQuery, {
+      __token__: SparqlUtil.makeLuceneQuery(text)
+    });
+    return Kefir.later(LEGACY_SEARCH_DELAY_MS, {})
+      .flatMap(() => SparqlClient.select(parametrized, { context: this.context.semanticContext }))
+      .flatMap<SearchResult>(result =>
+        this.restoreTreeFromLeafNodes(result.results.bindings).map(forest => ({
+          forest,
+          matchedCount: result.results.bindings.length,
+          matchLimit: parametrized.limit,
+        }))
+      );
+  }
+
+  private restoreTreeFromLeafNodes(searchResult: SparqlClient.Bindings): Kefir.Property<KeyedForest<Node>> {
+    const leafs = searchResult
+      .map(({ item, score = Rdf.literal('0'), label, hasChildren }): Node => {
+        if (!(item && item.isIri())) {
+          return undefined;
+        }
+        const certainlyLeaf = hasChildren && hasChildren.isLiteral() && hasChildren.value === 'false';
+        return {
+          iri: item,
+          label: label && label.isLiteral() ? label : undefined,
+          score: parseFloat(score && score.isLiteral() ? score.value : ''),
+          children: [],
+          reachedLimit: certainlyLeaf,
+        };
+      })
+      .filter((node) => node !== undefined);
+
+    return this.state.model
+      .loadFromLeafs(leafs, { transitiveReduction: true })
+      .map((treeRoot) => KeyedForest.create(Node.keyOf, sealLazyExpanding(treeRoot)));
+  }
+
+  private focusOnNode(iri: string) {
+    const forest = this.state.forest;
+    const nodes = forest?.nodes.get(iri);
+    if (nodes && nodes.size > 0) {
+      const path = forest.getKeyPath(nodes.first());
+      this.onExpandAndScrollToPath(path, nodes.first());
+      return;
+    }
+
+    const iriNode: Node = {
+      iri: Rdf.iri(iri),
+      children: [],
+      reachedLimit: true,
+    };
+
+    this.expandingCancellation = this.cancel.deriveAndCancel(this.expandingCancellation);
+    this.expandingCancellation.map(
+      this.state.model.loadFromLeafs([iriNode], { transitiveReduction: false }).map(treeRoot => KeyedForest.create(Node.keyOf, treeRoot))
+    ).observe({
+      value: forestWithPath => {
+        const target = forestWithPath.nodes.get(iri)?.first();
+        if (!target) {
+          return;
+        }
+        const path = forestWithPath.getKeyPath(target);
+        this.setState({ forest: expandPath(forestWithPath, path), highlightedPath: path }, () => this.scrollToPath(path));
+      }
+    });
+  }
 
   onExpandAndScrollToPath(path: KeyPath, target: Node) {
     const onExpandingStateChanged = () => {

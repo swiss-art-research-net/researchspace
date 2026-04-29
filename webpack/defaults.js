@@ -117,6 +117,7 @@ module.exports = function() {
             "SemanticSearchKeywordConfig",
             "SemanticSearchQueryConstantConfig",
             "SemanticSimpleSearchConfig",
+            "SemanticDataTableConfig",
             "SemanticTableConfig",
             "SemanticTimelineConfig",
             "SemanticTreeConfig",

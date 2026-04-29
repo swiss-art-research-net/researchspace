@@ -33,7 +33,7 @@ interface ImageUploadConfig {
      * "user" - the user's camera
      * "environment" - the environment's camera
      */
-    capture?: string;
+    capture?: boolean | "environment" | "user";
     className?: string;
     id?: string;
     /**

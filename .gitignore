@@ -47,3 +47,5 @@ src/main/webapp/assets/*
 .env
 docker-compose.override.yml
 buildDockerImage.sh
+# Local secrets - DO NOT COMMIT
+gradle-local.properties

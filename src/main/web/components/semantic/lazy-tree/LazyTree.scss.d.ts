@@ -12,11 +12,16 @@ declare namespace LazyTreeScssNamespace {
     decorateHighlightParent: string;
     decoratedNodeBody: string;
     findAlignedButton: string;
+    highlighted: string;
+    legacySearchField: string;
+    legacySearchInput: string;
     nodeInfoButton: string;
     nodeInfoPopup: string;
     scrollNotification: string;
     scrollSpinner: string;
     scrollToName: string;
+    searchMessage: string;
+    searchSpinner: string;
     unalignButton: string;
   }
 }
