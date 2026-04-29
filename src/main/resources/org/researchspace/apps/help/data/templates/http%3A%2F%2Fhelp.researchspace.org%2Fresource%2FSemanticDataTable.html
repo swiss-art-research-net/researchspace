@@ -1,0 +1,246 @@
+<div class="page__grid-container help-page-container">
+  <div class='page__content-container'>
+    <h1>Semantic data table</h1>
+    <p>
+      The <code>semantic-data-table</code> component is a modern table component for SPARQL
+      <code>SELECT</code> results. It supports the core features of <code>semantic-table</code>
+      while adding grouping, aggregation templates and column-level filtering.
+    </p>
+    <p>
+      Use it when you need a richer table interface with grouped rows, aggregated summaries or
+      more structured filtering controls.
+    </p>
+
+    <div id='demo1'>
+      <semantic-data-table
+        query='
+          PREFIX person: <http://example.com/person/>
+          SELECT ?person ?gender ?age WHERE {
+            VALUES (?person ?gender ?age) {
+              (person:alice "female" 34)
+              (person:lisa "female" 10)
+              (person:martin "male" 26)
+              (person:max "male" 17)
+            }
+          }'
+        number-of-displayed-rows=4
+        column-configuration='[
+          {"variableName":"person", "displayName":"Person"},
+          {"variableName":"gender", "displayName":"Gender"},
+          {"variableName":"age", "displayName":"Age"}
+        ]'
+        options='{
+          "showFilter": false
+        }'
+      >
+      </semantic-data-table>
+    </div>
+
+    <h2>Configuration</h2>
+    <mp-documentation type="SemanticDataTableConfig"></mp-documentation>
+    <hr class="divider">
+    <h2>Examples</h2>
+
+    <h3>Custom Column Configuration and Cell Templates</h3>
+    <p>
+      Column headers can be customized and individual columns can render their cells using
+      Handlebars templates.
+    </p>
+    <div id='demo2'>
+      <mp-code-example>
+      <![CDATA[
+<semantic-data-table
+  query='
+    PREFIX person: <http://example.com/person/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    SELECT ?person ?label ?gender WHERE {
+      VALUES (?person ?label ?gender) {
+        (person:alice "Alice" "female")
+        (person:lisa "Lisa" "female")
+        (person:martin "Martin" "male")
+      }
+    }'
+  column-configuration='[
+    {
+      "variableName": "person",
+      "displayName": "Person",
+      "cellTemplate": "<semantic-link iri={{person.value}}>{{label.value}}</semantic-link>"
+    },
+    {
+      "variableName": "gender",
+      "displayName": "Gender"
+    }
+  ]'>
+</semantic-data-table>
+      ]]>
+      </mp-code-example>
+    </div>
+
+    <br>
+    <h3>Global and Column Filtering</h3>
+    <p>
+      The component supports both a global search field and optional column filters. Column filter
+      type can be inferred automatically or set explicitly using <code>filterType</code>.
+    </p>
+    <div id='demo3'>
+      <mp-code-example>
+      <![CDATA[
+<semantic-data-table
+  query='
+    PREFIX person: <http://example.com/person/>
+    SELECT ?person ?gender ?age WHERE {
+      VALUES (?person ?gender ?age) {
+        (person:alice "female" 34)
+        (person:lisa "female" 10)
+        (person:carol "female" 22)
+        (person:martin "male" 26)
+        (person:max "male" 17)
+      }
+    }'
+  options='{
+    "showFilter": true,
+    "showColumnFilters": true
+  }'
+  column-configuration='[
+    {"variableName": "person", "displayName": "Person", "showFilter": false},
+    {"variableName": "gender", "displayName": "Gender", "showFilter": true, "filterType": "select"},
+    {"variableName": "age", "displayName": "Age", "showFilter": true, "filterType": "number"}
+  ]'>
+</semantic-data-table>
+      ]]>
+      </mp-code-example>
+    </div>
+
+    <br>
+    <h3>Grouping and Aggregation</h3>
+    <p>
+      Rows can be grouped by one or more columns using <code>groupingOptions.groupedBy</code>.
+      Aggregated cells can use built-in aggregation modes such as <code>average</code>,
+      <code>count</code> or <code>concat</code>.
+    </p>
+    <div id='demo4'>
+      <mp-code-example>
+      <![CDATA[
+<semantic-data-table
+  query='
+    PREFIX person: <http://example.com/person/>
+    SELECT ?person ?gender ?age WHERE {
+      VALUES (?person ?gender ?age) {
+        (person:alice "female" 34)
+        (person:lisa "female" 10)
+        (person:carol "female" 22)
+        (person:eve "female" 31)
+        (person:martin "male" 26)
+        (person:max "male" 17)
+        (person:bob "male" 41)
+      }
+    }'
+  options='{
+    "enableGrouping": true,
+    "groupingOptions": {
+      "groupedBy": ["gender"],
+      "expandByDefault": true
+    }
+  }'
+  column-configuration='[
+    {
+      "variableName": "person",
+      "displayName": "People",
+      "aggregation": "concat",
+      "aggregationCellTemplate": "People in this group: {{rows.length}}"
+    },
+    {
+      "variableName": "gender",
+      "displayName": "Gender"
+    },
+    {
+      "variableName": "age",
+      "displayName": "Age",
+      "aggregation": "average",
+      "aggregationCellTemplate": "Average age: {{value}}"
+    }
+  ]'>
+</semantic-data-table>
+      ]]>
+      </mp-code-example>
+    </div>
+
+    <br>
+    <h3>Grouped Summary View</h3>
+    <p>
+      For grouped summary results, <code>showOnlyAggregatedValue</code> keeps only the aggregated
+      row visible and hides the child rows.
+    </p>
+    <div id='demo5'>
+      <mp-code-example>
+      <![CDATA[
+<semantic-data-table
+  query='
+    SELECT ?groupIri ?subject ?label WHERE {
+      VALUES (?groupIri ?subject ?label) {
+        (<http://example.com/a> <http://example.com/a1> "Alpha 1")
+        (<http://example.com/a> <http://example.com/a2> "Alpha 2")
+        (<http://example.com/b> <http://example.com/b1> "Beta 1")
+      }
+    }'
+  options='{
+    "groupingOptions": {
+      "groupedBy": ["groupIri"],
+      "showOnlyAggregatedValue": true
+    }
+  }'
+  column-configuration='[
+    {
+      "variableName": "groupIri",
+      "displayName": "Group",
+      "cellTemplate": " "
+    },
+    {
+      "variableName": "subject",
+      "displayName": "Result",
+      "cellTemplate": "<semantic-link iri={{subject.value}}>{{label.value}}</semantic-link>",
+      "aggregation": "concat",
+      "aggregationCellTemplate": "{{rows.length}} results"
+    },
+    {
+      "variableName": "label",
+      "displayName": "Label"
+    }
+  ]'>
+</semantic-data-table>
+      ]]>
+      </mp-code-example>
+    </div>
+
+    <br>
+    <h3>Custom Tuple Template</h3>
+    <p>
+      A <code>tupleTemplate</code> can be used to render each row using a custom layout instead of
+      the default table cell output.
+    </p>
+    <div id='demo6'>
+      <mp-code-example>
+      <![CDATA[
+<semantic-data-table
+  query='
+    PREFIX person: <http://example.com/person/>
+    SELECT ?person ?label ?gender WHERE {
+      VALUES (?person ?label ?gender) {
+        (person:alice "Alice" "female")
+        (person:lisa "Lisa" "female")
+        (person:martin "Martin" "male")
+      }
+    }'
+  tuple-template='
+    <div class="panel panel-default" style="margin-bottom: 10px;">
+      <div class="panel-body">
+        <strong>{{label.value}}</strong><br>
+        <span>{{gender.value}}</span>
+      </div>
+    </div>'>
+</semantic-data-table>
+      ]]>
+      </mp-code-example>
+    </div>
+  </div>
+</div>
