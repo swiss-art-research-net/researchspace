@@ -27,7 +27,6 @@ import 'ol/ol.css';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import Vector from 'ol/source/Vector';
-import OSM from 'ol/source/OSM';
 import TileLayer from 'ol/layer/Tile';
 import VectorLayer from 'ol/layer/Vector';
 import Style from 'ol/style/Style';
@@ -48,6 +47,7 @@ import * as _ from 'lodash';
 import * as classNames from 'classnames';
 
 import { SpatialDistance, SpatialBoundingBox, Coordinate } from 'platform/components/semantic/search/data/search/Model';
+import { createOpenStreetMapSource } from 'platform/components/utils';
 import * as styles from './OLMapSelection.scss';
 
 export interface ZoomToOptions {
@@ -130,7 +130,7 @@ export class OLMapSelection extends React.Component<OLMapSelectionProps, OLMapSe
       target: findDOMNode(this.refs[MAP_REF]) as HTMLElement,
       layers: [
         new TileLayer({
-          source: new OSM(),
+          source: createOpenStreetMapSource(),
         }),
         vector_draw,
       ],
