@@ -146,6 +146,18 @@ export function DataTable(props: DataTableProps) {
   const enableSort = options.enableSort !== false;
   const enableGlobalFilter = options.showFilter !== false;
   const enableColumnFilters = Boolean(options.showColumnFilters || props.columnConfiguration?.some((column) => column.showFilter));
+  // When group members are rendered as a single collapsed row via groupMemberRowsTemplate,
+  // react-table must not count the individual member rows toward pagination. Otherwise the
+  // flat (group + member) row count inflates pageCount and produces pages that contain only
+  // suppressed member rows, which render blank. Disabling paginateExpandedRows makes pagination
+  // count groups only, keeping the page model in sync with what we actually render. Gated to
+  // this template so all other tables keep react-table's default behavior unchanged.
+  // Only meaningful when useExpanded is actually in the plugin pipeline (enableGrouping &&
+  // enableExpansion). Setting paginateExpandedRows:false otherwise makes usePagination call
+  // react-table's expandRows() with an undefined `expanded` state, which throws. With no
+  // expansion there are also no member rows to collapse, so the option simply does not apply.
+  const collapseGroupMemberRows =
+    Boolean(options.groupingOptions?.groupMemberRowsTemplate) && enableGrouping && enableExpansion;
 
   const columns = React.useMemo(() => {
     return buildColumns(props, sourceRows, renderingState, { enableGrouping, enableSort, enableColumnFilters });
@@ -239,12 +251,16 @@ export function DataTable(props: DataTableProps) {
       filterTypes: filterTypes as any,
       globalFilter: 'globalText',
       initialState,
+      // Known limitation: with in-table filters enabled (showFilter / showColumnFilters) and
+      // pagination, applying a filter that reduces the result set while on a later page can leave
+      // the table on an empty page (autoResetPage is disabled to keep page state stable).
       autoResetPage: false,
       autoResetGroupBy: false,
       autoResetExpanded: false,
       autoResetSortBy: false,
       autoResetFilters: false,
       autoResetGlobalFilter: false,
+      paginateExpandedRows: !collapseGroupMemberRows,
     } as any,
     enableGlobalFilter ? useGlobalFilter : identityHook,
     enableColumnFilters ? useFilters : identityHook,
@@ -254,11 +270,16 @@ export function DataTable(props: DataTableProps) {
     usePagination
   ) as any;
 
+  // Sync the table to an externally controlled page only when that external value changes
+  // (e.g. initial value, or a search restoring page state from the URL). Intentionally NOT
+  // depending on instance.state.pageIndex: doing so makes this effect re-run on every internal
+  // page change and force the table back to props.currentPage, which cancels user navigation
+  // when the page value is not fed back in (standalone use, where onPageChange is undefined).
   React.useEffect(() => {
     if (typeof props.currentPage === 'number' && props.currentPage !== instance.state.pageIndex) {
       instance.gotoPage(props.currentPage);
     }
-  }, [props.currentPage, instance.state.pageIndex]);
+  }, [props.currentPage]);
 
   React.useEffect(() => {
     if (enableGrouping && enableExpansion && options.groupingOptions?.expandByDefault) {
