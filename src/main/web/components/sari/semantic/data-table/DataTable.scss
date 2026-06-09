@@ -26,6 +26,29 @@
   gap: 4px;
 }
 
+.semantic-data-table__group-row-template {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.semantic-data-table__group-row-template-toggle {
+  flex: 0 0 auto;
+}
+
+.semantic-data-table__group-row-template-content {
+  flex: 1 1 auto;
+}
+
+.semantic-data-table__group-row-template-cell,
+.semantic-data-table__group-member-rows-template-cell {
+  padding: 0 !important;
+}
+
+.semantic-data-table__group-row-template-cell--clickable {
+  cursor: pointer;
+}
+
 .semantic-data-table__tuple-row {
   padding: 0 !important;
 }

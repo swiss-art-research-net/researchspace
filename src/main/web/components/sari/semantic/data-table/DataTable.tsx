@@ -56,6 +56,10 @@ export interface GroupingOptions {
   defaultAggregationCellTemplate?: string;
   expandByDefault?: boolean;
   showOnlyAggregatedValue?: boolean;
+  groupRowTemplate?: string;
+  groupMemberRowsTemplate?: string;
+  showGroupRowToggle?: boolean;
+  toggleGroupRowOnClick?: boolean;
 }
 
 export interface DataTableOptions {
@@ -142,6 +146,18 @@ export function DataTable(props: DataTableProps) {
   const enableSort = options.enableSort !== false;
   const enableGlobalFilter = options.showFilter !== false;
   const enableColumnFilters = Boolean(options.showColumnFilters || props.columnConfiguration?.some((column) => column.showFilter));
+  // When group members are rendered as a single collapsed row via groupMemberRowsTemplate,
+  // react-table must not count the individual member rows toward pagination. Otherwise the
+  // flat (group + member) row count inflates pageCount and produces pages that contain only
+  // suppressed member rows, which render blank. Disabling paginateExpandedRows makes pagination
+  // count groups only, keeping the page model in sync with what we actually render. Gated to
+  // this template so all other tables keep react-table's default behavior unchanged.
+  // Only meaningful when useExpanded is actually in the plugin pipeline (enableGrouping &&
+  // enableExpansion). Setting paginateExpandedRows:false otherwise makes usePagination call
+  // react-table's expandRows() with an undefined `expanded` state, which throws. With no
+  // expansion there are also no member rows to collapse, so the option simply does not apply.
+  const collapseGroupMemberRows =
+    Boolean(options.groupingOptions?.groupMemberRowsTemplate) && enableGrouping && enableExpansion;
 
   const columns = React.useMemo(() => {
     return buildColumns(props, sourceRows, renderingState, { enableGrouping, enableSort, enableColumnFilters });
@@ -235,12 +251,16 @@ export function DataTable(props: DataTableProps) {
       filterTypes: filterTypes as any,
       globalFilter: 'globalText',
       initialState,
+      // Known limitation: with in-table filters enabled (showFilter / showColumnFilters) and
+      // pagination, applying a filter that reduces the result set while on a later page can leave
+      // the table on an empty page (autoResetPage is disabled to keep page state stable).
       autoResetPage: false,
       autoResetGroupBy: false,
       autoResetExpanded: false,
       autoResetSortBy: false,
       autoResetFilters: false,
       autoResetGlobalFilter: false,
+      paginateExpandedRows: !collapseGroupMemberRows,
     } as any,
     enableGlobalFilter ? useGlobalFilter : identityHook,
     enableColumnFilters ? useFilters : identityHook,
@@ -250,11 +270,16 @@ export function DataTable(props: DataTableProps) {
     usePagination
   ) as any;
 
+  // Sync the table to an externally controlled page only when that external value changes
+  // (e.g. initial value, or a search restoring page state from the URL). Intentionally NOT
+  // depending on instance.state.pageIndex: doing so makes this effect re-run on every internal
+  // page change and force the table back to props.currentPage, which cancels user navigation
+  // when the page value is not fed back in (standalone use, where onPageChange is undefined).
   React.useEffect(() => {
     if (typeof props.currentPage === 'number' && props.currentPage !== instance.state.pageIndex) {
       instance.gotoPage(props.currentPage);
     }
-  }, [props.currentPage, instance.state.pageIndex]);
+  }, [props.currentPage]);
 
   React.useEffect(() => {
     if (enableGrouping && enableExpansion && options.groupingOptions?.expandByDefault) {
@@ -277,6 +302,10 @@ export function DataTable(props: DataTableProps) {
 
   const showHeading = options.showTableHeading !== false;
   const showColumnFilterRow = enableColumnFilters && instance.headerGroups.some((group) => group.headers.some((header) => !header.disableFilters));
+  const groupRowTemplate = options.groupingOptions?.groupRowTemplate;
+  const groupMemberRowsTemplate = options.groupingOptions?.groupMemberRowsTemplate;
+  const showGroupRowToggle = options.groupingOptions?.showGroupRowToggle !== false;
+  const toggleGroupRowOnClick = Boolean(options.groupingOptions?.toggleGroupRowOnClick);
 
   return (
     <div className="semantic-data-table-widget-holder">
@@ -324,10 +353,53 @@ export function DataTable(props: DataTableProps) {
         <tbody {...instance.getTableBodyProps()}>
           {instance.page.map((row) => {
             instance.prepareRow(row);
+            const rowProps = row.getRowProps();
+            const colSpan = row.cells.length || instance.visibleColumns?.length || columns.length || 1;
+
+            if (groupMemberRowsTemplate && isRowRenderedByGroupMemberTemplate(row)) {
+              return null;
+            }
+
+            if (row.isGrouped && (groupRowTemplate || groupMemberRowsTemplate)) {
+              return (
+                <React.Fragment key={rowProps.key}>
+                  {groupRowTemplate ? (
+                    <tr {...rowProps}>
+                      <td
+                        colSpan={colSpan}
+                        className={
+                          toggleGroupRowOnClick
+                            ? 'semantic-data-table__group-row-template-cell semantic-data-table__group-row-template-cell--clickable'
+                            : 'semantic-data-table__group-row-template-cell'
+                        }
+                        onClick={(event) => handleGroupRowTemplateClick(event, row, enableExpansion, toggleGroupRowOnClick)}
+                      >
+                        {renderGroupRowTemplate(row, groupRowTemplate, enableExpansion && showGroupRowToggle)}
+                      </td>
+                    </tr>
+                  ) : (
+                    <tr {...rowProps}>
+                      {row.cells.map((cell) => (
+                        <td {...cell.getCellProps()} key={cell.getCellProps().key}>
+                          {renderCell(cell, row, renderingState, enableExpansion)}
+                        </td>
+                      ))}
+                    </tr>
+                  )}
+                  {groupMemberRowsTemplate && enableExpansion && row.isExpanded ? (
+                    <tr key={`${rowProps.key}-members`} className="semantic-data-table__group-member-rows-template-row">
+                      <td colSpan={colSpan} className="semantic-data-table__group-member-rows-template-cell">
+                        {renderGroupMemberRowsTemplate(row, groupMemberRowsTemplate)}
+                      </td>
+                    </tr>
+                  ) : null}
+                </React.Fragment>
+              );
+            }
 
             if (props.tupleTemplate && !row.isGrouped) {
               return (
-                <tr {...row.getRowProps()} key={row.getRowProps().key}>
+                <tr {...rowProps} key={rowProps.key}>
                   <td colSpan={row.cells.length || 1} className="semantic-data-table__tuple-row">
                     <TemplateItem
                       template={{
@@ -341,7 +413,7 @@ export function DataTable(props: DataTableProps) {
             }
 
             return (
-              <tr {...row.getRowProps()} key={row.getRowProps().key}>
+              <tr {...rowProps} key={rowProps.key}>
                 {row.cells.map((cell) => (
                   <td {...cell.getCellProps()} key={cell.getCellProps().key}>
                     {renderCell(cell, row, renderingState, enableExpansion)}
@@ -369,6 +441,102 @@ const FILTER_TYPE_TEXT = 'dataTableText';
 const FILTER_TYPE_SELECT = 'dataTableSelect';
 const FILTER_TYPE_MULTISELECT = 'dataTableMultiSelect';
 const FILTER_TYPE_NUMBER = 'dataTableNumber';
+
+function renderGroupRowTemplate(row: any, template: string, enableExpansion: boolean) {
+  const toggleProps = enableExpansion ? row.getToggleRowExpandedProps() : {};
+  return (
+    <div className="semantic-data-table__group-row-template">
+      {enableExpansion ? (
+        <button type="button" className="btn btn-link btn-xs semantic-data-table__group-row-template-toggle" {...toggleProps}>
+          {row.isExpanded ? '-' : '+'}
+        </button>
+      ) : null}
+      <div className="semantic-data-table__group-row-template-content">
+        <TemplateItem
+          template={{
+            source: template,
+            options: getGroupRowTemplateOptions(row),
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function renderGroupMemberRowsTemplate(row: any, template: string) {
+  return (
+    <TemplateItem
+      template={{
+        source: template,
+        options: getGroupMemberRowsTemplateOptions(row),
+      }}
+    />
+  );
+}
+
+function isRowRenderedByGroupMemberTemplate(row: any): boolean {
+  return row.depth > 0;
+}
+
+function handleGroupRowTemplateClick(
+  event: React.MouseEvent<HTMLElement>,
+  row: any,
+  enableExpansion: boolean,
+  toggleGroupRowOnClick: boolean
+) {
+  if (!enableExpansion) {
+    return;
+  }
+
+  const target = event.target as HTMLElement;
+  const customToggle = target.closest('.rs-row-toggle');
+  if (!customToggle && (!toggleGroupRowOnClick || isInteractiveElement(target))) {
+    return;
+  }
+
+  event.preventDefault();
+  event.stopPropagation();
+  row.toggleRowExpanded?.(!row.isExpanded);
+}
+
+function isInteractiveElement(target: HTMLElement): boolean {
+  return Boolean(target.closest('a, button, input, select, textarea, label, [role="button"], [role="link"]'));
+}
+
+function getGroupRowTemplateOptions(row: any) {
+  return {
+    ...getGroupMemberRowsTemplateOptions(row),
+    cells: { ...row.values },
+    isExpanded: Boolean(row.isExpanded),
+  };
+}
+
+function getGroupMemberRowsTemplateOptions(row: any) {
+  const rows = getLeafRows(row).map((leafRow) => leafRow.original);
+  return {
+    rows,
+    groupByValue: getGroupByValue(row),
+    memberCount: rows.length,
+  };
+}
+
+function getLeafRows(row: any): any[] {
+  if (!row.subRows || row.subRows.length === 0) {
+    return row.isGrouped ? [] : [row];
+  }
+  return _.flatMap(row.subRows, getLeafRows);
+}
+
+function getGroupByValue(row: any) {
+  const groupedCell = row.cells?.find((cell) => cell.isGrouped);
+  if (groupedCell) {
+    return groupedCell.value;
+  }
+  if (row.groupByID && row.values) {
+    return row.values[row.groupByID];
+  }
+  return undefined;
+}
 
 function renderCell(cell: any, row: any, renderingState: RenderingState, enableExpansion: boolean) {
   if (cell.isGrouped) {

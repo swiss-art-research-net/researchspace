@@ -54,9 +54,27 @@
           },
           "type": "array"
         },
+        "groupMemberRowsTemplate": {
+          "description": "Template for rendering all expanded member rows of a grouped row in a full-width row.",
+          "type": "string"
+        },
+        "groupRowTemplate": {
+          "description": "Template for rendering a grouped row in a full-width row.",
+          "type": "string"
+        },
+        "showGroupRowToggle": {
+          "default": true,
+          "description": "Whether DataTable should render the built-in expand/collapse toggle next to groupRowTemplate.",
+          "type": "boolean"
+        },
         "showOnlyAggregatedValue": {
           "default": false,
           "description": "If enabled, grouped rows only display the aggregated values.",
+          "type": "boolean"
+        },
+        "toggleGroupRowOnClick": {
+          "default": false,
+          "description": "Whether clicking the custom grouped row should expand or collapse the group. Interactive elements are ignored unless they use the rs-row-toggle class.",
           "type": "boolean"
         }
       },
@@ -64,6 +82,10 @@
         "groupedBy",
         "defaultAggregation",
         "defaultAggregationCellTemplate",
+        "groupRowTemplate",
+        "groupMemberRowsTemplate",
+        "showGroupRowToggle",
+        "toggleGroupRowOnClick",
         "expandByDefault",
         "showOnlyAggregatedValue"
       ],
