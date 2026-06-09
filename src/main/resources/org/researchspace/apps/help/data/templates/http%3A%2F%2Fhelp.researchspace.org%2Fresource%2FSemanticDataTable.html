@@ -213,12 +213,107 @@
     </div>
 
     <br>
+    <h3>Grouped Row Templates</h3>
+    <p>
+      <code>groupRowTemplate</code> and <code>groupMemberRowsTemplate</code> can be used to customize
+      the visual rendering of grouped rows. The table continues to define the data model: columns,
+      headers, grouping, sorting, filtering, expansion and pagination are configured through
+      <code>column-configuration</code> and <code>options</code>. The row templates only affect how
+      grouped rows and their expanded member rows are displayed.
+    </p>
+    <p>
+      <code>groupRowTemplate</code> defines the grouped summary row and is evaluated once for each
+      group. <code>groupMemberRowsTemplate</code> defines the expanded members of a group and is also
+      evaluated once for each group, not once for each member row. The template receives all member
+      records in <code>rows</code>, so members can be rendered by iterating over
+      <code>&#123;&#123;#each rows&#125;&#125;</code>. Both templates are optional and independent.
+      The <code>groupRowTemplate</code> receives <code>rows</code>, <code>cells</code>,
+      <code>isExpanded</code>, <code>groupByValue</code> and <code>memberCount</code>.
+      The <code>groupMemberRowsTemplate</code> receives <code>rows</code>, <code>groupByValue</code>
+      and <code>memberCount</code>.
+    </p>
+    <p>
+      By default, the table renders a built-in expand/collapse toggle next to
+      <code>groupRowTemplate</code>. Set <code>showGroupRowToggle</code> to <code>false</code> to hide
+      this toggle. To provide a custom toggle inside the template, add the
+      <code>rs-row-toggle</code> class to an element in <code>groupRowTemplate</code>. Set
+      <code>toggleGroupRowOnClick</code> to <code>true</code> to make clicking anywhere in the
+      grouped row toggle expansion. Interactive elements (links, buttons, form fields) inside the
+      row keep their normal behavior and do not toggle the group unless they have the
+      <code>rs-row-toggle</code> class.
+    </p>
+    <div id='demo6'>
+      <mp-code-example>
+      <![CDATA[
+<semantic-data-table
+  query='
+    PREFIX person: <http://example.com/person/>
+    SELECT ?person ?label ?team ?age WHERE {
+      VALUES (?person ?label ?team ?age) {
+        (person:alice  "Alice"   "Research"    30)
+        (person:bob    "Bob"     "Research"    36)
+        (person:carol  "Carol"   "Research"    42)
+        (person:dan    "Dan"     "Design"      28)
+        (person:eve    "Eve"     "Design"      40)
+        (person:frank  "Frank"   "Engineering" 38)
+        (person:grace  "Grace"   "Engineering" 50)
+        (person:henry  "Henry"   "Editorial"   33)
+      }
+    }'
+  number-of-displayed-rows="2"
+  options='{
+    "enableGrouping": true,
+    "showTableHeading": false,
+    "groupingOptions": {
+      "groupedBy": ["team"],
+      "expandByDefault": true,
+      "groupRowTemplate": "{{> groupRowTemplate}}",
+      "groupMemberRowsTemplate": "{{> groupMemberRowsTemplate}}",
+      "showGroupRowToggle": false,
+      "toggleGroupRowOnClick": true
+    }
+  }'
+  column-configuration='[
+    {"variableName": "team", "displayName": "Team"},
+    {"variableName": "person", "displayName": "Person"},
+    {"variableName": "label", "displayName": "Label"},
+    {"variableName": "age", "displayName": "Age", "aggregation": "average"}
+  ]'>
+
+  <template id="groupRowTemplate">
+    <div style="padding: 8px 12px;">
+      <strong>{{groupByValue.value}}</strong>
+      <span style="margin-left: 8px;">{{memberCount}} people</span>
+      <span style="margin-left: 8px;">average age {{cells.age}}</span>
+    </div>
+  </template>
+
+  <template id="groupMemberRowsTemplate">
+    <div>
+      <table class="table table-condensed" style="margin: 0;">
+        <tbody>
+          {{#each rows}}
+            <tr>
+              <td>{{label.value}}</td>
+              <td class="text-right">{{age.value}}</td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </template>
+</semantic-data-table>
+      ]]>
+      </mp-code-example>
+    </div>
+
+    <br>
     <h3>Custom Tuple Template</h3>
     <p>
       A <code>tupleTemplate</code> can be used to render each row using a custom layout instead of
       the default table cell output.
     </p>
-    <div id='demo6'>
+    <div id='demo7'>
       <mp-code-example>
       <![CDATA[
 <semantic-data-table
