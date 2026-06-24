@@ -18,6 +18,20 @@
  */
 
 export const StringsFunctions = {
+  arraySplit: function(text: string) {
+    if (typeof text !== 'string') {
+      return [];
+    }
+    try {
+      const array = JSON.parse(text);
+      if (Array.isArray(array)) {
+        return array;
+      }
+    } catch (e) {
+      console.error('Error parsing JSON array:', e);
+    }
+    return []; 
+  },
   extractFilename: function(url) {
     if (typeof url === 'string') {
       // Using a regular expression to remove everything up to and including the last '/'
