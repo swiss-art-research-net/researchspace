@@ -19,6 +19,7 @@
 import * as React from 'react';
 import * as Immutable from 'immutable';
 import * as classnames from 'classnames';
+import { Button } from 'react-bootstrap';
 
 import { Cancellation } from 'platform/api/async';
 
@@ -45,6 +46,13 @@ export interface ChecklistInputProps extends MultipleValuesProps {
    * Allow to add custom css-class of Checklist item .
    */
   classItemName?: string;
+
+  /**
+   * Adds a button to clear all selected items.
+   *
+   * @default false
+   */
+  clearable?: boolean;
 
   /**
    * Allow to transform items(checkboxes or radio-buttons) in a row.
@@ -167,6 +175,21 @@ export class ChecklistInput extends MultipleValuesInput<ChecklistInputProps, Sta
     });
   };
 
+  private clearList = () => {
+    const { updateValues, handler } = this.props;
+    updateValues(({ errors }) =>
+      handler.validate({
+        values: Immutable.List<FieldValue>(),
+        errors,
+      })
+    );
+  };
+
+  private isClearable = () => {
+    const { clearable, values } = this.props;
+    return clearable === true && values.some(FieldValue.isAtomic);
+  };
+
   private checkType = () => {
     const { type } = this.props;
     return type === 'checkbox' ? 'checkbox' : type === 'radio' ? 'radio' : 'checkbox';
@@ -210,7 +233,14 @@ export class ChecklistInput extends MultipleValuesInput<ChecklistInputProps, Sta
     const options = this.state.valueSet ? this.state.valueSet.toArray() : [];
 
     return (
-      <div className={classnames(className, { [`${CHECKLIST_CLASS}_row`]: row })}>{this.renderChecklist(options)}</div>
+      <div className={classnames(className, { [`${CHECKLIST_CLASS}_row`]: row })}>
+        {this.renderChecklist(options)}
+        {this.isClearable() && (
+          <Button bsSize="small" bsStyle="default" onClick={this.clearList}>
+            <span className="fa fa-trash" />
+          </Button>
+        )}
+      </div>
     );
   }
 
