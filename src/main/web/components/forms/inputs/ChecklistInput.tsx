@@ -22,6 +22,7 @@ import * as classnames from 'classnames';
 import { Button } from 'react-bootstrap';
 
 import { Cancellation } from 'platform/api/async';
+import Icon from 'platform/components/ui/icon/Icon';
 
 import { FieldValue, SparqlBindingValue, ErrorKind, DataState } from '../FieldValues';
 import {
@@ -236,8 +237,8 @@ export class ChecklistInput extends MultipleValuesInput<ChecklistInputProps, Sta
       <div className={classnames(className, { [`${CHECKLIST_CLASS}_row`]: row })}>
         {this.renderChecklist(options)}
         {this.isClearable() && (
-          <Button bsSize="small" bsStyle="default" onClick={this.clearList}>
-            <span className="fa fa-trash" />
+          <Button bsStyle="default" onClick={this.clearList}>
+            <Icon iconType="rounded" iconName="delete" symbol />
           </Button>
         )}
       </div>
