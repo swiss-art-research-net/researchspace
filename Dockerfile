@@ -1,3 +1,5 @@
+FROM node:14-bullseye AS node
+
 FROM maven:3-jdk-11 AS builder
 
 RUN sed -i \
@@ -20,8 +22,7 @@ RUN echo "export PATH=${GRADLE_HOME}/bin:${PATH}" >> /etc/profile.d/gradle.sh
 RUN chmod +x /etc/profile.d/gradle.sh
 
 # Install Node.js v14x
-RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash -
-RUN apt-get install -y nodejs
+COPY --from=node /usr/local /usr/local
 
 # Add source data
 ADD . /workdir
