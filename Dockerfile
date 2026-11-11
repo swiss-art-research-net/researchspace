@@ -1,38 +1,27 @@
-# Use a multi-arch compatible base image
-FROM eclipse-temurin:11 AS builder
+FROM maven:3-jdk-11 AS builder
 
-# Set environment variables for Gradle and Java
-ENV GRADLE_VERSION=8.11.1
-ENV GRADLE_HOME=/opt/gradle
-ENV PATH="$GRADLE_HOME/bin:$PATH"
-
-# Install necessary dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl \
-    ca-certificates \
-    unzip \
-    build-essential \
-  && rm -rf /var/lib/apt/lists/*
+RUN apt update
+RUN apt -y install curl dirmngr apt-transport-https lsb-release ca-certificates openjdk-11-jdk python2 build-essential
 
 # Install Gradle
-RUN curl -fsSL "https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip" -o /tmp/gradle.zip \
-  && unzip -d /opt/gradle /tmp/gradle.zip \
-  && ln -s /opt/gradle/gradle-${GRADLE_VERSION} /opt/gradle/latest \
-  && rm /tmp/gradle.zip
+RUN wget https://services.gradle.org/distributions/gradle-6.5.1-bin.zip -P /tmp
+RUN unzip -d /opt/gradle /tmp/gradle-6.5.1-bin.zip
+RUN ln -s /opt/gradle/gradle-6.5.1 /opt/gradle/latest
+RUN echo "export GRADLE_HOME=/opt/gradle/latest" >> /etc/profile.d/gradle.sh
+RUN echo "export PATH=${GRADLE_HOME}/bin:${PATH}" >> /etc/profile.d/gradle.sh
+RUN chmod +x /etc/profile.d/gradle.sh
 
-# Install Node.js (adjust to LTS version)
-RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
-  && apt-get install -y --no-install-recommends nodejs \
-  && rm -rf /var/lib/apt/lists/*
+# Install Node.js v14x
+RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash -
+RUN apt-get install -y nodejs
 
-# Copy application source
-WORKDIR /workdir
+# Add source data
 ADD . /workdir
-
-# Build the application
+WORKDIR /workdir
+# Build war artefact
 RUN ./gradlew clean war
 
-# Move the artifact to the target directory
+# Move war artefact to platform folder
 RUN mv build/libs/ROOT-*.war /workdir/dist/docker/platform/ROOT.war
 
 # Build image
@@ -100,7 +89,7 @@ RUN echo "setting up platform, apps, and runtime folders" \
 
 COPY --chown=100:0 dist/docker/platform/jetty-logging.properties /var/lib/jetty/resources/jetty-logging.properties
 
-COPY --chown=100:0 dist/docker/platform/shiro-tools-hasher-2.0.2-cli.jar /firstStart/
+COPY --chown=100:0 dist/docker/platform/shiro-tools-hasher-1.3.2-cli.jar /firstStart/
 COPY --chown=100:0 dist/docker/platform/first-passwd-init.sh /firstStart/
 
 COPY --chown=100:0 dist/docker/platform/ROOT.xml /var/lib/jetty/webapps/ROOT.xml
@@ -123,7 +112,7 @@ USER jetty
 RUN java -jar "$JETTY_HOME/start.jar" --add-to-start="logging-jetty"
 
 ENV PLATFORM_OPTS=
-ENV RUNTIME_OPTS="-DruntimeDirectory=/runtime-data -Dorg.researchspace.config.baselocation=/runtime-data/config -DappsDirectory=/apps -Dconfig.environment.shiroConfig=/runtime-data/config/shiro.ini -Dlog4j.configurationFile=classpath:org/researchspace/logging/log4j2.xml -Dorg.eclipse.jetty.server.Request.maxFormContentSize=104857600"
+ENV RUNTIME_OPTS "-DruntimeDirectory=/runtime-data -Dorg.researchspace.config.baselocation=/runtime-data/config -DappsDirectory=/apps -Dconfig.environment.shiroConfig=/runtime-data/config/shiro.ini -Dlog4j.configurationFile=classpath:org/researchspace/logging/log4j2.xml -Dorg.eclipse.jetty.server.Request.maxFormContentSize=104857600"
 
 ENTRYPOINT ["/entrypoint.sh"]
 
