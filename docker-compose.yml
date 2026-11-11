@@ -1,8 +1,8 @@
 services:
   rs-dev:
-    container_name: "rs-dev"
+    container_name: "rs-dev-v3"
     build: dev/.
-    image: fkraeutli/rs-dev
+    image: fkraeutli/rs-dev-v3
     ports:
       - "3000:3000"
       - "10214:10214"
@@ -16,4 +16,5 @@ services:
 # DOCKER_NETWORK=my-network
 networks:
   default:
+    external: true
     name: ${DOCKER_NETWORK}
