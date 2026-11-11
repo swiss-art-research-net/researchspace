@@ -1,7 +1,17 @@
+FROM node:14-bullseye AS node
+
 FROM maven:3-jdk-11 AS builder
 
-RUN apt update
-RUN apt -y install curl dirmngr apt-transport-https lsb-release ca-certificates openjdk-11-jdk python2 build-essential
+RUN sed -i \
+        -e 's|deb.debian.org/debian-security|archive.debian.org/debian-security|g' \
+        -e 's|deb.debian.org/debian|archive.debian.org/debian|g' \
+        -e '/bullseye-updates/d' \
+        /etc/apt/sources.list \
+    && apt-get -o Acquire::Check-Valid-Until=false update \
+    && apt-get install -y --no-install-recommends \
+        curl dirmngr apt-transport-https lsb-release ca-certificates \
+        openjdk-11-jdk python2 build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install Gradle
 RUN wget https://services.gradle.org/distributions/gradle-6.5.1-bin.zip -P /tmp
@@ -12,8 +22,7 @@ RUN echo "export PATH=${GRADLE_HOME}/bin:${PATH}" >> /etc/profile.d/gradle.sh
 RUN chmod +x /etc/profile.d/gradle.sh
 
 # Install Node.js v14x
-RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash -
-RUN apt-get install -y nodejs
+COPY --from=node /usr/local /usr/local
 
 # Add source data
 ADD . /workdir
