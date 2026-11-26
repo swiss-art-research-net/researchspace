@@ -13,8 +13,8 @@ import { SearchResults } from './searchResults';
 
 import { WorkspaceContextTypes, WorkspaceContextWrapper, WorkspaceEventKey } from '../workspace/workspaceContext';
 
-const DirectionInImage = require('../../../images/direction-in.png');
-const DirectionOutImage = require('../../../images/direction-out.png');
+const DirectionInImage = require('../../../images/direction-in.png').default;
+const DirectionOutImage = require('../../../images/direction-out.png').default;
 
 export interface InstancesSearchProps {
   className?: string;
